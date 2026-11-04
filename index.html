@@ -247,6 +247,8 @@ function save(){if(API.on){if(sess?.role==='admin'&&!API.empty)schedulePush();re
 /* ---------- ระบบออนไลน์ (OneDrive ผ่าน Netlify) — ถ้าไม่มี /api จะทำงานแบบต้นแบบในเบราว์เซอร์ ---------- */
 // ลิงก์เว็บแอป Google Apps Script (ได้จากขั้น "ทำให้ใช้งานได้") — เว้นว่าง = ใช้ /api ของ Netlify หรือโหมดต้นแบบ
 const GAS_URL='https://script.google.com/macros/s/AKfycbzj5zwphSuonYbOlkAo71A_wueQg-W63GXt9jhO_V08Rq30dsOeP8vvLh415ev9KDz1/exec';
+// ?demo = โหมดตัวอย่าง (ค่ายสมมติ เก็บในเบราว์เซอร์ ไม่ต่อระบบจริง) ใช้เป็นลิงก์ผลงานให้คนทั่วไปลองเล่น
+const DEMO=/[?&]demo(?:[=&]|$)/.test(location.search),GAS=DEMO?'':GAS_URL;
 const API={on:false,sheetUrl:null,st:null,etag:null,empty:false,err:null,gate:false,syncCfg:null,syncRd:null,q:[],t:null,lt:null,busy:false,sync:''};
 // รหัสเข้าดูเว็บไซต์: ตัวกลางให้โทเค็นแบบดูอย่างเดียว เก็บในเครื่องนี้ 30 วัน (ผู้ดูแลเปลี่ยนรหัสเมื่อไร โทเค็นเก่าใช้ไม่ได้ทันที)
 const VKEY='mmView';
@@ -255,7 +257,7 @@ function setViewTok(t,days){viewTok=t||null;try{t?localStorage.setItem(VKEY,JSON
 const cfgOf=s=>({v:s.v,companies:s.companies,meters:s.meters,blds:s.blds,shapes:s.shapes,settings:s.settings});
 const blankS=()=>({v:3,companies:[],meters:[],blds:[],shapes:[],readings:{},locPhotos:{},checks:{},settings:{openYm:null,closed:false,closeDay:3,cam:null},log:[]});
 async function api(p,o={}){
- if(GAS_URL){let r,j=null;try{r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({r:p.replace(/^\//,''),m:o.method||'GET',t:sess?.token||viewTok||'',b:o.body||null}),redirect:'follow',cache:'no-store'});}catch(_){const e=new Error('ต่ออินเทอร์เน็ตไม่ได้');e.status=0;throw e;}
+ if(GAS){let r,j=null;try{r=await fetch(GAS,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({r:p.replace(/^\//,''),m:o.method||'GET',t:sess?.token||viewTok||'',b:o.body||null}),redirect:'follow',cache:'no-store'});}catch(_){const e=new Error('ต่ออินเทอร์เน็ตไม่ได้');e.status=0;throw e;}
   try{j=await r.json();}catch(_){}if(!j){const e=new Error('ระบบ Google ไม่ตอบ (HTTP '+r.status+')');e.status=r.status||500;throw e;}
   if(!j.ok){const e=new Error(j.error||'ผิดพลาด');e.status=j.status||500;throw e;}return j.data;}
  const h={'Content-Type':'application/json'};if(sess?.token)h.Authorization='Bearer '+sess.token;
@@ -293,7 +295,8 @@ function pageGate(){return `<div class="card gate"><div class="gate-ic" aria-hid
  <div class="row" style="justify-content:center"><input type="password" id="gtCode" autocomplete="off" placeholder="รหัสเข้าดู" aria-label="รหัสเข้าดู" style="max-width:220px"><button class="primary" id="gtGo">เข้าดู</button></div>
  <p id="gtErr" class="bad" style="min-height:1.5em;margin:6px 0 0"></p>
  <label class="chip" style="justify-content:center"><input type="checkbox" id="gtKeep" checked> จำไว้ในเครื่องนี้ 30 วัน</label>
- <p class="hint" style="margin-bottom:0">ผู้กรอกข้อมูลและผู้ดูแลที่มีบัญชีแล้ว กด "🔑 เข้าสู่ระบบ" มุมขวาบนได้เลย</p></div>`;}
+ <p class="hint" style="margin-bottom:0">ผู้กรอกข้อมูลและผู้ดูแลที่มีบัญชีแล้ว กด "🔑 เข้าสู่ระบบ" มุมขวาบนได้เลย</p>
+ <p class="hint" style="margin:10px 0 0">ไม่มีรหัส? <a href="?demo">ลองดูตัวอย่างการทำงาน (ข้อมูลสมมติ)</a></p></div>`;}
 async function gateGo(){const v=$('#gtCode').value.trim(),err=t=>{$('#gtErr').textContent=t;};if(!v)return err('ใส่รหัส');
  err('กำลังตรวจรหัส…');$('#gtGo').disabled=true;
  try{const r=await api('/login',{method:'POST',body:{view:v}});setViewTok(r.token,$('#gtKeep').checked?30:0.5);await loadOnline();if(!handleHash())render();}
@@ -1174,7 +1177,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#mbg'))closeM
 window.addEventListener('hashchange',handleHash);
 
 async function boot(){initTheme();
- if(GAS_URL){API.on=true;try{API.st=await api('/ping');}catch(e){API.st={storage:'google'};API.err='เชื่อมระบบ Google ไม่ได้: '+e.message;}}
+ if(DEMO){const b=$('#demoBar');if(b)b.innerHTML+=' · <a href="./">ไปหน้าระบบจริง (ต้องใส่รหัส)</a>';}
+ if(GAS){API.on=true;try{API.st=await api('/ping');}catch(e){API.st={storage:'google'};API.err='เชื่อมระบบ Google ไม่ได้: '+e.message;}}
  else try{const p=await fetch('/api/ping',{cache:'no-store'});if(p.ok){const j=await p.json().catch(()=>null);if(j&&j.app==='meter-map'){API.on=true;API.st=j;}}}catch(_){}
  if(API.on){const d=$('#demoBar');if(d)d.style.display='none';$('#main').innerHTML='<div class="card"><p class="hint">กำลังโหลดข้อมูล…</p></div>';if(!API.err)await loadOnline();}
  if(!handleHash())render();}
