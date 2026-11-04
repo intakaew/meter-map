@@ -1,0 +1,1185 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แผนที่มิเตอร์ ม.๑ พัน.๓ รอ.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root{color-scheme:light;--menu-bg:#FFFFFF;--bg:#eef2f8;--surface:rgba(255,255,255,.84);--surface-solid:#ffffff;--surface2:rgba(15,27,45,.045);--text-primary:#0f1b2d;--text-muted:#5a6679;--border:rgba(15,27,45,.10);--accent:#2457e6;--accent2:#0ea5e9;--elec:#d97706;--water:#0284c7;--ok:#15803d;--warn:#b45309;--bad:#b91c1c;--shadow:0 1px 2px rgba(16,24,40,.05),0 10px 30px rgba(16,24,40,.08);--glow1:rgba(36,87,230,.16);--glow2:rgba(14,165,233,.13)}
+:root[data-theme="dark"]{color-scheme:dark;--menu-bg:#141A26;--bg:#070b14;--surface:rgba(19,27,42,.80);--surface-solid:#131b2a;--surface2:rgba(255,255,255,.05);--text-primary:#e8edf5;--text-muted:#98a4b7;--border:rgba(255,255,255,.09);--accent:#6d8cff;--accent2:#22d3ee;--elec:#fbbf24;--water:#38bdf8;--ok:#4ade80;--warn:#fbbf24;--bad:#f87171;--shadow:0 1px 2px rgba(0,0,0,.45),0 12px 32px rgba(0,0,0,.38);--glow1:rgba(109,140,255,.17);--glow2:rgba(34,211,238,.10)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--text-primary);font-family:Sarabun,system-ui,sans-serif;font-size:16px;line-height:1.5;background:radial-gradient(900px 520px at 6% -12%,var(--glow1),transparent 60%),radial-gradient(820px 520px at 102% -4%,var(--glow2),transparent 58%),var(--bg);background-attachment:fixed}
+select option,select optgroup{background-color:var(--menu-bg);color:var(--text-primary)}
+input,select,textarea,button{font:inherit;color:var(--text-primary)}
+input[type=text],input[type=number],input[type=password],input[type=url],input[type=tel],select,textarea{background:var(--surface-solid);border:1px solid var(--border);border-radius:10px;padding:6px 10px;min-height:38px;max-width:100%;outline:none;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--glow1)}
+input[type=file]{max-width:100%;color:var(--text-muted)}
+input[type=color]{width:44px;height:34px;border:1px solid var(--border);border-radius:8px;background:var(--surface-solid);padding:2px}
+button,.btn{display:inline-flex;align-items:center;gap:6px;background:var(--surface-solid);border:1px solid var(--border);border-radius:10px;padding:6px 13px;cursor:pointer;min-height:38px;color:var(--text-primary);transition:border-color .15s,background .15s,box-shadow .15s}
+button:hover,.btn:hover{border-color:var(--accent)}
+button.primary,button.on{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;font-weight:600;box-shadow:0 4px 14px var(--glow1)}
+button.danger{color:var(--bad)}
+button:disabled{opacity:.5;cursor:not-allowed}
+header.top{position:sticky;top:0;z-index:20;background:var(--surface);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 18px}
+.brand{display:flex;gap:12px;align-items:center;margin-right:auto;min-width:0}
+.logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#2457e6,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 16px rgba(36,87,230,.35);flex:none}
+header .title{font-weight:700;font-size:18px;line-height:1.25}
+header .title small{display:block;font-weight:400;font-size:13px;color:var(--text-muted)}
+.nav{display:flex;gap:6px;flex-wrap:wrap}
+.demo{background:linear-gradient(90deg,rgba(234,179,8,.16),rgba(234,179,8,.06));color:#6b4a00;border-bottom:1px solid rgba(234,179,8,.35);padding:6px 18px;font-size:14px}
+:root[data-theme="dark"] .demo{color:#f3d892}
+main{padding:18px;max-width:1480px;margin:0 auto}
+.layout{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.layout{grid-template-columns:minmax(0,1fr)}main{padding:12px}}
+.card{background:var(--surface);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);border:1px solid var(--border);border-radius:18px;box-shadow:var(--shadow);padding:16px;margin-bottom:18px}
+.card h2{margin:0 0 10px;font-size:20px;line-height:1.3}
+.card h3{margin:0 0 8px;font-size:17px;line-height:1.3}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.muted{color:var(--text-muted)}.credit{text-align:center;font-size:13px;color:var(--text-muted);padding:8px 16px 18px}.credit a{color:inherit}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:4px 12px;background:var(--surface-solid);cursor:pointer;font-size:14px;user-select:none;min-height:32px;color:var(--text-primary);box-shadow:none;font-weight:400}
+.chip input{margin:0;accent-color:var(--accent)}
+.chip.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,var(--surface-solid));color:var(--text-primary);box-shadow:none}
+.dot{width:12px;height:12px;border-radius:50%;display:inline-block;flex:none}
+/* แผนที่ */
+.mapslot{position:relative;height:clamp(460px,64vh,760px);border-radius:16px;overflow:hidden;border:1px solid var(--border);margin:12px 0;background:#0b1220}
+.mapslot.sm{height:clamp(340px,48vh,540px)}
+.mapslot.lg{height:clamp(500px,70vh,820px)}
+@media (max-width:700px){.mapslot,.mapslot.lg{height:62vh;min-height:380px}.mapslot.sm{height:48vh;min-height:320px}}
+.mapel{position:absolute;inset:0}
+.gd{background:rgba(9,14,25,.72);backdrop-filter:blur(10px) saturate(1.3);-webkit-backdrop-filter:blur(10px) saturate(1.3);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.mapbtns{position:absolute;left:10px;top:10px;z-index:3;display:flex;gap:4px;padding:4px}
+.mapbtns button{background:transparent;color:#fff;border:0;min-height:32px;padding:4px 10px;font-size:14px;border-radius:10px;box-shadow:none}
+.mapbtns button:hover{background:rgba(255,255,255,.12)}
+.mapbtns button.on{background:linear-gradient(135deg,#2457e6,#0ea5e9);color:#fff}
+.mapkpi{position:absolute;left:10px;top:62px;z-index:3;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.mapkpi .k{padding:7px 13px;min-width:150px}
+.mapkpi .k small{display:block;font-size:12px;opacity:.78}
+.mapkpi .k b{font-size:21px;font-weight:700;letter-spacing:.2px}
+.mapkpi .k b em{font-style:normal;font-size:12px;font-weight:400;opacity:.75;margin-left:4px}
+@media (max-width:700px){.mapkpi{display:none}}
+.maplegend{position:absolute;left:10px;bottom:10px;z-index:3;padding:7px 12px;font-size:12.5px;max-width:calc(100% - 150px);display:flex;flex-wrap:wrap;gap:3px 12px;align-items:center}
+.maplegend span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.maplegend .dot{width:10px;height:10px}
+@media (max-width:700px){.maplegend{max-width:calc(100% - 20px);bottom:34px}}
+.mk{display:flex;flex-direction:column;align-items:center;cursor:pointer;filter:drop-shadow(0 4px 4px rgba(0,0,0,.45))}
+.mk-pin{width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 55%,#000));border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;margin-bottom:7px;transition:transform .15s}
+.mk-ico{transform:rotate(45deg);width:20px;height:20px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;line-height:1}
+.mk:hover .mk-pin{transform:rotate(-45deg) scale(1.12)}
+.mk-lbl{position:absolute;left:29px;top:-3px;display:flex;align-items:center;gap:5px;background:rgba(9,14,25,.82);color:#fff;font-size:12px;font-weight:700;padding:0 9px 0 7px;border-radius:999px;white-space:nowrap;line-height:21px;border:1px solid rgba(255,255,255,.2)}
+.mk-lbl i{width:8px;height:8px;border-radius:50%;background:var(--c);flex:none}
+.mk.dim{opacity:.25}
+.mk.sel .mk-pin{animation:mkpulse 1.6s ease-out infinite;transform:rotate(-45deg) scale(1.15)}
+@keyframes mkpulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.85)}100%{box-shadow:0 0 0 16px rgba(255,255,255,0)}}
+@media (prefers-reduced-motion:reduce){.mk.sel .mk-pin{animation:none;box-shadow:0 0 0 5px rgba(255,255,255,.85)}.mk-pin{transition:none}}
+.maplibregl-popup-content{font-family:Sarabun,sans-serif;font-size:15px;color:#0f1b2d;background:rgba(255,255,255,.96);border-radius:14px;padding:12px 14px;min-width:210px;box-shadow:0 12px 32px rgba(0,0,0,.35)}
+.maplibregl-popup-content .pm{display:block;padding:4px 6px;border-radius:8px;cursor:pointer;color:#2457e6}
+.maplibregl-popup-content .pm:hover{background:#eef2fb}
+.maplibregl-popup-close-button{font-size:18px;padding:2px 8px;color:#5a6679}
+.hovertip .maplibregl-popup-content{background:rgba(9,14,25,.88);color:#fff;padding:6px 11px;min-width:0;font-size:13px;border-radius:10px;border:1px solid rgba(255,255,255,.15)}
+.hovertip .maplibregl-popup-tip{display:none}
+.maplibregl-ctrl-group{border-radius:12px!important;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.35)!important}
+.maplibregl-ctrl-attrib{font-size:11px}
+/* อื่น ๆ */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--surface-solid);border:1px solid var(--border);border-radius:14px;padding:12px 14px 12px 16px;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--sc,var(--accent))}
+.stat b{display:block;font-size:25px;line-height:1.25;letter-spacing:.2px}
+.stat span{font-size:13px;color:var(--text-muted)}
+.chartbox{position:relative;height:290px}
+.bars .bar{display:grid;grid-template-columns:100px 1fr auto;gap:10px;align-items:center;padding:6px 8px;border-radius:10px;cursor:pointer;font-size:15px}
+.bars .bar:hover,.bars .bar.on{background:var(--surface2)}
+.bars .track{height:10px;background:var(--surface2);border-radius:999px;overflow:hidden}
+.bars .fill{height:100%;border-radius:999px;background-image:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.28))}
+.mlist .grp{margin-top:12px}
+.mlist .grp h4{margin:0 0 4px;display:flex;align-items:center;gap:6px}
+.mlist .it{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:10px;cursor:pointer}
+.mlist .it:hover{background:var(--surface2)}
+.mlist .it .v{margin-left:auto;color:var(--text-muted);font-size:14px;white-space:nowrap}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--border);padding:7px 9px;text-align:left;white-space:nowrap}
+th{color:var(--text-muted);font-weight:600;font-size:13px}
+tbody tr:hover td{background:var(--surface2)}
+td.num,th.num{text-align:right}
+.tblwrap{overflow:auto}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 14px;font-size:15px;margin:10px 0}
+.kv dt{color:var(--text-muted)}
+.kv dd{margin:0}
+.badge{display:inline-block;border-radius:999px;padding:2px 11px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.photo{max-width:100%;border-radius:12px;border:1px solid var(--border);margin-top:8px;display:block}
+.mform{border:1px solid var(--border);border-radius:16px;padding:14px 14px 14px 18px;margin-bottom:12px;background:var(--surface);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.mform::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--warn)}
+.mform.done::before{background:var(--ok)}
+.mform .hd{display:flex;gap:8px;align-items:center;font-weight:700;flex-wrap:wrap}
+.mform .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+.mform label{display:flex;flex-direction:column;font-size:14px;color:var(--text-muted);gap:4px}
+.ok{color:var(--ok)}tr.pend td{background:rgba(245,158,11,.10)}.lgtabs{display:flex;gap:6px;margin:0 0 12px}.lgtabs button.on{background:var(--accent,#2563eb);color:#fff;border-color:transparent} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.modal-bg{position:fixed;inset:0;background:rgba(3,7,15,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal{background:var(--surface-solid);border-radius:18px;padding:18px;width:min(470px,100%);max-height:90vh;overflow:auto;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.modal label{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;font-size:14px;color:var(--text-muted)}
+.qrgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.qrcard{border:1px solid #bbb;border-radius:12px;padding:10px;text-align:center;background:#fff;color:#111;break-inside:avoid}
+.qrcard img,.qrcard canvas,.qrbig img,.qrbig canvas{display:block;margin:0 auto 6px}
+.qrbig{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border:1px solid #bbb;border-radius:12px;padding:12px;background:#fff;color:#111;margin:12px 0}
+.hint{font-size:14px;color:var(--text-muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:10px 20px;border-radius:12px;z-index:60;box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:600}
+details summary{cursor:pointer}
+.mkt td,.mkt th{padding:6px 8px;white-space:nowrap}.mkt input[type=number]{width:110px;min-width:0}@media(max-width:600px){.mkt .hm{display:none}.mkt input[type=number]{width:88px}.mkt td,.mkt th{padding:6px 5px}.mkt .ficon{padding:4px 6px}}.mkt .pvs{font-size:13px;color:var(--text-muted)}
+.mk-pin.mkt-pin{background:linear-gradient(135deg,#f97316,#ea580c)}.locimg{max-height:220px;object-fit:cover;width:100%}
+.ficon{display:inline-flex;align-items:center;gap:4px;cursor:pointer;border:1px solid var(--border);border-radius:10px;padding:6px 10px;background:var(--surface2);font-size:14px}.ficon input{display:none}
+@media print{.mksum table{font-size:11px}header.top,.demo,.noprint{display:none!important} body{background:#fff;color:#000} main{padding:0} .card{box-shadow:none;border:none;backdrop-filter:none;background:#fff}}
+.gate{max-width:460px;margin:40px auto;text-align:center}.gate h2{margin:6px 0}.gate-ic{font-size:40px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand"><div class="logo" aria-hidden="true">⚡</div><div class="title">แผนที่มิเตอร์ไฟฟ้า–น้ำประปา<small>ม.๑ พัน.๓ รอ. · การปฏิบัติตามมาตรการประหยัดใน ทบ.</small></div></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="row" id="who"></div>
+  <button id="themeBtn" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด">🌙</button>
+</header>
+<div class="demo noprint" id="demoBar">โหมดตัวอย่าง — ค่ายสมมติ ข้อมูลทั้งหมดแต่งขึ้น ไม่ใช่ผังหรือข้อมูลของหน่วยจริง · รหัสทดลอง: ผู้ดูแล <b>9999</b> · กองร้อย <b>1111</b> ถึง <b>5555</b></div>
+<main id="main"></main>
+<footer class="credit noprint">พัฒนาโดย Wirunwatcha Intakaew · <a href="https://github.com/intakaew/meter-map" target="_blank" rel="noopener">โค้ดเปิดบน GitHub</a> (CC BY-NC 4.0)</footer>
+
+<script>
+'use strict';
+const KEY='meterMapProtoV4';
+const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TH_MF=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+// เปรียบเทียบระหว่างปีงบประมาณได้ไม่เกิน 3 ปี (ผู้ใช้กำหนด 4 พ.ย. 69) — ปีงบไทย = 1 ต.ค. ปีก่อน ถึง 30 ก.ย.
+const FY_MAX=3;
+const FY_LABELS=['ต.ค.','พ.ย.','ธ.ค.','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.'];
+const TYPE={elec:{name:'ไฟฟ้า',icon:'⚡',unit:'หน่วย'},water:{name:'ประปา',icon:'💧',unit:'ลบ.ม.'}};
+const PALETTE=['#1f4fd1','#d97706','#16a34a','#dc2626','#7c3aed','#0891b2','#db2777'];
+const SAT='https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+// มุมกล้องของข้อมูลตัวอย่าง (ค่ายสมมติกลางทุ่งนา) — ระบบจริงใช้มุมที่ผู้ดูแลตั้งไว้ใน settings.cam
+const DEF_CAM={center:[100.30151,15.10032],zoom:17.2,pitch:50,bearing:0};
+
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n==null||isNaN(n)?'–':Math.round(n).toLocaleString('th-TH');
+const pad=n=>String(n).padStart(2,'0');
+const curYm=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1);};
+function prevYm(ym){let[y,m]=ym.split('-').map(Number);m--;if(!m){m=12;y--;}return y+'-'+pad(m);}
+function nextYm(ym){let[y,m]=ym.split('-').map(Number);m++;if(m>12){m=1;y++;}return y+'-'+pad(m);}
+function ymLabel(ym){const[y,m]=ym.split('-').map(Number);return TH_M[m-1]+' '+pad((y+543)%100);}
+function ymLong(ym){const[y,m]=ym.split('-').map(Number);return TH_MF[m-1]+' '+(y+543);}
+function fyOf(ym){const[y,m]=ym.split('-').map(Number);return (m>=10?y+1:y)+543;}
+function fyMonths(fy){const g=fy-543,out=[];for(let i=0;i<12;i++){const m=((9+i)%12)+1;out.push((m>=10?g-1:g)+'-'+pad(m));}return out;}
+function rangeMonths(a,b){const out=[];let x=a;while(x<=b){out.push(x);x=nextYm(x);}return out;}
+const r7=v=>Math.round(v*1e7)/1e7;
+const rgbOf=h=>{const n=parseInt(String(h).replace('#','').padEnd(6,'0').slice(0,6),16);return[n>>16&255,n>>8&255,n&255];};
+const hexA=(h,a)=>{const[r,g,b]=rgbOf(h);return `rgba(${r},${g},${b},${a})`;};
+const mix=(h,w,t)=>{const x=rgbOf(h),y=rgbOf(w);return '#'+x.map((v,i)=>Math.round(v+(y[i]-v)*t).toString(16).padStart(2,'0')).join('');};
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- ข้อมูลตัวอย่าง (ค่ายสมมติกลางทุ่งนา ไม่ใช่ผังหรือพิกัดของหน่วยจริง) ----------
+ โค้ดที่เปิดบน GitHub มีแค่ข้อมูลชุดนี้ ข้อมูลจริงของหน่วย (อาคาร แนวท่อ มิเตอร์) อยู่ใน Google Sheet/Drive ของหน่วยเท่านั้น
+ และตัวกลางส่งให้เฉพาะผู้ที่ใส่รหัสเข้าดูแล้ว */
+function rng(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function seed(){
+ const r=rng(70);
+ // วางผังเป็นเมตรรอบจุดกลาง แล้วแปลงเป็นพิกัด (x = ไปทางตะวันออก, y = ไปทางเหนือ)
+ const C0=DEF_CAM.center,LM=111320,LC=LM*Math.cos(C0[1]*Math.PI/180);
+ const P=(x,y)=>[r7(C0[0]+x/LC),r7(C0[1]+y/LM)];
+ const rect=(cx,cy,w,h)=>[P(cx-w/2,cy+h/2),P(cx+w/2,cy+h/2),P(cx+w/2,cy-h/2),P(cx-w/2,cy-h/2)];
+ const companies=[['c1','กองร้อย ก','#eab308','1111'],['c2','กองร้อย ข','#f97316','2222'],['c3','กองร้อย ค','#a855f7','3333'],['c4','กองร้อย ง','#ec4899','4444'],['c5','กองร้อย จ','#22c55e','5555']].map(([id,name,color,code])=>({id,name,color,code}));
+ // [รหัส, กองร้อย, กลาง x, กลาง y, กว้าง, ยาว, สูง, ชื่อ, ประเภท]
+ const B=[['b01','c1',-90,62,40,14,7,'โรงนอน กองร้อย ก','โรงนอนทหาร'],['b02','c1',-90,36,40,14,7,'อาคารกองร้อย ก',''],
+  ['b03','c2',-30,62,36,12,7,'โรงนอน กองร้อย ข','โรงนอนทหาร'],['b04','c2',-30,38,36,12,7,'อาคารกองร้อย ข',''],
+  ['b05','c3',30,40,30,12,7,'อาคารกองร้อย ค',''],['b06','c3',30,16,30,12,7,'โรงรถ กองร้อย ค',''],
+  ['b07','c4',-90,-30,40,14,7,'โรงนอน กองร้อย ง','โรงนอนทหาร'],['b08','c4',-90,-56,40,14,7,'อาคารกองร้อย ง',''],
+  ['b09','c5',-25,-42,32,16,3,'ตลาด (สมมติ)','ตลาด / ร้านค้าผู้ประกอบการ'],['b10','c5',30,-42,24,12,10,'หอถังน้ำ (สมมติ)','']];
+ const blds=B.map(([id,companyId,x,y,w,h,ht,name,type])=>({id,name,companyId,type,h:ht,pts:rect(x,y,w,h)}));
+ const zone=(ids,pad)=>{const bs=B.filter(b=>ids.includes(b[0]));const x0=Math.min(...bs.map(b=>b[2]-b[4]/2))-pad,x1=Math.max(...bs.map(b=>b[2]+b[4]/2))+pad,y0=Math.min(...bs.map(b=>b[3]-b[5]/2))-pad,y1=Math.max(...bs.map(b=>b[3]+b[5]/2))+pad;
+  return [P(x0,y1),P(x1,y1),P(x1,y0),P(x0,y0)];};
+ const shapes=[{id:'z1',kind:'zone',companyId:'c1',pts:zone(['b01','b02'],8)},{id:'z2',kind:'zone',companyId:'c4',pts:zone(['b07','b08'],8)},{id:'z3',kind:'zone',companyId:'c5',pts:zone(['b09','b10'],8)},
+  {id:'pw1',kind:'water',pts:[P(-125,10),P(70,10)]},{id:'pw2',kind:'water',pts:[P(-60,85),P(-60,-75)]},{id:'pw3',kind:'water',pts:[P(5,-70),P(5,85)]}];
+ // หมุดมิเตอร์ตัวอย่าง: กองร้อยละ 1 ไฟฟ้า + 1 ประปา ที่อาคารหลังแรก
+ const meters=[],readings={};let ne=0,nw=0;
+ const AVG={elec:[1800,1400,1300,2100,1200],water:[300,280,260,420,240]};
+ companies.forEach((c,ci)=>{const b=blds.find(q=>q.companyId===c.id);if(!b)return;
+  const cx=b.pts.reduce((a,p)=>a+p[0],0)/4,cy=b.pts.reduce((a,p)=>a+p[1],0)/4;
+  for(const type of['elec','water']){
+   const code=type==='elec'?'E'+pad(++ne):'W'+pad(++nw);
+   meters.push({id:code,code,type,name:(type==='elec'?'ไฟฟ้า ':'ประปา ')+b.name+' (ตัวอย่าง)',lng:r7(cx+(type==='elec'?-0.00005:0.00005)),lat:r7(cy),companyId:c.id,bldId:b.id,account:(type==='elec'?'กฟภ. 020':'ประปา 110')+String(10000+Math.floor(r()*89999))});
+   let v=Math.floor(5000+r()*40000),ym='2024-09';
+   readings[code]={[ym]:{reading:v,by:'ข้อมูลตั้งต้น',at:'2024-10-01'}};
+   while(ym<'2026-10'){ym=nextYm(ym);if(ym==='2026-10'&&(c.id==='c4'||c.id==='c5'))break;
+    const mo=+ym.slice(5),f=type==='elec'?([3,4,5].includes(mo)?1.3:[6,7,8,9].includes(mo)?1.1:.9):([3,4,5].includes(mo)?1.15:1);
+    v+=Math.round(AVG[type][ci]*f*(.88+r()*.24));readings[code][ym]={reading:v,by:c.name,at:nextYm(ym)+'-02'};}
+  }});
+ const d={v:3,companies,meters,blds,shapes,readings,settings:{adminCode:'9999',openYm:null,closed:false,closeDay:3,cam:null},
+  log:[{at:new Date().toISOString(),who:'ระบบ',text:'สร้างข้อมูลตัวอย่าง (ค่ายสมมติ)'}]};
+ applyBranches(d);return d;
+}
+
+/* ---------- สถานะ ---------- */
+// อาคารที่เพิ่มภายหลัง — เติมให้ข้อมูลที่บันทึกไว้แล้วในเบราว์เซอร์ (ครั้งเดียว ถ้าผู้ดูแลลบทิ้งจะไม่กลับมา)
+const ADD_BLDS=[]; // ประวัติการเพิ่มอาคารของหน่วยจริงย้ายไปอยู่ในข้อมูลบน Google แล้ว (settings.addBlds) ไม่เก็บพิกัดจริงไว้ในโค้ด
+function migrate(d){d.settings=d.settings||{};const done=d.settings.addBlds||0;
+ ADD_BLDS.filter(a=>a.v>done).forEach(a=>{(a.blds||[]).forEach(g=>{if(d.blds.some(b=>b.id===g.id))return;const c=d.companies.find(x=>x.id===g.companyId);if(!c)return;
+  const n=d.blds.filter(b=>b.companyId===g.companyId).length+1;d.blds.push({id:g.id,name:`อาคาร ${c.name} หลังที่ ${n}`,companyId:g.companyId,type:'',h:7,pts:g.pts});});
+  Object.entries(a.reshape||{}).forEach(([id,pts])=>{const b=d.blds.find(x=>x.id===id);if(b)b.pts=pts;});
+  (a.pipes||[]).forEach(p=>{if(!d.shapes.some(s=>s.id===p.id))d.shapes.push({id:p.id,kind:'water',pts:p.pts});});
+  // แก้แนวท่อเฉพาะเมื่อผู้ดูแลยังไม่ได้แก้เส้นนั้นเอง
+  Object.entries(a.repipe||{}).forEach(([id,r])=>{const s=d.shapes.find(x=>x.id===id);if(s&&JSON.stringify(s.pts)===JSON.stringify(r.from))s.pts=r.to;});
+  if(a.branches&&!d.shapes.some(x=>x.br))applyBranches(d);
+  if(a.dropShapes)d.shapes=d.shapes.filter(x=>!a.dropShapes.includes(x.id));
+  (a.addShapes||[]).forEach(x=>{if(!d.shapes.some(y=>y.id===x.id))d.shapes.push(JSON.parse(JSON.stringify(x)));});
+  if(a.rebranch)applyBranches(d);
+  Object.entries(a.edits||{}).forEach(([id,e])=>{const b=d.blds.find(x=>x.id===id);if(!b)return;if(e.name&&/^อาคาร .+ หลังที่ \d+$/.test(b.name))b.name=e.name;if(e.h&&b.h===7)b.h=e.h;});
+  (a.noBr||[]).forEach(id=>{const n=d.settings.noBr||(d.settings.noBr=[]);if(!n.includes(id))n.push(id);d.shapes=d.shapes.filter(x=>!(x.br&&x.auto&&x.bldId===id));});
+  // ค่าที่ใส่ไว้ตอนทดสอบระบบ ไม่ใช่ของผู้ใช้
+  Object.entries(a.untest||{}).forEach(([id,t])=>{const b=d.blds.find(x=>x.id===id);if(b&&b.type===t)b.type='';});});
+ d.settings.addBlds=Math.max(done,...ADD_BLDS.map(a=>a.v));d.locPhotos=d.locPhotos||{};d.checks=d.checks||{};return d;}
+function load(){let d=null;try{const j=localStorage.getItem(KEY);if(j)d=JSON.parse(j);}catch(e){}return d?migrate(d):migrate(seed());}
+function save(){if(API.on){if(sess?.role==='admin'&&!API.empty)schedulePush();return;}try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){alert('บันทึกไม่ได้: พื้นที่เก็บในเบราว์เซอร์เต็ม (ลองลดจำนวนรูป)');}}
+/* ---------- ระบบออนไลน์ (OneDrive ผ่าน Netlify) — ถ้าไม่มี /api จะทำงานแบบต้นแบบในเบราว์เซอร์ ---------- */
+// ลิงก์เว็บแอป Google Apps Script (ได้จากขั้น "ทำให้ใช้งานได้") — เว้นว่าง = ใช้ /api ของ Netlify หรือโหมดต้นแบบ
+const GAS_URL='https://script.google.com/macros/s/AKfycbzj5zwphSuonYbOlkAo71A_wueQg-W63GXt9jhO_V08Rq30dsOeP8vvLh415ev9KDz1/exec';
+const API={on:false,sheetUrl:null,st:null,etag:null,empty:false,err:null,gate:false,syncCfg:null,syncRd:null,q:[],t:null,lt:null,busy:false,sync:''};
+// รหัสเข้าดูเว็บไซต์: ตัวกลางให้โทเค็นแบบดูอย่างเดียว เก็บในเครื่องนี้ 30 วัน (ผู้ดูแลเปลี่ยนรหัสเมื่อไร โทเค็นเก่าใช้ไม่ได้ทันที)
+const VKEY='mmView';
+let viewTok=(()=>{try{const v=JSON.parse(localStorage.getItem(VKEY)||'null');return v&&v.exp>Date.now()?v.token:null;}catch(e){return null;}})();
+function setViewTok(t,days){viewTok=t||null;try{t?localStorage.setItem(VKEY,JSON.stringify({token:t,exp:Date.now()+(days||30)*864e5})):localStorage.removeItem(VKEY);}catch(e){}}
+const cfgOf=s=>({v:s.v,companies:s.companies,meters:s.meters,blds:s.blds,shapes:s.shapes,settings:s.settings});
+const blankS=()=>({v:3,companies:[],meters:[],blds:[],shapes:[],readings:{},locPhotos:{},checks:{},settings:{openYm:null,closed:false,closeDay:3,cam:null},log:[]});
+async function api(p,o={}){
+ if(GAS_URL){let r,j=null;try{r=await fetch(GAS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({r:p.replace(/^\//,''),m:o.method||'GET',t:sess?.token||viewTok||'',b:o.body||null}),redirect:'follow',cache:'no-store'});}catch(_){const e=new Error('ต่ออินเทอร์เน็ตไม่ได้');e.status=0;throw e;}
+  try{j=await r.json();}catch(_){}if(!j){const e=new Error('ระบบ Google ไม่ตอบ (HTTP '+r.status+')');e.status=r.status||500;throw e;}
+  if(!j.ok){const e=new Error(j.error||'ผิดพลาด');e.status=j.status||500;throw e;}return j.data;}
+ const h={'Content-Type':'application/json'};if(sess?.token)h.Authorization='Bearer '+sess.token;
+ let r;try{r=await fetch('/api'+p,{method:o.method||'GET',headers:h,body:o.body?JSON.stringify(o.body):undefined,cache:'no-store'});}catch(_){const e=new Error('ต่ออินเทอร์เน็ตไม่ได้');e.status=0;throw e;}
+ let j=null;try{j=await r.json();}catch(_){}if(!r.ok){const e=new Error(j?.error||('HTTP '+r.status));e.status=r.status;e.data=j;throw e;}return j;}
+function markSynced(){API.syncCfg=JSON.stringify(cfgOf(S));API.syncRd=JSON.parse(JSON.stringify(S.readings||{}));}
+function rdDiff(){const out=[],a=API.syncRd||{},b=S.readings||{};for(const id of new Set([...Object.keys(a),...Object.keys(b)])){const x=a[id]||{},y=b[id]||{};
+ for(const ym of new Set([...Object.keys(x),...Object.keys(y)]))if(JSON.stringify(x[ym])!==JSON.stringify(y[ym]))out.push({meterId:id,ym,rec:y[ym]||null});}return out;}
+function setSync(v){API.sync=v;const el=document.getElementById('sync');if(el)el.innerHTML=syncHtml();}
+const syncHtml=()=>({saving:'⏳ กำลังบันทึก…',ok:'☁️ บันทึกแล้ว',err:'⚠️ ยังไม่ได้บันทึก'}[API.sync]||'');
+function schedulePush(){clearTimeout(API.t);setSync('saving');API.t=setTimeout(pushNow,600);}
+async function pushNow(){if(API.busy){schedulePush();return;}API.busy=true;API.t=null;
+ try{const c=JSON.stringify(cfgOf(S));
+  if(c!==API.syncCfg){const r=await api('/admin/config',{method:'PUT',body:{config:cfgOf(S),etag:API.etag}});API.etag=r.etag;API.syncCfg=c;}
+  const ch=rdDiff();if(ch.length){const sent=JSON.parse(JSON.stringify(S.readings));const r=await api('/admin/readings',{method:'POST',body:{changes:ch}});
+   for(const id in r.photos||{})for(const ym in r.photos[id]){if(S.readings[id]?.[ym])S.readings[id][ym].photo=r.photos[id][ym];if(sent[id]?.[ym])sent[id][ym].photo=r.photos[id][ym];}
+   API.syncRd=sent;}
+  setSync(API.t?'saving':'ok');}
+ catch(e){setSync('err');
+  if(e.status===409){alert('มีการแก้ไขข้อมูลจากเครื่องอื่นระหว่างนี้ ระบบจะโหลดข้อมูลล่าสุดมาแสดง\n(การแก้ไขครั้งล่าสุดของคุณอาจต้องทำใหม่)');await loadOnline();render();}
+  else if(e.status===401){alert('หมดเวลาเข้าสู่ระบบ กรุณาเข้าสู่ระบบใหม่');setSess(null);UI.page='view';await loadOnline();render();}
+  else toast('บันทึกขึ้นระบบไม่สำเร็จ: '+e.message);}
+ finally{API.busy=false;}}
+async function flushLog(){if(!API.q.length||!sess?.token)return;const e=API.q.splice(0);try{await api('/log',{method:'POST',body:{entries:e}});}catch(_){}}
+async function loadOnline(){API.err=null;API.sync="";API.gate=false;
+ if(sess?.role==='admin'){if(ACC()&&!API.usersBusy)loadUsers();try{const j=await api('/admin/state');API.etag=j.etag;API.sheetUrl=j.sheetUrl||null;
+   if(!j.config){API.empty=true;S=migrate(seed());S.log=[];API.syncCfg=null;API.syncRd={};}
+   else{API.empty=false;S={...j.config,readings:j.readings||{},log:j.log||[],locPhotos:j.locPhotos||{},checks:j.checks||{}};const before=JSON.stringify(cfgOf(S));migrate(S);markSynced();API.syncCfg=before;if(JSON.stringify(cfgOf(S))!==before)schedulePush();}
+   return;}catch(e){if(e.status===401||e.status===403)setSess(null);else{API.err=e.message;S=blankS();return;}}}
+ try{const j=await api('/state');if(!j.config){API.empty=true;S=blankS();}else{API.empty=false;S={...j.config,readings:j.readings||{},log:[],locPhotos:j.locPhotos||{},checks:j.checks||{}};migrate(S);}}
+ catch(e){S=blankS();if(e.status===401){if(sess)setSess(null);setViewTok(null);API.gate=true;}else API.err=e.message;}}
+// หน้าใส่รหัสเข้าดู (ตัวกลางไม่ส่งข้อมูลใด ๆ จนกว่าจะใส่รหัสถูก)
+function pageGate(){return `<div class="card gate"><div class="gate-ic" aria-hidden="true">🔒</div><h2>ใส่รหัสเข้าดูเว็บไซต์</h2>
+ <p class="hint">ข้อมูลอาคาร แนวท่อ และมิเตอร์ของหน่วยเปิดให้ดูเฉพาะผู้ที่ได้รับรหัส · ขอรหัสได้จากผู้ดูแลระบบของหน่วย</p>
+ <div class="row" style="justify-content:center"><input type="password" id="gtCode" autocomplete="off" placeholder="รหัสเข้าดู" aria-label="รหัสเข้าดู" style="max-width:220px"><button class="primary" id="gtGo">เข้าดู</button></div>
+ <p id="gtErr" class="bad" style="min-height:1.5em;margin:6px 0 0"></p>
+ <label class="chip" style="justify-content:center"><input type="checkbox" id="gtKeep" checked> จำไว้ในเครื่องนี้ 30 วัน</label>
+ <p class="hint" style="margin-bottom:0">ผู้กรอกข้อมูลและผู้ดูแลที่มีบัญชีแล้ว กด "🔑 เข้าสู่ระบบ" มุมขวาบนได้เลย</p></div>`;}
+async function gateGo(){const v=$('#gtCode').value.trim(),err=t=>{$('#gtErr').textContent=t;};if(!v)return err('ใส่รหัส');
+ err('กำลังตรวจรหัส…');$('#gtGo').disabled=true;
+ try{const r=await api('/login',{method:'POST',body:{view:v}});setViewTok(r.token,$('#gtKeep').checked?30:0.5);await loadOnline();if(!handleHash())render();}
+ catch(e){err(e.message);const b=$('#gtGo');if(b)b.disabled=false;}}
+async function upInit(){
+ if(!confirm('อัปโหลดอาคาร เขตรับผิดชอบ แนวท่อ และรายชื่อกองร้อยชุดนี้ขึ้นระบบ?\n\n• หมุดมิเตอร์และตัวเลขตัวอย่างจะไม่ถูกอัปโหลด (ปักหมุดจริงต่อได้เลย)\n• ระบบจะสร้างรหัส 6 หลักใหม่ให้ผู้ดูแลและทุกกองร้อย'))return;
+ const used=new Set(),gen=()=>{let c;do{c=String(100000+crypto.getRandomValues(new Uint32Array(1))[0]%900000);}while(used.has(c));used.add(c);return c;};
+ S.meters=[];S.readings={};S.companies.forEach(c=>c.code=gen());S.settings.adminCode=gen();S.log=[];
+ try{const r=await api('/admin/config',{method:'PUT',body:{config:cfgOf(S),etag:null}});API.etag=r.etag;}catch(e){return alert('อัปโหลดไม่สำเร็จ: '+e.message);}
+ API.empty=false;markSynced();log('ผู้ดูแลระบบ','อัปโหลดข้อมูลตั้งต้นขึ้นระบบ');
+ alert('อัปโหลดแล้ว ✓\n\nรหัสผู้ดูแลระบบใหม่: '+S.settings.adminCode+'\nจดเก็บไว้ รหัสตั้งต้นใช้ไม่ได้แล้ว\nอนุมัติผู้สมัครและดูรหัสกองร้อยได้ที่แท็บ "ผู้ใช้และสิทธิ์"');UI.adminTab='access';render();}
+function backupNote(){if(API.empty||!API.st||API.st.storage==='onedrive'||API.st.storage==='google')return '';const lb=S.settings.lastBackup,d=lb?Math.floor((Date.now()-Date.parse(lb))/864e5):null;
+ if(d!=null&&d<=31)return `<p class="hint" style="margin:8px 0 0">สำรองข้อมูลล่าสุด ${d===0?'วันนี้':d+' วันก่อน'} · ควรสำรองเดือนละครั้ง</p>`;
+ return `<p style="margin:10px 0 6px">⚠️ ${d==null?'ยังไม่เคยสำรองข้อมูล':'ไม่ได้สำรองข้อมูลมา '+d+' วัน'} — ดาวน์โหลดไฟล์สำรองแล้วเก็บไว้ใน OneDrive ของบัญชีหน่วย</p><button id="expJson">⬇ ดาวน์โหลดไฟล์สำรอง</button>`;}
+function onlineCard(){if(!API.on)return '';const st=API.st||{};
+ const where=st.storage==='onedrive'?(st.connected?`☁️ ข้อมูลเก็บใน OneDrive ของบัญชี <b>${esc(st.account||'')}</b> (โฟลเดอร์ แอป › meter-map)`:`<b class="bad">ยังไม่ได้เชื่อม OneDrive</b>${st.broken?' — สิทธิ์เดิมหมดอายุ ต้องเชื่อมใหม่':''}`)
+    :st.storage==='google'?`☁️ ข้อมูลเก็บใน Google Sheet ของบัญชีหน่วย${API.sheetUrl?` · <a href="${esc(API.sheetUrl)}" target="_blank" rel="noopener">เปิดชีต</a>`:''}`
+  :st.storage==='netlify'?'☁️ ข้อมูลเก็บบน Netlify ของบัญชีหน่วย':'🧪 ทดสอบในเครื่อง (ข้อมูลอยู่ในโฟลเดอร์ dev/data)';
+ return `<div class="card"><div class="row"><span>${where}</span><span class="hint" id="sync">${syncHtml()}</span>${st.storage==='onedrive'?`<button id="msLink" class="${st.connected?'':'primary'}">${st.connected?'เชื่อมบัญชีใหม่':'🔗 เชื่อม OneDrive'}</button>`:''}</div>
+ ${backupNote()}${API.empty&&st.connected!==false?`<p style="margin:10px 0 6px">ระบบยังไม่มีข้อมูล — กดปุ่มนี้เพื่อเริ่มใช้งานด้วยอาคาร เขตรับผิดชอบ แนวท่อ และกองร้อยชุดที่เห็นบนแผนที่ตอนนี้</p><button class="primary" id="upInit">⬆ อัปโหลดข้อมูลตั้งต้นขึ้นระบบ</button>`:''}</div>`;}
+let S=load();
+let sess=(()=>{try{return JSON.parse(sessionStorage.getItem('mmSess')||'null');}catch(e){return null;}})();
+function setSess(v){sess=v;if(!v)API.users=null;try{v?sessionStorage.setItem('mmSess',JSON.stringify(v)):sessionStorage.removeItem('mmSess');}catch(e){}}
+const UI={page:'view',ovType:'elec',ovYear:'all',cmpOn:false,cmpMode:'year',cmpYears:[],cmpCos:[],filterCo:null,sel:null,
+ mYear:'all',mCmpOn:false,mCmpMode:'year',mCmpYears:[],mCmpMeter:'',layers:{elec:true,water:true,pipes:true,zones:true,blds:true},
+ is3d:true,tool:'select',draft:null,drawCo:'c1',drawH:8,adminTab:'map',gridFy:null,qrBase:'',fitFor:null,selMk:null,mkType:'elec',mkYear:'all',mkChartT:'bar',mkYears:[],mkBld:'',mkFy:null};
+const PENDING={};const CH={};
+
+const co=id=>S.companies.find(c=>c.id===id)||{id:'',name:'(ไม่ระบุ)',color:'#888888'};
+const meter=id=>S.meters.find(m=>m.id===id);
+const bld=id=>S.blds.find(b=>b.id===id);
+const rd=(id,ym)=>S.readings[id]?.[ym];
+// หน่วยที่ใช้ — ถ้าเลขลดลงและครั้งก่อนอยู่ใกล้เพดาน (≥90% ของ 999…9) ถือว่ามิเตอร์วนรอบ คิดแบบหน่วย: (999…9 − ครั้งก่อน) + ครั้งนี้
+function rollU(p,c){if(c>=p)return c-p;const max=10**String(Math.trunc(p)).length-1;return p>=max*.9?max-p+c:c-p;}
+const isRoll=(p,c)=>c<p&&rollU(p,c)>=0;
+function units(id,ym){const a=rd(id,ym),b=rd(id,prevYm(ym));if(a&&b)return rollU(b.reading,a.reading);const m=a||b?null:meter(id);return m?.agg?(m.u?.[ym]??null):null;}
+function dataMonths(){const s=new Set();for(const id in S.readings)for(const ym in S.readings[id])if(units(id,ym)!=null)s.add(ym);for(const m of S.meters)if(m.agg)for(const ym in m.u||{})s.add(ym);return [...s].sort();}
+/* ---------- ตลาด: มิเตอร์ย่อยรายห้อง ----------
+ มิเตอร์ที่ใส่ "ห้อง" = มิเตอร์ของร้าน/ผู้ประกอบการ · คนทั่วไปเห็นแค่ยอดรวมของอาคาร (ตัวกลางส่งมาเป็นมิเตอร์รวม agg)
+ ผู้กรอกเห็นชื่อร้านและยอดเฉพาะของกองร้อยตัวเอง · สรุปรายเดือนเฉพาะผู้ดูแล */
+const isRoom=m=>!!(m&&(m.room||m.agg));
+const canRoom=m=>!!m&&!m.agg&&(sess?.role==='admin'||(sess?.role==='company'&&sess.co===m.companyId));
+const canLoc=canRoom;
+// ห้องผูกกับอาคาร (ฝั่ง) ของตัวเอง · แสดงที่หมุดเดิมของฝั่งนั้น (hostOf) เช่น "E04 · 6 ห้อง" — ผู้ใช้กำหนด 4 พ.ย. 69
+const mkKey=id=>id||'';
+const hostOf=bid=>{if(!bid)return null;const ms=S.meters.filter(m=>!isRoom(m)&&(m.bldId||'')===bid);return ms.find(m=>m.type==='elec')||ms[0]||null;};
+const mkRooms=k=>S.meters.filter(m=>isRoom(m)&&mkKey(m.bldId||'')===k);
+const roomN=ms=>{const real=ms.filter(m=>!m.agg),ag={};ms.filter(m=>m.agg).forEach(m=>ag[m.type]=(ag[m.type]||0)+(m.n||0));return new Set(real.map(m=>m.room)).size+Math.max(0,...Object.values(ag));};
+const dupSide=x=>{const same=S.blds.filter(y=>(y.name||'').trim()===(x.name||'').trim());return same.length>1?' (ฝั่งที่ '+(same.indexOf(x)+1)+')':'';};
+function bldCenter(b){const p=b&&b.pts;if(!p||!p.length)return null;return [p.reduce((a,q)=>a+q[0],0)/p.length,p.reduce((a,q)=>a+q[1],0)/p.length];}
+function marketGroups(){const g={};for(const m of S.meters){if(!isRoom(m))continue;const k=mkKey(m.bldId||'');(g[k]||(g[k]=[])).push(m);}
+ return Object.entries(g).map(([bid,ms])=>{const bids=[...new Set(ms.map(m=>m.bldId||''))],bs=bids.map(bld).filter(Boolean),b=bs[0]||null,cs=bs.map(bldCenter).filter(Boolean);
+  return {bid,b,bids,ms,n:roomN(ms),companyId:b?b.companyId:ms[0].companyId,pos:cs.length?[cs.reduce((a,p)=>a+p[0],0)/cs.length,cs.reduce((a,p)=>a+p[1],0)/cs.length]:[ms.reduce((a,m)=>a+m.lng,0)/ms.length,ms.reduce((a,m)=>a+m.lat,0)/ms.length]};});}
+const mkName=k=>{const b=bld(k),h=hostOf(k);return (b?b.name:'ตลาด')+(h?' (ฝั่ง '+h.code+')':'');};
+const mkBld=k=>marketGroups().find(g=>g.bid===k)?.b||bld(k)||null;
+// แถวรายห้อง: รวมมิเตอร์ไฟ/น้ำของห้องเดียวกัน
+function roomRows(ms){const r={};for(const m of ms.filter(x=>!x.agg)){const k=m.room;(r[k]||(r[k]={room:k,shop:'',elec:null,water:null}));r[k][m.type]=m;if(m.shop&&!r[k].shop)r[k].shop=m.shop;}
+ return Object.values(r).sort((a,b)=>String(a.room).localeCompare(String(b.room),'th',{numeric:true}));}
+const locOf=id=>S.locPhotos?.[id]||null;
+/* ---------- เฝ้าระวังการใช้ผิดปกติ (คำสั่ง ทบ. ที่ 220/2552 ข้อ 2.3.1 ติดตามการใช้เพื่อหาการรั่วไหล, 2.3.3 กราฟเปรียบเทียบ) ----------
+ เทียบกับเดือนเดียวกันของปีก่อน ถ้าไม่มีใช้ค่าเฉลี่ย 3 เดือนก่อนหน้า · หน้าร้อน มี.ค.–พ.ค. เตือนเมื่อเกิน 30% · ช่วงอื่นเกิน 20%
+ ต้องต่างกันอย่างน้อย 30 หน่วย (ไฟ) / 3 ลบ.ม. (น้ำ) กันจุดที่ใช้น้อยเตือนพร่ำเพรื่อ · เลขลดลง (ติดลบ) = เตือนให้ตรวจเลขที่จด */
+const ANOM={summer:[3,4,5],thS:.3,th:.2,minAbs:{elec:30,water:3}};
+const seasonOf=mo=>ANOM.summer.includes(mo)?'หน้าร้อน':[11,12,1,2].includes(mo)?'หน้าหนาว':'หน้าฝน';
+function anomFor(ms,ym){if(!ms||!ms.length)return null;const u=sumUnits(ms,ym);if(u==null)return null;const t=ms[0].type,mo=+ym.slice(5);
+ if(u<0)return {u,neg:true};
+ const th=ANOM.summer.includes(mo)?ANOM.thS:ANOM.th,ly=sumUnits(ms,(+ym.slice(0,4)-1)+ym.slice(4));let base=null,src='';
+ if(ly!=null&&ly>0){base=ly;src='เดือนเดียวกันปีก่อน';}
+ else{const p=[];let y=prevYm(ym);for(let i=0;i<3;i++){const v=sumUnits(ms,y);if(v!=null&&v>=0)p.push(v);y=prevYm(y);}if(p.length>=2){base=p.reduce((a,b)=>a+b,0)/p.length;src='เฉลี่ย '+p.length+' เดือนก่อนหน้า';}}
+ if(base==null)return null;const pct=(u-base)/Math.max(base,1);
+ return pct>th&&u-base>=ANOM.minAbs[t]?{u,base,pct,th,src,season:seasonOf(mo)}:null;}
+// จุดที่เฝ้าระวัง: มิเตอร์ทั่วไป 1 จุด = 1 รายการ · ห้องในอาคารเดียวกัน = รวมเป็น 1 รายการต่อประเภท (คีย์ b:<อาคาร>:<elec|water>)
+function watchTargets(co){const out=[];for(const m of S.meters){if(isRoom(m)||(co&&m.companyId!==co))continue;out.push({key:m.id,ms:[m],type:m.type,co:m.companyId,name:`${TYPE[m.type].icon} ${m.code} ${m.name}`});}
+ for(const g of marketGroups()){if(co&&g.companyId!==co)continue;for(const t of ['elec','water']){const ms=g.ms.filter(m=>m.type===t);if(ms.length)out.push({key:'b:'+g.bid+':'+t,ms,type:t,co:g.companyId,name:`${TYPE[t].icon} ${mkName(g.bid)} รวม ${roomN(ms)} ห้อง`});}}
+ return out;}
+const chkOf=(key,ym)=>S.checks?.[key]?.[ym]||null;
+const canChk=tg=>!!tg&&(sess?.role==='admin'||(sess?.role==='company'&&sess.co===tg.co));
+const anomMonths=(tg,months)=>months.map(ym=>({ym,a:anomFor(tg.ms,ym)})).filter(x=>x.a);
+const fmtPct=p=>(p>0?'+':'')+Math.round(p*100)+'%';
+const anomTxt=a=>a.neg?'เลขลดลง ตรวจเลขที่จด':`${fmtPct(a.pct)} จาก ${fmt(Math.round(a.base))} (${a.src})`;
+const chkTxt=c=>c?(c.s==='ok'?'<span class="ok">✓ ตรวจแล้ว ไม่พบรั่ว</span>':'<span class="warn">🔧 พบรั่ว แจ้งซ่อมแล้ว</span>')+(c.note?` <span class="muted">${esc(c.note)}</span>`:''):'<span class="bad">ยังไม่บันทึกผลตรวจ</span>';
+function anomTable(tg,months){const rows=anomMonths(tg,months).reverse();
+ return `<h3 style="margin-top:14px">🔎 เฝ้าระวังการใช้ผิดปกติ</h3><p class="hint" style="margin-top:0">เทียบกับเดือนเดียวกันของปีก่อน (ถ้าไม่มี ใช้ค่าเฉลี่ย 3 เดือนก่อนหน้า) · หน้าร้อน มี.ค.–พ.ค. เตือนเมื่อเกิน 30% · ช่วงอื่นเกิน 20% · แท่งสีแดงในกราฟ = เดือนที่เตือน</p>
+ ${rows.length?`<div class="tblwrap"><table><thead><tr><th>เดือน</th><th class="num">ใช้ไป</th><th>เทียบ</th><th>ผลตรวจรั่ว</th></tr></thead><tbody>${rows.map(({ym,a})=>{const c=chkOf(tg.key,ym);
+  return `<tr><td>⚠️ ${ymLabel(ym)} <span class="muted">${a.neg?'':a.season}</span></td><td class="num"><b>${fmt(a.u)}</b></td><td><span class="bad">${anomTxt(a)}</span></td><td>${chkTxt(c)}${c?.by?`<br><small class="muted">${esc(c.by)}</small>`:''}${canChk(tg)?` <button data-chk="${esc(tg.key)}|${ym}">${c?'แก้':'บันทึกผลตรวจ'}</button>`:''}</td></tr>`;}).join('')}</tbody></table></div>`
+ :'<p class="ok" style="margin:0">✓ ไม่พบเดือนที่ใช้มากผิดปกติในช่วงนี้</p>'}
+ <div class="row" style="margin-top:10px"><button data-poster="${esc(tg.key)}">🖨️ พิมพ์กราฟติดประกาศ</button><span class="hint">ตามข้อ 2.3.3 ให้ติดประกาศกราฟในบริเวณอาคาร</span></div>`;}
+function companyWatch(co){const end=openYm(),ms=[...fyMonths(fyOf(end)-1),...fyMonths(fyOf(end))].filter(ym=>ym<=end),items=[];
+ for(const tg of watchTargets(co))for(const {ym,a} of anomMonths(tg,ms))items.push({tg,ym,a,c:chkOf(tg.key,ym)});
+ if(!items.length)return '<p class="ok" style="margin:8px 0 0">🔎 ไม่พบเดือนที่ใช้มากผิดปกติ (ปีงบนี้และปีงบก่อน)</p>';
+ const todo=items.filter(x=>!x.c).reverse(),done=items.filter(x=>x.c).reverse();
+ const row=x=>`<div class="row" style="gap:8px;padding:6px 0;border-top:1px solid var(--border)"><span>⚠️ ${esc(x.tg.name)} · <b>${ymLabel(x.ym)}</b> ใช้ ${fmt(x.a.u)} ${TYPE[x.tg.type].unit} <span class="muted">(${anomTxt(x.a)})</span></span>${x.c?chkTxt(x.c):''}<button data-chk="${esc(x.tg.key)}|${x.ym}" style="margin-left:auto">${x.c?'แก้':'บันทึกผลตรวจ'}</button></div>`;
+ return `<div style="margin-top:10px"><b class="${todo.length?'bad':'ok'}">🔎 เดือนที่ใช้มากผิดปกติ — ${todo.length?'ยังไม่บันทึกผลตรวจ '+todo.length+' รายการ':'บันทึกผลตรวจครบแล้ว'}</b>
+ <p class="hint" style="margin:2px 0 6px">ไปตรวจหาจุดรั่ว (คำสั่ง ทบ. ที่ 220/2552 ข้อ 2.3.1) แล้วบันทึกผล ถ้าใช้มากด้วยเหตุปกติ เช่น ฝึก มีงาน เพิ่มกำลังพล ให้เลือก "ไม่พบรั่ว" แล้วเขียนเหตุผล · ผู้ตรวจเห็นผลนี้ในหน้าแสดงผล</p>
+ ${todo.map(row).join('')}${done.length?`<details><summary class="muted">บันทึกผลแล้ว ${done.length} รายการ</summary>${done.map(row).join('')}</details>`:''}</div>`;}
+function chkModal(key,ym){const tg=watchTargets().find(x=>x.key===key);if(!canChk(tg))return alert('ไม่มีสิทธิ์บันทึกผลตรวจของจุดนี้');const a=anomFor(tg.ms,ym),c=chkOf(key,ym);
+ modal(`<h3>บันทึกผลตรวจการรั่วไหล</h3><p><b>${esc(tg.name)}</b><br>เดือน ${ymLong(ym)} ใช้ไป ${fmt(sumUnits(tg.ms,ym))} ${TYPE[tg.type].unit}${a?` <span class="bad">(${anomTxt(a)})</span>`:''}</p>
+ <div class="chips" style="flex-direction:column;align-items:stretch"><label class="chip"><input type="radio" name="ckS" value="ok"> ✓ ตรวจแล้ว ไม่พบรั่ว (ใช้มากด้วยเหตุปกติ)</label><label class="chip"><input type="radio" name="ckS" value="leak"> 🔧 พบจุดรั่ว แจ้งซ่อม/ซ่อมแล้ว</label></div>
+ <label style="margin-top:10px">หมายเหตุ เช่น เหตุที่ใช้มาก จุดที่รั่ว วันที่แจ้งซ่อม<textarea id="ckNote" rows="3" maxlength="200" style="width:100%">${esc(c?.note||'')}</textarea></label>
+ <div class="row" style="margin-top:10px"><button class="primary" id="ckSave">บันทึก</button><button id="ckX">ปิด</button>${c?'<button class="danger" id="ckDel" style="margin-left:auto">ลบผลตรวจ</button>':''}</div>`);
+ if(c){const r=document.querySelector(`input[name=ckS][value="${c.s}"]`);if(r)r.checked=true;}
+ $('#ckX').onclick=closeModal;
+ const send=async s=>{const note=$('#ckNote').value.trim().slice(0,200);S.checks=S.checks||{};
+  if(API.on){try{const r=await api('/check',{method:'POST',body:{key,ym,s,note}});if(r.rec)(S.checks[key]||(S.checks[key]={}))[ym]=r.rec;else if(S.checks[key])delete S.checks[key][ym];}catch(e){if(e.status===401){setSess(null);UI.page='view';closeModal();render();}return alert('บันทึกไม่สำเร็จ: '+e.message);}}
+  else{if(s)(S.checks[key]||(S.checks[key]={}))[ym]={s,note,by:whoName(),at:new Date().toISOString()};else if(S.checks[key])delete S.checks[key][ym];log(whoName(),(s?'บันทึกผลตรวจรั่ว ':'ลบผลตรวจรั่ว ')+tg.name+' '+ymLabel(ym));save();}
+  closeModal();render();toast(s?'บันทึกผลตรวจแล้ว ✓':'ลบผลตรวจแล้ว');};
+ $('#ckSave').onclick=()=>{const s=document.querySelector('input[name=ckS]:checked')?.value;if(!s)return alert('เลือกผลการตรวจ');send(s);};
+ if(c)$('#ckDel').onclick=()=>{if(confirm('ลบผลตรวจเดือนนี้?'))send(null);};}
+// หน้าพิมพ์กราฟติดประกาศ (A4 แนวนอน พื้นขาว) — วาดกราฟใหม่ในหน้าต่างพิมพ์ ไม่ใช้ภาพจากจอ (โหมดมืดตัวหนังสือจะจาง)
+function posterPrint(key){const tg=watchTargets().find(x=>x.key===key);if(!tg)return;const T=TYPE[tg.type],end=openYm(),has=y=>fyMonths(y).some(ym=>ym<=end&&sumUnits(tg.ms,ym)!=null);let fy=fyOf(end);while(fy>fyOf(end)-6&&!has(fy))fy--;const ys=[fy-2,fy-1,fy].filter(has);
+ const cols=['#94a3b8','#f59e0b','#1f4fd1'].slice(-ys.length),ds=ys.map((y,i)=>{const fl=fyMonths(y).map(ym=>!!anomFor(tg.ms,ym));return {label:'ปีงบ '+y,data:fyMonths(y).map(ym=>sumUnits(tg.ms,ym)),borderColor:cols[i],backgroundColor:cols[i],borderWidth:i===ys.length-1?3.5:2.5,tension:.3,cubicInterpolationMode:'monotone',fill:false,spanGaps:false,pointBackgroundColor:fl.map(f=>f?'#dc2626':cols[i]),pointBorderColor:fl.map(f=>f?'#7f1d1d':'#fff'),pointRadius:fl.map(f=>f?8:4),pointBorderWidth:2};});
+ const cur=fyMonths(fy).filter(ym=>sumUnits(tg.ms,ym)!=null),title=tg.name.replace(/^\S+\s/,''),w=window.open('','_blank');if(!w)return alert('เบราว์เซอร์บล็อกหน้าต่างใหม่ ให้อนุญาตป๊อปอัปก่อน');
+ w.document.write(`<!doctype html><html lang="th"><head><meta charset="utf-8"><title>${esc(title)}</title><link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"><\/script>
+ <style>body{font-family:Sarabun,sans-serif;margin:18px;color:#111;background:#fff}h1{font-size:26px;margin:0}p{margin:2px 0 10px;color:#333}.box{height:330px}table{border-collapse:collapse;width:100%;margin-top:10px;font-size:14px}td,th{border:1px solid #999;padding:3px 6px;text-align:center}.w{color:#dc2626;font-weight:700}@page{size:A4 landscape;margin:10mm}</style></head><body>
+ <h1>${T.icon} สถิติการใช้${T.name} ${esc(title)}</h1><p>หน่วยนับ: ${T.unit} · เปรียบเทียบรายเดือน ต.ค.–ก.ย. · ติดประกาศตามคำสั่ง ทบ. ที่ 220/2552 ข้อ 2.3.3 · ข้อมูล ณ ${ymLong(end)}</p>
+ <div class="box"><canvas id="c"></canvas></div>
+ <table><tr><th>ปีงบ ${fy}</th>${cur.map(ym=>`<th>${ymLabel(ym)}</th>`).join('')}</tr><tr><th>ใช้ไป</th>${cur.map(ym=>{const a=anomFor(tg.ms,ym);return `<td class="${a?'w':''}">${fmt(sumUnits(tg.ms,ym))}${a?' ⚠':''}</td>`;}).join('')}</tr></table>
+ <p style="margin-top:8px">จุดสีแดงใหญ่ / ⚠ = ใช้มากผิดปกติ (เกินเดือนเดียวกันปีก่อนหรือค่าเฉลี่ย 3 เดือน: หน้าร้อน 30% ช่วงอื่น 20%) · ช่วยกันประหยัดไฟฟ้าและน้ำประปา พบจุดรั่วแจ้ง ตอนส่งกำลังบำรุง</p>
+ <script>new Chart(document.getElementById('c'),{type:'line',data:{labels:${JSON.stringify(FY_LABELS)},datasets:${JSON.stringify(ds)}},options:{maintainAspectRatio:false,animation:false,plugins:{legend:{labels:{font:{family:'Sarabun',size:14}}}},scales:{y:{beginAtZero:true,title:{display:true,text:'${T.unit}'}}}}});setTimeout(()=>print(),700);<\/script></body></html>`);w.document.close();}
+function locBlock(m){const u=locOf(m.id),ed=canLoc(m);if(!u&&!ed)return '';
+ return `<h3 style="margin-top:14px">📍 รูปตำแหน่งที่ติดมิเตอร์</h3>${u?`<img class="photo locimg" src="${esc(u)}" alt="ตำแหน่งที่ติดมิเตอร์ ${esc(m.code)}">`:'<p class="hint" style="margin:0">ยังไม่มีรูป · ถ่ายให้เห็นตัวมิเตอร์กับสิ่งรอบข้าง ไม่ให้ติดป้ายหน่วย ยานพาหนะ หรือบุคคล</p>'}
+ ${ed?`<div class="row" style="margin-top:8px"><label class="ficon">📷 ${u?'เปลี่ยนรูป':'ใส่รูป'}<input type="file" accept="image/*" data-lp="${esc(m.id)}"></label>${u?`<button data-lpdel="${esc(m.id)}">ลบรูป</button>`:''}</div>`:''}`;}
+async function setLoc(id,file){const m=meter(id);if(!canLoc(m))return alert('ไม่มีสิทธิ์แก้รูปของมิเตอร์นี้');
+ let url=null;if(file){try{url=await readImg(file,1280,.75);}catch(_){return alert('เปิดรูปไม่ได้');}}
+ if(API.on){toast(url?'กำลังส่งรูป…':'กำลังลบรูป…');try{const r=await api('/meter/locphoto',{method:'POST',body:{meterId:id,photo:url}});if(r.url)S.locPhotos[id]=r.url;else delete S.locPhotos[id];}catch(e){if(e.status===401){setSess(null);UI.page='view';render();}return alert('บันทึกรูปไม่สำเร็จ: '+e.message);}}
+ else{if(url)S.locPhotos[id]=url;else delete S.locPhotos[id];log(whoName(),(url?'ใส่รูปตำแหน่ง ':'ลบรูปตำแหน่ง ')+m.code);save();}
+ const inModal=!!$('#mbg');render();if(inModal)openMeterModal(id);toast(url?'บันทึกรูปแล้ว ✓':'ลบรูปแล้ว');}
+function scopeMonths(sc){if(sc==='all'){const d=dataMonths();return d.length?rangeMonths(d[0],d[d.length-1]):[];}return fyMonths(+sc);}
+const scopeName=sc=>sc==='all'?'ทั้งหมด':'ปีงบ '+sc;
+function fyList(){return [...new Set(dataMonths().map(fyOf))].sort((a,b)=>b-a);}
+function sumUnits(ms,ym){let s=0,any=false;for(const m of ms){const u=units(m.id,ym);if(u!=null){s+=u;any=true;}}return any?s:null;}
+const metersOf=({type,co:c}={})=>S.meters.filter(m=>(!type||m.type===type)&&(!c||m.companyId===c));
+const sortedMeters=()=>[...S.meters].sort((a,b)=>S.companies.findIndex(c=>c.id===a.companyId)-S.companies.findIndex(c=>c.id===b.companyId)||a.code.localeCompare(b.code));
+const openYm=()=>S.settings.openYm||prevYm(curYm());
+function log(who,text){S.log.unshift({at:new Date().toISOString(),who,text});S.log=S.log.slice(0,500);
+ if(API.on&&sess?.token&&!API.empty){API.q.push(text);clearTimeout(API.lt);API.lt=setTimeout(flushLog,1200);}}
+const whoName=()=>!sess?'ผู้เยี่ยมชม':sess.name?sess.name+(sess.role==='admin'?' (ผู้ดูแล)':' ('+co(sess.co).name+')'):sess.role==='admin'?'ผู้ดูแลระบบ':co(sess.co).name;
+// บัญชีผู้ใช้ (สมัคร/อนุมัติ) ใช้ได้เมื่อต่อกับตัวกลาง Google
+const ACC=()=>API.on&&API.st?.storage==='google';
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
+function download(text,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);}
+function readImg(file,max=900,q=.72){return new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height));const cv=document.createElement('canvas');cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);res(cv.toDataURL('image/jpeg',q));};im.onerror=rej;im.src=fr.result;};fr.onerror=rej;fr.readAsDataURL(file);});}
+function inPoly([x,y],pts){let ins=false;for(let i=0,j=pts.length-1;i<pts.length;j=i++){const[xi,yi]=pts[i],[xj,yj]=pts[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)ins=!ins;}return ins;}
+
+/* ---------- กราฟ ---------- */
+const cssv=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function chart(id,cfg){if(CH[id]){CH[id].destroy();delete CH[id];}const el=document.getElementById(id);if(!el)return;
+ if(!window.Chart){el.parentElement.innerHTML='<p class="muted">แสดงกราฟไม่ได้ (ต้องต่ออินเทอร์เน็ตเพื่อโหลดตัววาดกราฟ)</p>';return;}
+ Chart.defaults.font.family='Sarabun';Chart.defaults.font.size=13;Chart.defaults.color=cssv('--text-muted');Chart.defaults.borderColor=cssv('--border');
+ Object.assign(Chart.defaults.plugins.tooltip,{backgroundColor:'rgba(9,14,25,.92)',titleColor:'#fff',bodyColor:'#e8edf5',padding:10,cornerRadius:10,boxPadding:4,borderColor:'rgba(255,255,255,.15)',borderWidth:1});
+ Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.pointStyle='circle';
+ if(cfg.type==='bar')for(const d of cfg.data.datasets){d.borderRadius=d.borderRadius??4;d.borderSkipped=false;d.maxBarThickness=26;}
+ CH[id]=new Chart(el,cfg);}
+function baseOpts(stacked,unit){return{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+ plugins:{legend:{display:true,position:'bottom',labels:{boxWidth:12}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.parsed.y)} ${unit}`}}},
+ scales:{x:{stacked,grid:{display:false}},y:{stacked,beginAtZero:true,border:{display:false},grid:{color:cssv('--border')},ticks:{callback:v=>fmt(v)},title:{display:true,text:unit}}}};}
+const line=(label,color,data,dash)=>({label,data,borderColor:color,pointBackgroundColor:color,pointBorderColor:'#fff',pointBorderWidth:1.5,borderWidth:2.5,tension:.35,pointRadius:2.5,pointHoverRadius:6,spanGaps:false,fill:'origin',
+ backgroundColor:ctx=>{const a=ctx.chart.chartArea;if(!a)return hexA(color,.12);const g=ctx.chart.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,hexA(color,.22));g.addColorStop(1,hexA(color,0));return g;},
+ ...(dash?{borderDash:[6,4],fill:false}:{})});
+
+/* ---------- แผนที่ดาวเทียม 3D ---------- */
+let MAP=null,MAPEL=null,MAPREADY=false,MARKERS=[],POPUP=null,HOVERTIP=null,hoverId=null,selBld=null,lastDrag=0;
+const cam=()=>S.settings.cam||DEF_CAM;
+function mapSlot(size,extra){return `<div class="mapslot ${size||''}" id="mapSlot"><div class="mapbtns gd noprint"><button id="v3d" class="${UI.is3d?'on':''}">🧊 3D</button><button id="v2d" class="${UI.is3d?'':'on'}">🗺️ 2D</button><button id="vHome" title="กลับมุมเริ่มต้น">⌂</button></div>${extra||''}${mapLegend()}</div>`;}
+function mapLegend(){const only=UI.page==='company'?sess?.co:null;
+ return `<div class="maplegend gd">${S.companies.filter(c=>!only||c.id===only).map(c=>`<span><i class="dot" style="background:${c.color}"></i>${esc(c.name)}</span>`).join('')}<span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" style="stroke:#38bdf8;stroke-width:4"/></svg>ท่อเมนประปา</span>${S.shapes.some(s=>s.br)?'<span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" style="stroke:#7dd3fc;stroke-width:2"/><circle cx="3" cy="4" r="2.6" style="fill:#e0f7ff;stroke:#0284c7;stroke-width:1.2"/></svg>ท่อแยกเข้าอาคาร</span>':''}${S.shapes.some(s=>s.kind==='elec')?'<span><svg width="22" height="8" aria-hidden="true"><line x1="0" y1="4" x2="22" y2="4" style="stroke:#fcd34d;stroke-width:3;stroke-dasharray:5 3"/></svg>สายไฟฟ้า</span>':''}</div>`;}
+function mapKpi(){const sc=UI.ovYear,f=UI.filterCo,months=scopeMonths(sc),tot=ms=>months.reduce((a,ym)=>a+(sumUnits(ms,ym)||0),0),dm=dataMonths();
+ return `<div class="mapkpi"><div class="k gd"><small>⚡ ไฟฟ้ารวม (${scopeName(sc)})</small><b>${fmt(tot(metersOf({type:'elec',co:f})))}<em>หน่วย</em></b></div><div class="k gd"><small>💧 ประปารวม (${scopeName(sc)})</small><b>${fmt(tot(metersOf({type:'water',co:f})))}<em>ลบ.ม.</em></b></div><div class="k gd"><small>${f?esc(co(f).name):'ทั้งหน่วย'}</small><b>${metersOf({co:f}).length}<em>จุดมิเตอร์ · ${S.blds.filter(b=>!f||b.companyId===f).length} อาคาร</em></b></div><div class="k gd"><small>ข้อมูลล่าสุด</small><b>${dm.length?ymLabel(dm[dm.length-1]):'–'}</b></div></div>`;}
+const DASH=[[0,4,3],[0.5,4,2.5],[1,4,2],[1.5,4,1.5],[2,4,1],[2.5,4,0.5],[3,4,0],[0,0.5,3,3.5],[0,1,3,3],[0,1.5,3,2.5],[0,2,3,2],[0,2.5,3,1.5],[0,3,3,1],[0,3.5,3,0.5]];
+let flowStep=-1;
+function flow(ts){if(MAP&&MAPREADY&&MAP.getLayer('pipes-water-flow')){const s=Math.floor(ts/75)%DASH.length;if(s!==flowStep){MAP.setPaintProperty('pipes-water-flow','line-dasharray',DASH[s]);flowStep=s;}}requestAnimationFrame(flow);}
+function mountMap(){const slot=$('#mapSlot');if(!slot)return;
+ if(!window.maplibregl){slot.insertAdjacentHTML('beforeend','<p style="color:#fff;padding:60px 16px">แสดงแผนที่ไม่ได้ (ต้องต่ออินเทอร์เน็ต)</p>');return;}
+ if(!MAPEL){MAPEL=document.createElement('div');MAPEL.className='mapel';}
+ slot.insertBefore(MAPEL,slot.firstChild);
+ if(!MAP){const c=cam(),narrow=slot.clientWidth<600?0.8:0;
+  MAP=new maplibregl.Map({container:MAPEL,center:c.center,zoom:c.zoom-narrow,pitch:UI.is3d?c.pitch:0,bearing:UI.is3d?c.bearing:0,maxPitch:70,attributionControl:false,
+   style:{version:8,sources:{sat:{type:'raster',tiles:[SAT],tileSize:256,maxzoom:19,attribution:'ภาพดาวเทียม © Esri, Maxar, Earthstar Geographics'}},
+    layers:[{id:'bg',type:'background',paint:{'background-color':'#0b1220'}},{id:'sat',type:'raster',source:'sat',paint:{'raster-saturation':-0.25,'raster-brightness-max':0.86,'raster-contrast':0.06,'raster-fade-duration':200}}]}});
+  MAP.addControl(new maplibregl.NavigationControl({visualizePitch:true}),'top-right');
+  MAP.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+  MAP.once('style.load',()=>{addLayers();
+   try{MAP.setLight({anchor:'viewport',color:'#ffffff',intensity:0.42,position:[1.3,210,35]});}catch(_){}
+   try{if(MAP.setSky)MAP.setSky({'sky-color':'#6f9fd8','horizon-color':'#cfe0f2','fog-color':'#cfe0f2','sky-horizon-blend':0.6,'horizon-fog-blend':0.6,'fog-ground-blend':0.25});}catch(_){}
+   MAPREADY=true;refreshMap();
+   if(MAPEL.clientWidth<600&&UI.page==='view'){const pts=S.blds.flatMap(b=>b.pts);if(pts.length){const bb=pts.reduce((a,[x,y])=>[[Math.min(a[0][0],x),Math.min(a[0][1],y)],[Math.max(a[1][0],x),Math.max(a[1][1],y)]],[[1e9,1e9],[-1e9,-1e9]]);MAP.fitBounds(bb,{padding:24,bearing:MAP.getBearing(),pitch:MAP.getPitch(),duration:0});}}
+   fitIfNeeded();if(!REDUCED)requestAnimationFrame(flow);});
+  MAP.on('click',onMapClick);
+  MAP.on('mousemove',e=>{if(!MAPREADY)return;const f=MAP.queryRenderedFeatures(e.point,{layers:['bld']})[0];
+   MAP.getCanvas().style.cursor=(UI.page==='admin'&&UI.tool!=='select')?'crosshair':f?'pointer':'';
+   const id=f?f.id:null;
+   if(id!==hoverId){if(hoverId!=null)MAP.setFeatureState({source:'blds',id:hoverId},{hover:false});hoverId=id;if(id!=null)MAP.setFeatureState({source:'blds',id},{hover:true});}
+   const b=id!=null&&bld(id);
+   if(!b||(UI.page==='admin'&&UI.tool!=='select')){HOVERTIP?.remove();return;}
+   if(!HOVERTIP)HOVERTIP=new maplibregl.Popup({closeButton:false,closeOnClick:false,className:'hovertip',offset:14});
+   HOVERTIP.setLngLat(e.lngLat).setHTML(`<b>${esc(b.name)}</b>${btype(b)?`<br><span style="opacity:.8">🏷️ ${esc(btype(b))}</span>`:''}<br><span style="color:${co(b.companyId).color}">●</span> ${esc(co(b.companyId).name)} · มิเตอร์ ${S.meters.filter(m=>m.bldId===b.id).length} จุด`).addTo(MAP);});
+  MAP.on('mouseout',()=>{HOVERTIP?.remove();if(hoverId!=null&&MAPREADY)MAP.setFeatureState({source:'blds',id:hoverId},{hover:false});hoverId=null;});
+ }else{MAP.resize();refreshMap();fitIfNeeded();}}
+function addLayers(){const E={type:'FeatureCollection',features:[]};
+ MAP.addSource('zones',{type:'geojson',data:E});MAP.addSource('blds',{type:'geojson',data:E,promoteId:'id'});
+ MAP.addSource('pipes',{type:'geojson',data:E});MAP.addSource('draft',{type:'geojson',data:E});
+ const W=['==',['get','kind'],'water'],EL=['==',['get','kind'],'elec'],RJ={'line-cap':'round','line-join':'round'};
+ MAP.addLayer({id:'zones-fill',type:'fill',source:'zones',paint:{'fill-color':['get','color'],'fill-opacity':['get','op']}});
+  MAP.addLayer({id:'bld-foot',type:'line',source:'blds',layout:RJ,paint:{'line-color':['get','ocolor'],'line-width':1.4,'line-opacity':.9}});
+ MAP.addLayer({id:'pipes-water-glow',type:'line',source:'pipes',filter:W,layout:RJ,paint:{'line-color':'#38bdf8','line-width':['case',['==',['get','br'],1],7,13],'line-opacity':.28,'line-blur':['case',['==',['get','br'],1],3,6]}});
+ MAP.addLayer({id:'pipes-water',type:'line',source:'pipes',filter:W,layout:RJ,paint:{'line-color':['case',['==',['get','br'],1],'#7dd3fc','#38bdf8'],'line-width':['case',['==',['get','br'],1],2.4,4.5]}});
+ MAP.addLayer({id:'pipes-water-flow',type:'line',source:'pipes',filter:W,paint:{'line-color':'#e0f7ff','line-width':['case',['==',['get','br'],1],1,2],'line-opacity':.95,'line-dasharray':DASH[0]}});
+ MAP.addLayer({id:'pipes-elec-glow',type:'line',source:'pipes',filter:EL,layout:RJ,paint:{'line-color':'#fbbf24','line-width':10,'line-opacity':.22,'line-blur':5}});
+ MAP.addLayer({id:'pipes-tee',type:'circle',source:'pipes',filter:['all',W,['==',['geometry-type'],'Point']],paint:{'circle-radius':3.2,'circle-color':'#e0f7ff','circle-stroke-color':'#0284c7','circle-stroke-width':1.5}});
+ MAP.addLayer({id:'pipes-elec',type:'line',source:'pipes',filter:EL,layout:{'line-join':'round'},paint:{'line-color':'#fcd34d','line-width':3,'line-dasharray':[2,1.5]}});
+ const st=k=>['boolean',['feature-state',k],false];
+ MAP.addLayer({id:'bld',type:'fill-extrusion',source:'blds',paint:{'fill-extrusion-color':['case',st('hover'),['get','hcolor'],st('sel'),['get','hcolor'],['get','color']],'fill-extrusion-height':['case',st('hover'),['+',['get','h'],2],st('sel'),['+',['get','h'],2],['get','h']],'fill-extrusion-base':0,'fill-extrusion-opacity':.9,'fill-extrusion-vertical-gradient':true,'fill-extrusion-height-transition':{duration:250}}});
+ MAP.addLayer({id:'draft-line',type:'line',source:'draft',filter:['==',['geometry-type'],'LineString'],paint:{'line-color':'#ffffff','line-width':3,'line-dasharray':[2,1]}});
+ MAP.addLayer({id:'draft-pt',type:'circle',source:'draft',filter:['==',['geometry-type'],'Point'],paint:{'circle-radius':6,'circle-color':'#ffffff','circle-stroke-color':'#1f4fd1','circle-stroke-width':2}});}
+const fc=f=>({type:'FeatureCollection',features:f});
+const ring=pts=>[[...pts,pts[0]]];
+/* ---------- ท่อแยกเข้าอาคาร (สร้างอัตโนมัติ) ----------
+ หลักที่ใช้: แยกจากท่อเมนเส้นที่ใกล้ที่สุด เป็นแนวตั้งฉากกับท่อเมน (ต่อแบบสามทาง) เข้ากลางผนังด้านที่หันหาท่อ
+ ท่อแยกต้องไม่ผ่านใต้อาคารอื่น · อาคารที่ท่อเมนผ่านชิดอยู่แล้ว (ไม่เกิน 1.5 ม.) ไม่ต้องแยก
+ ถ้าไม่มีแนวตั้งฉาก ใช้ท่อหักฉาก 1 ครั้ง (เดินขนานท่อเมนก่อน แล้วเลี้ยวเข้าอาคาร) */
+function genBranches(d){const C=Math.cos(((d.blds[0]&&d.blds[0].pts[0][1])||15)*Math.PI/180),M=111320;
+ const toM=p=>[p[0]*C*M,p[1]*M],toLL=q=>[+(q[0]/C/M).toFixed(7),+(q[1]/M).toFixed(7)];
+ const sub=(a,b)=>[a[0]-b[0],a[1]-b[1]],add=(a,b)=>[a[0]+b[0],a[1]+b[1]],mul=(a,k)=>[a[0]*k,a[1]*k],dot=(a,b)=>a[0]*b[0]+a[1]*b[1],cr=(a,b)=>a[0]*b[1]-a[1]*b[0],len=a=>Math.hypot(a[0],a[1]);
+ const segX=(p,p2,q,q2)=>{const r=sub(p2,p),t=sub(q2,q),den=cr(r,t);if(Math.abs(den)<1e-9)return null;const u=cr(sub(q,p),t)/den,v=cr(sub(q,p),r)/den;return u>=0&&u<=1&&v>=0&&v<=1?u:null;};
+ const ptSeg=(p,a,b)=>{const ab=sub(b,a),L2=dot(ab,ab)||1e-9,t=Math.max(0,Math.min(1,dot(sub(p,a),ab)/L2));return add(a,mul(ab,t));};
+ const polys=d.blds.map(b=>({id:b.id,q:b.pts.map(toM)}));
+ const edges=q=>q.map((p,i)=>[p,q[(i+1)%q.length]]);
+ const inside=(p,q)=>{let c=false;for(const [a,b] of edges(q))if((a[1]>p[1])!==(b[1]>p[1])&&p[0]<(b[0]-a[0])*(p[1]-a[1])/(b[1]-a[1])+a[0])c=!c;return c;};
+ // เส้นทางผ่านอาคารอื่นหรือไม่ (ยอมให้แตะปลายที่อาคารเป้าหมาย)
+ const blocked=(path,selfId)=>{for(let k=0;k<path.length-1;k++){const a=path[k],b=path[k+1];const L=len(sub(b,a));if(L<.01)continue;
+   const a2=add(a,mul(sub(b,a),.3/L)),b2=add(b,mul(sub(a,b),.3/L));
+   for(const P of polys){if(P.id===selfId&&k===path.length-2)continue;
+    if(edges(P.q).some(([e1,e2])=>segX(a2,b2,e1,e2)!==null)||inside(add(a2,mul(sub(b2,a2),.5)),P.q))return true;}}return false;};
+ const mains=d.shapes.filter(x=>x.kind==='water'&&!x.br).flatMap(x=>{const q=x.pts.map(toM);return q.slice(1).map((p,i)=>[q[i],p]);});
+ const out=[],skip=[],fail=[];
+ const anyW=d.shapes.filter(x=>x.kind==='water'&&!(x.br&&x.auto)).flatMap(x=>{const q=x.pts.map(toM);return q.slice(1).map((p,i)=>[q[i],p]);});
+ const noBr=new Set((d.settings&&d.settings.noBr)||[]);
+ for(const P of polys){const q=P.q;if(noBr.has(P.id)){skip.push(P.id);continue;}
+  // ติดท่อเมนอยู่แล้ว
+  let near=Infinity;for(const [a,b] of anyW){for(const v of q)near=Math.min(near,len(sub(v,ptSeg(v,a,b))));for(const [e1,e2] of edges(q)){for(const v of [a,b])near=Math.min(near,len(sub(v,ptSeg(v,e1,e2))));if(segX(a,b,e1,e2)!==null)near=0;}}
+  if(near<=1.5){skip.push(P.id);continue;}
+  let best=null;const tryPath=(path,score)=>{if(best&&score>=best.score)return;if(blocked(path,P.id))return;best={path,score};};
+  for(const [A,B] of mains){const AB=sub(B,A),L=len(AB);if(L<.5)continue;const u=mul(AB,1/L),n=[-u[1],u[0]];
+   const ts=q.map(v=>dot(sub(v,A),u)),ss=q.map(v=>dot(sub(v,A),n));
+   const side=Math.sign(ss.reduce((x,y)=>x+y,0))||1;
+   const lo=Math.max(.8,Math.min(...ts)),hi=Math.min(L-.8,Math.max(...ts));
+   if(hi-lo>=1){// แนวตั้งฉาก: กลางช่วงที่อาคารซ้อนกับท่อเมน
+    for(const t of [(lo+hi)/2,lo+(hi-lo)*.25,lo+(hi-lo)*.75]){const Q=add(A,mul(u,t)),dir=mul(n,side);
+     let hit=null;for(const [e1,e2] of edges(q)){const k=segX(Q,add(Q,mul(dir,400)),e1,e2);if(k!==null&&(hit===null||k<hit))hit=k;}
+     if(hit===null)continue;const Bp=add(Q,mul(dir,400*hit));tryPath([Q,Bp],len(sub(Bp,Q))+(t===(lo+hi)/2?0:1.5));}}
+   // หักฉาก 1 ครั้ง: จากปลายท่อเมนเดินต่อแนวเดิม แล้วเลี้ยวตั้งฉากเข้ากลางอาคาร
+   const cen=mul(q.reduce((x,v)=>add(x,v),[0,0]),1/q.length),tc=dot(sub(cen,A),u);
+   const tE=Math.max(0,Math.min(L,tc)),Q=add(A,mul(u,tE)),K=add(A,mul(u,tc)),dir=mul(n,Math.sign(dot(sub(cen,K),n))||1);
+   if(inside(K,q)){// อาคารอยู่ในแนวท่อเมนพอดี: ต่อท่อเมนยาวออกไปจนชนผนังอาคาร
+    let h2=null;for(const [e1,e2] of edges(q)){const k=segX(Q,K,e1,e2);if(k!==null&&(h2===null||k<h2))h2=k;}
+    if(h2!==null){const Bp=add(Q,mul(sub(K,Q),h2));tryPath([Q,Bp],len(sub(Bp,Q))+8);}continue;}
+   let hit=null;for(const [e1,e2] of edges(q)){const k=segX(K,add(K,mul(dir,400)),e1,e2);if(k!==null&&(hit===null||k<hit))hit=k;}
+   if(hit!==null){const Bp=add(K,mul(dir,400*hit));tryPath(len(sub(K,Q))<.3?[Q,Bp]:[Q,K,Bp],len(sub(K,Q))+len(sub(Bp,K))+6);}}
+  if(best&&best.score<=150)out.push({id:'br-'+P.id,kind:'water',br:1,auto:1,bldId:P.id,pts:best.path.map(toLL)});else fail.push(P.id);}
+ return {branches:out,skip,fail};}
+function applyBranches(d){d.shapes=d.shapes.filter(x=>!(x.br&&x.auto));const r=genBranches(d);d.shapes.push(...r.branches);return r;}
+function refreshMap(){if(!MAP||!MAPREADY)return;
+ const pl=UI.page==='view'&&MAPEL.clientWidth>700?175:0;if((MAP.getPadding().left||0)!==pl)MAP.setPadding({left:pl,top:0,right:0,bottom:0});
+ const mode=UI.page,adm=mode==='admin',only=mode==='company'?sess?.co:null,L=UI.layers,f=UI.filterCo;
+ const dimC=c=>mode==='view'&&f&&f!==c;
+ MAP.getSource('zones').setData(fc((L.zones||adm)?S.shapes.filter(s=>s.kind==='zone'&&(!only||s.companyId===only)).map(s=>({type:'Feature',properties:{id:s.id,color:co(s.companyId).color,op:dimC(s.companyId)?.04:.22},geometry:{type:'Polygon',coordinates:ring(s.pts)}})):[]));
+ MAP.getSource('blds').setData(fc((L.blds||adm)?S.blds.map(b=>{const gray=(only&&b.companyId!==only)||dimC(b.companyId),c=gray?'#7c8696':co(b.companyId).color;
+  return {type:'Feature',properties:{id:b.id,h:+b.h||6,color:c,hcolor:mix(c,'#ffffff',.35),ocolor:mix(c,'#000000',.35)},geometry:{type:'Polygon',coordinates:ring(b.pts)}};}):[]));
+ const sm=mode==='view'&&UI.sel&&meter(UI.sel),nb=sm&&sm.bldId?sm.bldId:null;
+ if(selBld!==nb){if(selBld)MAP.setFeatureState({source:'blds',id:selBld},{sel:false});if(nb)MAP.setFeatureState({source:'blds',id:nb},{sel:true});selBld=nb;}
+ MAP.getSource('pipes').setData(fc((L.pipes||adm)?S.shapes.filter(s=>s.kind!=='zone').map(s=>({type:'Feature',properties:{id:s.id,kind:s.kind,br:s.br?1:0},geometry:{type:'LineString',coordinates:s.pts}})).concat(S.shapes.filter(s=>s.br).map(s=>({type:'Feature',properties:{id:s.id,kind:'water',br:1},geometry:{type:'Point',coordinates:s.pts[0]}}))):[]));
+ const d=adm&&UI.draft?UI.draft:null,closed=d&&['drawZone','drawBld'].includes(UI.tool)&&d.length>2?[...d,d[0]]:d;
+ MAP.getSource('draft').setData(fc(d?[...(d.length>1?[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:closed}}]:[]),...d.map(p=>({type:'Feature',properties:{},geometry:{type:'Point',coordinates:p}}))]:[]));
+ MARKERS.forEach(m=>m.remove());MARKERS=[];
+ const HOSTS={};for(const g of marketGroups()){const h=hostOf(g.bid);if(h)HOSTS[h.id]=g;}
+ // ⚠️ ที่หมุด = 3 เดือนล่าสุดมีเดือนที่ใช้มากผิดปกติและยังไม่บันทึกผลตรวจ
+ const WARN=new Set(),rec=[openYm(),prevYm(openYm()),prevYm(prevYm(openYm()))];
+ for(const tg of watchTargets())if(rec.some(ym=>anomFor(tg.ms,ym)&&!chkOf(tg.key,ym))){if(tg.key.startsWith('b:')){const h=hostOf(tg.key.split(':')[1]);WARN.add(h?h.id:tg.key);}else WARN.add(tg.key);}
+ for(const m of S.meters){
+  if(isRoom(m))continue;
+  const hg=HOSTS[m.id];
+  if(!adm&&((m.type==='elec'&&!L.elec)||(m.type==='water'&&!L.water)))continue;
+  if(only&&m.companyId!==only)continue;
+  const c=co(m.companyId),el=document.createElement('div');
+  el.className='mk'+(dimC(m.companyId)?' dim':'')+(mode==='view'&&UI.sel===m.id?' sel':'');
+  el.style.setProperty('--c',c.color);
+  const mark=mode==='company'?(rd(m.id,openYm())?' ✓':' •'):'';
+  el.innerHTML=`<div class="mk-pin"><span class="mk-ico">${TYPE[m.type].icon}</span></div><div class="mk-lbl"><i></i>${esc(m.code)}${hg?' · '+hg.n+' ห้อง':''}${WARN.has(m.id)?' ⚠️':''}${mark}</div>`;
+  el.title=`${m.code} ${m.name} — ${c.name}${hg?` · มิเตอร์ย่อย ${hg.n} ห้อง`:''}`;
+  el.addEventListener('click',e=>{e.stopPropagation();if(Date.now()-lastDrag<400)return;if(hg&&!adm)return onMarketClick(hg.bid);onMarkerClick(m.id);});
+  const mk=new maplibregl.Marker({element:el,anchor:'bottom',draggable:adm&&UI.tool==='select'}).setLngLat([m.lng,m.lat]).addTo(MAP);
+  if(adm)mk.on('dragend',()=>{lastDrag=Date.now();const p=mk.getLngLat();m.lng=r7(p.lng);m.lat=r7(p.lat);log('ผู้ดูแลระบบ',`ย้ายหมุด ${m.code}`);save();});
+  MARKERS.push(mk);}
+ if(adm||L.elec||L.water)for(const g of marketGroups()){
+  if(only&&g.companyId!==only)continue;
+  if(hostOf(g.bid))continue;
+  const c=co(g.companyId),el=document.createElement('div'),open=openYm(),mine=g.ms.filter(m=>!m.agg&&(!only||m.companyId===only));
+  el.className='mk'+(dimC(g.companyId)?' dim':'')+(mode==='view'&&UI.selMk===g.bid?' sel':'');el.style.setProperty('--c',c.color);
+  const mark=mode==='company'?` ${mine.filter(m=>rd(m.id,open)).length}/${mine.length}`:'';
+  el.innerHTML=`<div class="mk-pin mkt-pin"><span class="mk-ico">🏪</span></div><div class="mk-lbl"><i></i>${esc(mkName(g.bid))} · ${g.n} ห้อง${mark}</div>`;
+  el.title=`${mkName(g.bid)} — มิเตอร์ย่อย ${g.n} ห้อง (${c.name})`;
+  el.addEventListener('click',e=>{e.stopPropagation();onMarketClick(g.bid);});
+  MARKERS.push(new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat(g.pos).addTo(MAP));}
+ if(POPUP&&mode!=='view'){POPUP.remove();POPUP=null;}}
+function onMarketClick(bid){if(UI.page==='admin'){UI.adminTab='market';UI.mkBld=mkBld(bid)?.id||bid;render();return;}
+ if(UI.page==='company')return document.getElementById('mk-'+bid)?.scrollIntoView({behavior:'smooth',block:'start'});
+ selectMarket(bid);}
+function selectMarket(bid){if(!mkRooms(bid).length)return;UI.page='view';UI.sel=null;UI.selMk=bid;POPUP?.remove();POPUP=null;try{history.replaceState(null,'','#/k/'+encodeURIComponent(bid));}catch(e){}render();
+ const g=marketGroups().find(x=>x.bid===bid);if(MAP&&g)MAP.easeTo({center:g.pos,zoom:Math.max(MAP.getZoom(),18.2),duration:700});
+ if(innerWidth<900)document.getElementById('side')?.scrollIntoView({behavior:'smooth',block:'start'});}
+function fitIfNeeded(){if(!MAPREADY||UI.page!=='company'||UI.fitFor===sess?.co)return;UI.fitFor=sess.co;
+ const pts=[...S.meters.filter(m=>m.companyId===sess.co).map(m=>[m.lng,m.lat]),...S.blds.filter(b=>b.companyId===sess.co).flatMap(b=>b.pts)];if(!pts.length)return;
+ const bb=pts.reduce((a,[x,y])=>[[Math.min(a[0][0],x),Math.min(a[0][1],y)],[Math.max(a[1][0],x),Math.max(a[1][1],y)]],[[1e9,1e9],[-1e9,-1e9]]);
+ MAP.fitBounds(bb,{padding:70,maxZoom:18.6,pitch:MAP.getPitch(),bearing:MAP.getBearing(),duration:800});}
+function setView3d(on){UI.is3d=on;const c=cam();if(MAP)MAP.easeTo({pitch:on?c.pitch:0,bearing:on?c.bearing:0,duration:700});
+ $('#v3d')?.classList.toggle('on',on);$('#v2d')?.classList.toggle('on',!on);}
+function goHome(){const c=cam();if(MAP)MAP.flyTo({center:c.center,zoom:c.zoom-(MAPEL.clientWidth<600?0.8:0),pitch:UI.is3d?c.pitch:0,bearing:UI.is3d?c.bearing:0,duration:900});}
+function onMarkerClick(id){if(UI.page==='admin')return openMeterModal(id);
+ if(UI.page==='company')return document.getElementById('f-'+id)?.scrollIntoView({behavior:'smooth',block:'center'});
+ selectMeter(id);}
+function onMapClick(e){if(!MAPREADY)return;const p=[r7(e.lngLat.lng),r7(e.lngLat.lat)];
+ if(UI.page==='admin'){const t=UI.tool;
+  if(t==='addElec'||t==='addWater')return newMeter(t==='addElec'?'elec':'water',p);
+  if(t.startsWith('draw')){(UI.draft||(UI.draft=[])).push(p);render();return;}
+  if(t==='del'){const bb=[[e.point.x-8,e.point.y-8],[e.point.x+8,e.point.y+8]];const f=MAP.queryRenderedFeatures(bb,{layers:['pipes-water','pipes-elec','bld','zones-fill']})[0];if(f)delFeature(f);return;}
+  const f=MAP.queryRenderedFeatures(e.point,{layers:['bld']})[0];if(f)openBldModal(f.properties.id);return;}
+ const f=MAP.queryRenderedFeatures(e.point,{layers:['bld']})[0];
+ if(!f){POPUP?.remove();POPUP=null;return;}
+ const b=bld(f.properties.id);if(!b)return;
+ const c=co(b.companyId),ms=S.meters.filter(m=>m.bldId===b.id&&!isRoom(m)&&(UI.page!=='company'||m.companyId===sess?.co)),rooms=mkRooms(mkKey(b.id));
+ POPUP?.remove();
+ POPUP=new maplibregl.Popup({closeButton:true,maxWidth:'280px'}).setLngLat(e.lngLat).setHTML(`<b>${esc(b.name)}</b>${btype(b)?`<div style="color:#5b6678;font-size:13px">🏷️ ${esc(btype(b))}</div>`:'<br>'}<span class="badge" style="background:${c.color}">ผู้รับผิดชอบ: ${esc(c.name)}</span>
+  <div style="margin-top:6px;color:#5b6678;font-size:13px">มิเตอร์ในอาคารนี้</div>${ms.map(m=>`<span class="pm" data-m="${esc(m.id)}">${TYPE[m.type].icon} ${esc(m.code)} ${esc(m.name)}</span>`).join('')}${rooms.length?`<span class="pm" data-mk="${esc(mkKey(b.id))}">🏪 มิเตอร์ย่อย ${roomN(rooms)} ห้อง — ดูกราฟรวม</span>`:''}${!ms.length&&!rooms.length?'<span style="color:#5b6678">— ไม่มี —</span>':''}`).addTo(MAP);}
+
+function legendHtml(){const f=UI.filterCo,v=UI.page==='view';
+ if(!v)return '';
+ return `<div class="row" style="gap:6px"><span class="hint">ดูเฉพาะ:</span><div class="chips"><button class="chip ${!f?'on':''}" data-fco="">ทุกกองร้อย</button>${S.companies.map(c=>`<button class="chip ${f===c.id?'on':''}" data-fco="${c.id}"><i class="dot" style="background:${c.color}"></i>${esc(c.name)}</button>`).join('')}</div></div>`;}
+function mapToolbar(title){const L=UI.layers,c=(k,lab)=>`<label class="chip ${L[k]?'on':''}"><input type="checkbox" data-layer="${k}" ${L[k]?'checked':''}>${lab}</label>`;
+ return `<div class="row" style="justify-content:space-between"><h3 style="margin:0">${title}</h3><div class="chips">${c('elec','⚡ ไฟฟ้า')}${c('water','💧 ประปา')}${c('pipes','แนวท่อ/สายไฟ')}${c('blds','อาคาร 3D')}${c('zones','เขตรับผิดชอบ')}</div></div>`;}
+const chipHtml=(grp,val,label,on)=>`<label class="chip ${on?'on':''}"><input type="checkbox" data-grp="${grp}" value="${val}" ${on?'checked':''}>${label}</label>`;
+
+/* ---------- ชั้น ๑ แสดงผล ---------- */
+function pageView(){const m=UI.sel&&meter(UI.sel);
+ return `<div class="layout"><section class="card">${mapToolbar('แผนที่หน่วย')}${mapSlot('',mapKpi())}${legendHtml()}<p class="hint" style="margin-bottom:0">แตะหมุดเพื่อดูกราฟของจุดนั้น · แตะอาคารเพื่อดูว่ากองร้อยไหนดูแลและมีมิเตอร์อะไร · ลากเพื่อเลื่อน · ใช้สองนิ้ว (หรือคลิกขวาค้างแล้วลาก) เพื่อหมุน/เอียง</p></section>
+ <section id="side">${m?viewMeter(m):UI.selMk!=null?viewMarket(UI.selMk):viewOverview()}</section></div>`;}
+function viewOverview(){
+ const t=UI.ovType,sc=UI.ovYear,f=UI.filterCo,months=scopeMonths(sc),years=fyList(),T=TYPE[t];
+ const msE=metersOf({type:'elec',co:f}),msW=metersOf({type:'water',co:f});
+ const tot=ms=>months.reduce((a,ym)=>a+(sumUnits(ms,ym)||0),0),cntM=ms=>ms.reduce((a,m)=>a+(m.agg?m.n||0:1),0);
+ const dm=dataMonths(),last=dm[dm.length-1];
+ let h=`<div class="card"><h2>${f?esc(co(f).name)+' — ':''}ภาพรวมการใช้ไฟฟ้าและน้ำประปา</h2>
+ <div class="row" style="margin-bottom:10px"><label>ข้อมูล <select id="ovType"><option value="elec">⚡ ไฟฟ้า</option><option value="water">💧 ประปา</option></select></label>
+ <label>ช่วง <select id="ovYear"><option value="all">ต่อเนื่องทั้งหมด</option>${years.map(y=>`<option value="${y}">ปีงบ ${y}</option>`).join('')}</select></label>
+ <button id="cmpBtn" class="${UI.cmpOn?'on':''}">⇄ เปรียบเทียบ</button>${f?'<button id="clrCo">แสดงทุกกองร้อย</button>':''}</div>
+ ${UI.cmpOn?`<div class="card" style="background:var(--surface2);box-shadow:none;margin-bottom:10px"><label>เปรียบเทียบ <select id="cmpMode"><option value="year">ระหว่างปีงบ</option><option value="co">ระหว่างกองร้อย</option></select></label>
+  <div class="chips" style="margin-top:8px">${UI.cmpMode==='year'?years.map(y=>chipHtml('cy',y,'ปีงบ '+y,UI.cmpYears.includes(y))).join(''):S.companies.map(c=>chipHtml('cc',c.id,`<i class="dot" style="background:${c.color}"></i>${esc(c.name)}`,UI.cmpCos.includes(c.id))).join('')}</div>
+  <p class="hint" style="margin:6px 0 0">เลือกได้หลายรายการ${UI.cmpMode==='co'?' · ใช้ช่วงเวลาที่เลือกด้านบน':' · เทียบปีงบได้ไม่เกิน '+FY_MAX+' ปี · เดือนต่อเดือน ต.ค.–ก.ย.'}</p></div>`:''}
+ <div class="cards"><div class="stat" style="--sc:#f59e0b"><span>⚡ ไฟฟ้ารวม (${scopeName(sc)})</span><b>${fmt(tot(msE))}</b><span>หน่วย</span></div>
+ <div class="stat" style="--sc:#0ea5e9"><span>💧 ประปารวม (${scopeName(sc)})</span><b>${fmt(tot(msW))}</b><span>ลบ.ม.</span></div>
+ <div class="stat" style="--sc:#8b5cf6"><span>จำนวนมิเตอร์</span><b>${cntM(msE)+cntM(msW)}</b><span>ไฟฟ้า ${cntM(msE)} · ประปา ${cntM(msW)}</span></div>
+ <div class="stat" style="--sc:#22c55e"><span>ข้อมูลล่าสุด</span><b>${last?ymLabel(last):'–'}</b><span>บันทึกต่อเนื่อง</span></div></div>
+ <div class="chartbox"><canvas id="ovChart" aria-label="กราฟการใช้${T.name}"></canvas></div></div>`;
+ const ms=metersOf({type:t});
+ const rows=S.companies.map(c=>({c,v:months.reduce((a,ym)=>a+(sumUnits(ms.filter(m=>m.companyId===c.id),ym)||0),0)}));
+ const max=Math.max(1,...rows.map(r=>r.v));
+ h+=`<div class="card"><h3>แยกตามกองร้อยผู้รับผิดชอบ (${T.name}, ${scopeName(sc)})</h3><p class="hint" style="margin-top:0">แตะชื่อกองร้อยเพื่อดูเฉพาะจุดที่กองร้อยนั้นดูแล</p><div class="bars">${rows.map(r=>`<div class="bar ${f===r.c.id?'on':''}" data-co="${r.c.id}"><span class="row" style="gap:6px;flex-wrap:nowrap"><i class="dot" style="background:${r.c.color}"></i>${esc(r.c.name)}</span><div class="track"><div class="fill" style="width:${r.v/max*100}%;background:${r.c.color}"></div></div><span>${fmt(r.v)} ${T.unit}</span></div>`).join('')}</div></div>`;
+ h+=`<div class="card mlist"><h3>จุดมิเตอร์ทั้งหมด (${scopeName(sc)})</h3>${S.companies.filter(c=>!f||c.id===f).map(c=>{const list=S.meters.filter(m=>m.companyId===c.id&&!isRoom(m)),mks=marketGroups().filter(g=>g.companyId===c.id);if(!list.length&&!mks.length)return'';
+  const mkT=(g,t)=>months.reduce((a,ym)=>a+(sumUnits(g.ms.filter(m=>m.type===t),ym)||0),0);
+  return `<div class="grp"><h4><i class="dot" style="background:${c.color}"></i>${esc(c.name)} <span class="muted" style="font-weight:400">(${list.length} จุด${mks.length?' + ตลาด '+mks.length+' แห่ง':''})</span></h4>${mks.map(g=>`<div class="it" data-mk="${esc(g.bid)}">🏪 <b>${esc(mkName(g.bid))}</b> <span>มิเตอร์ย่อย ${g.n} ห้อง</span><span class="v">⚡ ${fmt(mkT(g,'elec'))} · 💧 ${fmt(mkT(g,'water'))}</span></div>`).join('')}${list.map(m=>`<div class="it" data-m="${esc(m.id)}">${TYPE[m.type].icon} <b>${esc(m.code)}</b> <span>${esc(m.name)}</span><span class="v">${fmt(months.reduce((a,ym)=>a+(units(m.id,ym)||0),0))} ${TYPE[m.type].unit}</span></div>`).join('')}</div>`;}).join('')}</div>`;
+ return h;}
+function drawOverview(){const t=UI.ovType,f=UI.filterCo,unit=TYPE[t].unit;
+ if(!UI.cmpOn){const ms=scopeMonths(UI.ovYear);
+  chart('ovChart',{type:'bar',data:{labels:ms.map(ymLabel),datasets:S.companies.filter(c=>!f||c.id===f).map(c=>({label:c.name,backgroundColor:c.color,data:ms.map(ym=>sumUnits(metersOf({type:t,co:c.id}),ym))}))},options:baseOpts(true,unit)});return;}
+ if(UI.cmpMode==='year'){chart('ovChart',{type:'line',data:{labels:FY_LABELS,datasets:[...UI.cmpYears].sort().map((y,i)=>line('ปีงบ '+y,PALETTE[i%7],fyMonths(y).map(ym=>sumUnits(metersOf({type:t,co:f}),ym))))},options:baseOpts(false,unit)});return;}
+ const ms=scopeMonths(UI.ovYear);
+ chart('ovChart',{type:'line',data:{labels:ms.map(ymLabel),datasets:S.companies.filter(c=>UI.cmpCos.includes(c.id)).map(c=>line(c.name,c.color,ms.map(ym=>sumUnits(metersOf({type:t,co:c.id}),ym))))},options:baseOpts(false,unit)});}
+function viewMeter(m){
+ const c=co(m.companyId),T=TYPE[m.type],years=fyList(),months=scopeMonths(UI.mYear),b=bld(m.bldId);
+ const tot=months.reduce((a,ym)=>a+(units(m.id,ym)||0),0);
+ const keys=Object.keys(S.readings[m.id]||{}).sort().reverse(),ph=keys.find(ym=>rd(m.id,ym).photo);
+ const others=S.meters.filter(x=>x.type===m.type&&x.id!==m.id&&!x.agg&&(!x.room||canRoom(x)));
+ const rows=[...months].reverse().filter(ym=>rd(m.id,ym)).map(ym=>{const r=rd(m.id,ym),u=units(m.id,ym);return `<tr><td>${ymLabel(ym)}</td><td class="num">${fmt(r.reading)}</td><td class="num"><b>${fmt(u)}</b></td><td class="muted">${esc(r.by||'')}${r.photo?' 📷':''}</td></tr>`;}).join('');
+ return `<div class="card"><button id="backOv">← ภาพรวม</button>
+ <h2 style="margin-top:12px">${T.icon} ${esc(m.code)} · ${esc(m.name)}</h2>
+ <span class="badge" style="background:${c.color}">ผู้รับผิดชอบ: ${esc(c.name)}</span>
+ <dl class="kv"><dt>ประเภท</dt><dd>${T.name} (${T.unit})</dd><dt>อาคาร</dt><dd>${esc(b?b.name:'–')}</dd>${m.room?`<dt>ห้อง/แผง</dt><dd>${esc(m.room)}</dd><dt>ร้าน/ผู้ใช้</dt><dd>${esc(m.shop||'–')}</dd>`:''}<dt>เลขผู้ใช้</dt><dd>${esc(m.account||'–')}</dd><dt>ใช้รวม (${scopeName(UI.mYear)})</dt><dd><b>${fmt(tot)}</b> ${T.unit}</dd></dl>
+ <div class="row"><label>ช่วง <select id="mYear"><option value="all">ต่อเนื่องทั้งหมด</option>${years.map(y=>`<option value="${y}">ปีงบ ${y}</option>`).join('')}</select></label><button id="mCmpBtn" class="${UI.mCmpOn?'on':''}">⇄ เปรียบเทียบ</button></div>
+ ${UI.mCmpOn?`<div class="card" style="background:var(--surface2);box-shadow:none;margin:8px 0 0"><label>เปรียบเทียบ <select id="mCmpMode"><option value="year">ระหว่างปีงบ</option><option value="meter">กับมิเตอร์อื่น</option></select></label>
+  <div style="margin-top:8px">${UI.mCmpMode==='year'?`<div class="chips">${years.map(y=>chipHtml('my',y,'ปีงบ '+y,UI.mCmpYears.includes(y))).join('')}</div>`:`<select id="mCmpMeter"><option value="">— เลือกมิเตอร์ที่จะเทียบ —</option>${others.map(o=>`<option value="${esc(o.id)}">${TYPE[o.type].icon} ${esc(o.code)} ${esc(o.name)} (${esc(co(o.companyId).name)})</option>`).join('')}</select>`}</div></div>`:''}
+ <div class="chartbox" style="margin-top:10px"><canvas id="mChart" aria-label="กราฟการใช้ของ ${esc(m.code)}"></canvas></div>
+ ${ph?`<h3 style="margin-top:14px">รูปหน้าปัดล่าสุด (${ymLabel(ph)})</h3><img class="photo" src="${rd(m.id,ph).photo}" alt="รูปหน้าปัดมิเตอร์ ${esc(m.code)}">`:''}
+ ${anomTable({key:m.id,ms:[m],type:m.type,co:m.companyId,name:`${T.icon} ${m.code} ${m.name}`},months)}
+ ${locBlock(m)}
+ ${m.room?`<div style="margin-top:10px"><button data-mk="${esc(mkKey(m.bldId||''))}">🏪 ดูทั้งตลาด</button></div>`:''}
+ <h3 style="margin-top:14px">บันทึกรายเดือน (${scopeName(UI.mYear)})</h3><div class="tblwrap"><table><thead><tr><th>เดือน</th><th class="num">เลขมิเตอร์</th><th class="num">ใช้ไป (${T.unit})</th><th>ผู้บันทึก</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="muted">ยังไม่มีข้อมูล</td></tr>'}</tbody></table></div></div>`;}
+function drawMeter(m){const T=TYPE[m.type],c=co(m.companyId);
+ if(!UI.mCmpOn){const ms=scopeMonths(UI.mYear),o=baseOpts(false,T.unit);o.plugins.legend.display=false;
+  chart('mChart',{type:'bar',data:{labels:ms.map(ymLabel),datasets:[{label:m.code,backgroundColor:ms.map(ym=>anomFor([m],ym)?'#ef4444':c.color),borderRadius:4,data:ms.map(ym=>units(m.id,ym))}]},options:o});return;}
+ if(UI.mCmpMode==='year'){chart('mChart',{type:'line',data:{labels:FY_LABELS,datasets:[...UI.mCmpYears].sort().map((y,i)=>line('ปีงบ '+y,PALETTE[i%7],fyMonths(y).map(ym=>units(m.id,ym))))},options:baseOpts(false,T.unit)});return;}
+ const ms=scopeMonths(UI.mYear),o2=meter(UI.mCmpMeter),ds=[line(m.code+' '+m.name,c.color,ms.map(ym=>units(m.id,ym)))];
+ if(o2)ds.push(line(o2.code+' '+o2.name,o2.companyId===m.companyId?PALETTE[1]:co(o2.companyId).color,ms.map(ym=>units(o2.id,ym)),true));
+ chart('mChart',{type:'line',data:{labels:ms.map(ymLabel),datasets:ds},options:baseOpts(false,T.unit)});}
+function selectMeter(id){const m=meter(id);if(!m||m.agg)return;UI.sel=id;UI.selMk=null;UI.mCmpMeter='';POPUP?.remove();POPUP=null;
+ try{history.replaceState(null,'','#/m/'+encodeURIComponent(id));}catch(e){}render();
+ if(MAP)MAP.easeTo({center:[m.lng,m.lat],zoom:Math.max(MAP.getZoom(),18.2),duration:700});
+ if(innerWidth<900)document.getElementById('side')?.scrollIntoView({behavior:'smooth',block:'start'});}
+
+function viewMarket(bid){const b=mkBld(bid),all=mkRooms(bid),t=UI.mkType,T=TYPE[t],years=fyList(),months=scopeMonths(UI.mkYear),c=co(b?b.companyId:all[0]?.companyId);
+ const ms=all.filter(m=>m.type===t),tot=months.reduce((a,ym)=>a+(sumUnits(ms,ym)||0),0),rows=roomRows(all.filter(canRoom));
+ const dm=months.filter(ym=>sumUnits(all,ym)!=null),lm=dm[dm.length-1];
+ return `<div class="card"><button id="backOv">← ภาพรวม</button>
+ <h2 style="margin-top:12px">🏪 ${esc(mkName(bid))}</h2>
+ <span class="badge" style="background:${c.color}">ผู้รับผิดชอบ: ${esc(c.name)}</span>
+ <p class="muted" style="margin:8px 0">มิเตอร์ย่อยของร้านค้า/ผู้ประกอบการ ${roomN(all)} ห้อง · กราฟนี้คือยอดรวมของทุกห้อง</p>
+ <div class="row"><label>ข้อมูล <select id="mkType"><option value="elec">⚡ ไฟฟ้า</option><option value="water">💧 ประปา</option></select></label>
+ <label>กราฟ <select id="mkChartT"><option value="bar">📊 แท่งรายเดือน</option><option value="line">📈 เส้นเทียบปีงบ</option></select></label>
+ ${UI.mkChartT==='line'?'':`<label>ช่วง <select id="mkYear"><option value="all">ต่อเนื่องทั้งหมด</option>${years.map(y=>`<option value="${y}">ปีงบ ${y}</option>`).join('')}</select></label>`}</div>
+ ${UI.mkChartT==='line'?`<div style="margin-top:8px"><div class="chips">${years.map(y=>chipHtml('mky',y,'ปีงบ '+y,UI.mkYears.includes(y))).join('')||'<span class="hint">ยังไม่มีข้อมูล</span>'}</div>
+ <p class="hint" style="margin:6px 0 0">เลือกได้ไม่เกิน ${FY_MAX} ปีงบประมาณ · แกนนอน ต.ค.–ก.ย. (ปีงบ ${years[0]||''} = ต.ค. ${String((years[0]||2569)-1).slice(-2)} – ก.ย. ${String(years[0]||2569).slice(-2)})</p></div>`:''}
+ <div class="cards" style="margin-top:10px"><div class="stat" style="--sc:${t==='elec'?'#f59e0b':'#0ea5e9'}"><span>${T.icon} ใช้รวม (${scopeName(UI.mkYear)})</span><b>${fmt(tot)}</b><span>${T.unit}</span></div>
+ <div class="stat" style="--sc:#22c55e"><span>ข้อมูลล่าสุด</span><b>${lm?ymLabel(lm):'–'}</b><span>${lm&&sumUnits(ms,lm)!=null?fmt(sumUnits(ms,lm))+' '+T.unit:''}</span></div></div>
+ <div class="chartbox" style="margin-top:10px"><canvas id="mkChart" aria-label="กราฟการใช้${T.name}รวมของตลาด"></canvas></div>
+ ${anomTable({key:'b:'+bid+':'+t,ms,type:t,co:b?b.companyId:all[0]?.companyId,name:`${T.icon} ${mkName(bid)} รวม ${roomN(ms)} ห้อง`},months)}</div>
+ ${rows.length?`<div class="card"><h3>รายห้อง${lm?' · ใช้ไปเดือน '+ymLabel(lm):''}</h3><div class="tblwrap"><table class="mkt"><thead><tr><th>ห้อง</th><th>ร้าน/ผู้ใช้</th><th class="num">⚡ หน่วย</th><th class="num">💧 ลบ.ม.</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><b>${esc(r.room)}</b></td><td>${esc(r.shop||'–')}</td>${['elec','water'].map(k=>{const m=r[k];if(!m)return '<td class="num muted">–</td>';const u=lm?units(m.id,lm):null;return `<td class="num"><a href="#/m/${encodeURIComponent(m.id)}" data-m="${esc(m.id)}">${u!=null?fmt(u):'–'}</a></td>`;}).join('')}</tr>`).join('')}
+ </tbody></table></div><p class="hint" style="margin-bottom:0">${sess?.role==='admin'?'สรุปรายเดือน ส่งออก และเพิ่มห้อง อยู่ที่หน้าผู้ดูแล › แท็บ 🏪 ตลาด':'เห็นรายห้องเพราะเป็นผู้รับผิดชอบตลาดนี้ · คนทั่วไปเห็นแค่กราฟรวม'}</p></div>`
+ :'<div class="card"><p class="hint" style="margin:0">🔒 เลขห้อง ชื่อร้าน และยอดรายห้อง เปิดให้เฉพาะผู้รับผิดชอบตลาดและผู้ดูแลระบบ</p></div>'}`;}
+function drawMarket(bid){const ms=mkRooms(bid).filter(m=>m.type===UI.mkType),T=TYPE[UI.mkType],c=co(mkBld(bid)?.companyId||ms[0]?.companyId),mo=scopeMonths(UI.mkYear),o=baseOpts(false,T.unit);o.plugins.legend.display=false;
+ if(UI.mkChartT==='line'){const ys=[...UI.mkYears].sort();chart('mkChart',{type:'line',data:{labels:FY_LABELS,datasets:ys.map((y,i)=>line('ปีงบ '+y,PALETTE[i%7],fyMonths(y).map(ym=>sumUnits(ms,ym))))},options:baseOpts(false,T.unit)});return;}
+ chart('mkChart',{type:'bar',data:{labels:mo.map(ymLabel),datasets:[{label:'รวมทุกห้อง',backgroundColor:mo.map(ym=>anomFor(ms,ym)?'#ef4444':c.color),borderRadius:4,data:mo.map(ym=>sumUnits(ms,ym))}]},options:o});}
+
+/* ---------- ชั้น ๒ กองร้อย ---------- */
+function pageCompany(){const c=co(sess.co),ym=openYm(),closed=S.settings.closed,list=S.meters.filter(m=>m.companyId===c.id&&!m.agg),done=list.filter(m=>rd(m.id,ym)).length;
+ const plain=list.filter(m=>!m.room),mks=[...new Set(list.filter(m=>m.room).map(m=>mkKey(m.bldId||'')))];
+ return `<div class="card"><div class="row"><span class="badge" style="background:${c.color};font-size:15px">${esc(c.name)}</span><h2 style="margin:0">กรอกเลขมิเตอร์ประจำเดือน ${ymLong(ym)}</h2></div>
+ <p class="${closed?'bad':'ok'}" style="margin:6px 0">${closed?'🔒 ปิดรับข้อมูลแล้ว — ถ้าต้องแก้ ติดต่อผู้ดูแลระบบ':`🟢 เปิดรับข้อมูล · กำหนดส่งภายในวันที่ ${S.settings.closeDay} ${ymLong(nextYm(ym))}`}</p>
+ <p class="muted" style="margin:0">กรอกแล้ว <b>${done}/${list.length}</b> จุด · หน้านี้เห็นและแก้ได้เฉพาะมิเตอร์ของ ${esc(c.name)}</p>${companyWatch(c.id)}</div>
+ <div class="layout"><section class="card"><h3>จุดมิเตอร์ที่ ${esc(c.name)} รับผิดชอบ</h3>${mapSlot('sm')}<p class="hint" style="margin:0">✓ = กรอกแล้ว · • = ยังไม่กรอก · อาคารสีเทา = ของกองร้อยอื่น · แตะหมุดเพื่อไปที่ช่องกรอก</p></section>
+ <section>${mks.map(bid=>marketForm(bid,list.filter(m=>m.room&&mkKey(m.bldId||'')===bid),ym,closed)).join('')}${plain.map(m=>meterForm(m,ym,closed)).join('')}${!list.length?'<div class="card">ยังไม่มีมิเตอร์ในความรับผิดชอบ ติดต่อผู้ดูแลระบบ</div>':''}</section></div>`;}
+function marketForm(bid,ms,ym,closed){const rows=roomRows(ms),done=ms.filter(m=>rd(m.id,ym)).length;
+ return `<div class="card" id="mk-${esc(bid)}"><div class="row"><h3 style="margin:0">🏪 ${esc(mkName(bid))}</h3><span class="${done===ms.length?'ok':'warn'}">กรอกแล้ว ${done}/${ms.length}</span></div>
+ <p class="hint">กรอกเลขของแต่ละห้องแล้วกด "บันทึกทุกห้องที่กรอก" ครั้งเดียว · แตะ 📷 เพื่อแนบรูปหน้าปัด (ไม่บังคับ) · คนทั่วไปเห็นแค่ยอดรวมของตลาด</p>
+ <div class="tblwrap"><table class="mkt"><thead><tr><th>ห้อง/ร้าน</th><th></th><th class="num">ครั้งก่อน</th><th>เลขเดือนนี้</th><th class="num">ใช้ไป</th><th>รูป</th><th class="hm"></th></tr></thead><tbody>
+ ${rows.flatMap(r=>['elec','water'].filter(k=>r[k]).map((k,i)=>{const m=r[k],T=TYPE[k],cur=rd(m.id,ym),prev=rd(m.id,prevYm(ym)),u=cur&&prev?rollU(prev.reading,cur.reading):null,span=r.elec&&r.water?2:1;
+  return `<tr id="f-${esc(m.id)}">${i===0?`<td rowspan="${span}" style="white-space:normal;min-width:70px"><b>${esc(r.room)}</b>${r.shop?`<br><small class="muted">${esc(r.shop)}</small>`:''}</td>`:''}<td>${T.icon} <span class="muted hm">${esc(m.code)}</span></td>
+  <td class="num">${prev?fmt(prev.reading):'<span class="muted">ยังไม่มี</span>'}</td>
+  <td><input type="number" inputmode="decimal" min="0" id="r-${esc(m.id)}" value="${cur?cur.reading:''}" aria-label="เลข${T.name} ห้อง ${esc(r.room)}" ${closed?'disabled':''}></td>
+  <td class="num"><b id="u-${esc(m.id)}" style="color:${u<0?'var(--bad)':'var(--text-primary)'}">${u!=null?fmt(u):'–'}</b></td>
+  <td><label class="ficon" title="แนบรูปหน้าปัด">📷<input type="file" accept="image/*" id="p-${esc(m.id)}" ${closed?'disabled':''}></label> <span class="pvs" id="pv-${esc(m.id)}">${cur?.photo?'มีรูป':''}</span></td>
+  <td class="hm">${cur?'<span class="ok">✓</span>':''} <button data-save="${esc(m.id)}" ${closed?'disabled':''}>บันทึก</button></td></tr>`;})).join('')}
+ </tbody></table></div>
+ <div class="row" style="margin-top:10px"><button class="primary" data-mksave="${esc(bid)}" ${closed?'disabled':''}>💾 บันทึกทุกห้องที่กรอก</button><span class="hint" id="mks-${esc(bid)}"></span></div></div>`;}
+async function saveMarket(bid){const ids=S.meters.filter(m=>m.room&&mkKey(m.bldId||'')===bid&&m.companyId===sess?.co).map(m=>m.id)
+  .filter(id=>{const i=document.getElementById('r-'+id);return i&&i.value.trim()!==''&&(i.value!==i.defaultValue||PENDING[id]);});
+ if(!ids.length)return alert('ยังไม่มีห้องที่กรอกเลขใหม่');
+ let n=0;for(const id of ids){const st=document.getElementById('mks-'+bid);if(st)st.textContent=`กำลังบันทึก ${n+1}/${ids.length}…`;const ok=await saveReading(id,true);if(ok!==true)break;n++;}
+ render();toast(`บันทึกแล้ว ${n}/${ids.length} มิเตอร์`);}
+function meterForm(m,ym,closed){const T=TYPE[m.type],cur=rd(m.id,ym),prev=rd(m.id,prevYm(ym)),u=cur&&prev?rollU(prev.reading,cur.reading):null;
+ let hy=prevYm(ym);const hist=[];for(let i=0;i<6;i++){if(rd(m.id,hy))hist.push(hy);hy=prevYm(hy);}
+ return `<div class="mform ${cur?'done':''}" id="f-${esc(m.id)}"><div class="hd">${T.icon} ${esc(m.code)} · ${esc(m.name)} ${cur?'<span class="ok" style="margin-left:auto">✓ บันทึกแล้ว</span>':'<span class="warn" style="margin-left:auto">ยังไม่กรอก</span>'}</div>
+ <div class="grid"><label>เลขครั้งก่อน (${ymLabel(prevYm(ym))})<b style="color:var(--text-primary);font-size:18px">${prev?fmt(prev.reading):'ยังไม่มี'}</b></label>
+ <label>เลขมิเตอร์เดือนนี้<input type="number" inputmode="decimal" min="0" id="r-${esc(m.id)}" value="${cur?cur.reading:''}" ${closed?'disabled':''}></label>
+ <label>ใช้ไป (${T.unit})<b id="u-${esc(m.id)}" style="color:${u<0?'var(--bad)':'var(--text-primary)'};font-size:18px">${u!=null?fmt(u):'–'}</b></label></div>
+ <label style="margin-top:8px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--text-muted)">รูปหน้าปัดมิเตอร์ (ถ่ายใหม่หรือเลือกจากเครื่อง)<input type="file" accept="image/*" id="p-${esc(m.id)}" ${closed?'disabled':''}></label>
+ <div id="pv-${esc(m.id)}">${cur?.photo?`<img class="photo" src="${cur.photo}" style="max-height:160px" alt="รูปหน้าปัดมิเตอร์">`:''}</div>
+ <div class="row" style="margin-top:8px"><button class="primary" data-save="${esc(m.id)}" ${closed?'disabled':''}>บันทึก</button>${!prev?'<span class="hint">ครั้งแรกของมิเตอร์นี้ — ระบบจะใช้เป็นเลขตั้งต้น</span>':''}</div>
+ <details style="margin-top:8px"><summary class="muted">📍 รูปตำแหน่งที่ติดมิเตอร์${locOf(m.id)?' (มีแล้ว)':''}</summary>${locBlock(m)}</details>
+ ${hist.length?`<details style="margin-top:8px"><summary class="muted">ดูย้อนหลัง ${hist.length} เดือน</summary><table><thead><tr><th>เดือน</th><th class="num">เลขมิเตอร์</th><th class="num">ใช้ไป</th></tr></thead><tbody>${hist.map(y=>`<tr><td>${ymLabel(y)}</td><td class="num">${fmt(rd(m.id,y).reading)}</td><td class="num">${fmt(units(m.id,y))}</td></tr>`).join('')}</tbody></table></details>`:''}</div>`;}
+function saveReading(id,batch){
+ const m=meter(id);if(!m||sess?.role!=='company'||m.companyId!==sess.co){alert('ไม่มีสิทธิ์กรอกมิเตอร์นี้');return false;}
+ if(S.settings.closed){alert('ปิดรับข้อมูลแล้ว');return false;}
+ const ym=openYm(),v=parseFloat(document.getElementById('r-'+id).value);
+ if(isNaN(v)||v<0){alert(`กรอกเลขมิเตอร์ให้ถูกต้อง (${m.code}${m.room?' ห้อง '+m.room:''})`);return false;}
+ const prev=rd(id,prevYm(ym));
+ const who=m.room?`ห้อง ${m.room} (${m.code})\n`:'';
+ if(prev&&v<prev.reading&&!confirm(who+(isRoll(prev.reading,v)?`เลขที่กรอก (${fmt(v)}) น้อยกว่าครั้งก่อน (${fmt(prev.reading)})\nระบบจะคิดว่ามิเตอร์วนรอบ = ใช้ไป ${fmt(rollU(prev.reading,v))} ${TYPE[m.type].unit}\nถ้าถูกต้องกด "ตกลง"`:`เลขที่กรอก (${fmt(v)}) น้อยกว่าครั้งก่อน (${fmt(prev.reading)})\nถ้าเปลี่ยนมิเตอร์ใหม่จริง กด "ตกลง"`)))return false;
+ if(prev&&v>=prev.reading){let y=prevYm(ym);const past=[];for(let i=0;i<6;i++){const u=units(id,y);if(u!=null)past.push(u);y=prevYm(y);}
+  const avg=past.length?past.reduce((a,b)=>a+b,0)/past.length:0;
+  if(avg>0&&v-prev.reading>avg*3&&!confirm(who+`ใช้ไป ${fmt(v-prev.reading)} ${TYPE[m.type].unit} สูงกว่าค่าเฉลี่ย 6 เดือน (${fmt(avg)}) มากกว่า 3 เท่า\nตรวจเลขอีกครั้ง ถ้าถูกต้องกด "ตกลง"`))return false;}
+ const cur=rd(id,ym);
+ if(API.on){const btn=document.querySelector(`[data-save="${CSS.escape(id)}"]`);if(btn){btn.disabled=true;btn.textContent='กำลังบันทึก…';}
+  return api('/reading',{method:'POST',body:{meterId:id,ym,reading:v,photo:PENDING[id]||null}}).then(r=>{(S.readings[id]||(S.readings[id]={}))[ym]=r.rec;delete PENDING[id];if(!batch){render();toast('บันทึกแล้ว ✓');}else{const i=document.getElementById('r-'+id);if(i)i.defaultValue=i.value;}return true;})
+   .catch(e=>{if(btn){btn.disabled=false;btn.textContent='บันทึก';}alert('บันทึกไม่สำเร็จ: '+e.message);if(e.status===401){setSess(null);UI.page='view';render();}return false;});}
+ (S.readings[id]||(S.readings[id]={}))[ym]={reading:v,photo:PENDING[id]??cur?.photo??null,by:co(m.companyId).name,at:new Date().toISOString()};
+ delete PENDING[id];
+ log(co(m.companyId).name,`${cur?'แก้':'กรอก'}เลข ${m.code} เดือน ${ymLabel(ym)} = ${fmt(v)}`);
+ save();if(!batch){render();toast('บันทึกแล้ว ✓');}else{const i=document.getElementById('r-'+id);if(i)i.defaultValue=i.value;}return true;}
+
+/* ---------- ชั้น ๓ ผู้ดูแล ---------- */
+const ATABS=[['map','🗺️ แผนที่ อาคาร แนวท่อ'],['meters','📟 มิเตอร์'],['data','📊 ข้อมูลรายเดือน'],['market','🏪 ตลาด'],['access','🔑 ผู้ใช้และสิทธิ์'],['qr','▦ QR โค้ด'],['log','🕘 ประวัติการแก้ไข'],['handover','📦 สำรองและส่งมอบงาน']];
+const TOOLS=[['select','✋ เลือก/ลากหมุด'],['addElec','⚡ เพิ่มมิเตอร์ไฟฟ้า'],['addWater','💧 เพิ่มมิเตอร์ประปา'],['drawBld','🏢 วาดอาคาร 3D'],['drawWater','〰 วาดท่อประปา'],['drawElec','〰 วาดสายไฟฟ้า'],['drawZone','⬠ วาดเขตกองร้อย'],['del','🗑 ลบเส้น/อาคาร/เขต']];
+const HINT={select:'ลากหมุดเพื่อย้ายตำแหน่ง · แตะหมุดเพื่อแก้ข้อมูลมิเตอร์ · แตะอาคารเพื่อแก้ชื่อ/กองร้อย/ความสูง',addElec:'แตะบนแผนที่ตรงจุดที่ติดตั้งมิเตอร์ไฟฟ้า',addWater:'แตะบนแผนที่ตรงจุดที่ติดตั้งมิเตอร์ประปา',drawBld:'เลือกกองร้อยและความสูง แล้วแตะมุมหลังคาอาคารทีละมุม แล้วกด "เสร็จ"',drawWater:'แตะทีละจุดตามแนวท่อประปา แล้วกด "เสร็จ"',drawElec:'แตะทีละจุดตามแนวสายไฟ แล้วกด "เสร็จ"',drawZone:'เลือกกองร้อย แล้วแตะมุมของเขตทีละมุม (อย่างน้อย 3 มุม) แล้วกด "เสร็จ"',del:'แตะเส้นท่อ สายไฟ อาคาร หรือเขตที่ต้องการลบ'};
+function pageAdmin(){const np=(API.users||[]).filter(u=>u.status==='pending').length;return onlineCard()+`<div class="tabs noprint">${ATABS.map(([k,n])=>`<button data-atab="${k}" class="${UI.adminTab===k?'on':''}">${n}${k==='access'&&np?` <span class="badge" style="background:var(--bad);padding:0 8px">${np}</span>`:''}</button>`).join('')}</div>`+({map:adminMap,meters:adminMeters,data:adminData,market:adminMarket,access:adminAccess,qr:adminQr,log:adminLog,handover:adminHandover}[UI.adminTab])();}
+function adminMap(){const t=UI.tool,needCo=t==='drawZone'||t==='drawBld';
+ return `<div class="card"><div class="row">${TOOLS.map(([k,n])=>`<button data-tool="${k}" class="${t===k?'on':''}">${n}</button>`).join('')}</div>
+ <div class="row" style="margin-top:8px;min-height:40px"><span class="hint">👉 ${HINT[t]}</span>
+ ${needCo?`<select id="drawCo" aria-label="กองร้อย">${S.companies.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select>`:''}
+ ${t==='drawBld'?`<label class="hint">สูง <input type="number" id="drawH" min="2" max="80" value="${UI.drawH}" style="width:70px"> ม.</label>`:''}
+ ${UI.draft?`<button class="primary" id="drFin">✓ เสร็จ (${UI.draft.length} จุด)</button><button id="drUndo">↶ ย้อนจุด</button><button id="drCancel">ยกเลิก</button>`:''}</div>
+ ${mapSlot('lg')}${legendHtml()}
+ <div class="row" style="margin-top:10px"><button id="genBr">🚰 วางท่อแยกเข้าทุกอาคารใหม่</button><button id="camSave">📷 ตั้งมุมกล้องตอนนี้เป็นมุมเริ่มต้นของทุกคน</button>${S.settings.cam?'<button id="camReset">ใช้มุมเริ่มต้นเดิม</button>':''}<span class="hint">ตอนวาดหรือปักหมุด ระบบจะเปลี่ยนเป็นมุมมอง 2D ให้อัตโนมัติเพื่อความแม่นยำ</span></div></div>${bldTable()}`;}
+function bldTable(){const nt=S.blds.filter(b=>!b.type).length;
+ return `<div class="card"><div class="row"><h3 style="margin:0">อาคารและสถานที่ (${S.blds.length})</h3>${nt?`<span class="hint">ยังไม่ระบุประเภท ${nt} หลัง</span>`:''}</div>
+ <p class="hint">กด "แก้" เพื่อตั้งชื่อจริง ระบุว่าเป็นอาคารอะไร กองร้อยผู้รับผิดชอบ และความสูง หรือคลิกอาคารบนแผนที่ก็ได้</p>
+ <div class="tblwrap"><table><thead><tr><th>ชื่อ</th><th>เป็นอาคารอะไร</th><th>กองร้อย</th><th>มิเตอร์</th><th></th></tr></thead><tbody>
+ ${S.companies.flatMap(c=>S.blds.filter(b=>b.companyId===c.id)).concat(S.blds.filter(b=>!co(b.companyId))).map(b=>{const c=co(b.companyId)||{name:'—',color:'#888'};
+  return `<tr><td>${esc(b.name)}</td><td>${b.type?esc(b.type):'<span class="hint">— ยังไม่ระบุ —</span>'}</td><td><i class="dot" style="background:${c.color}"></i> ${esc(c.name)}</td><td>${S.meters.filter(m=>m.bldId===b.id).length}</td><td><button data-bed="${b.id}">แก้</button></td></tr>`;}).join('')}
+ </tbody></table></div></div>`;}
+function newMeter(type,p){const pre=type==='elec'?'E':'W';const n=Math.max(0,...S.meters.map(m=>(m.code.match(new RegExp('^'+pre+'(\\d+)$'))||[])[1]).filter(Boolean).map(Number))+1;
+ const b=S.blds.find(q=>inPoly(p,q.pts)),z=S.shapes.find(s=>s.kind==='zone'&&inPoly(p,s.pts));
+ const m={id:'m'+Date.now().toString(36),code:pre+pad(n),type,name:(type==='elec'?'ไฟฟ้า ':'ประปา ')+(b?b.name:'(ตั้งชื่อจุด)'),lng:p[0],lat:p[1],companyId:b?b.companyId:z?z.companyId:S.companies[0]?.id,bldId:b?b.id:'',account:''};
+ S.meters.push(m);log('ผู้ดูแลระบบ',`เพิ่มมิเตอร์ ${m.code}`);save();UI.tool='select';render();openMeterModal(m.id);}
+function finishDraft(){const d=UI.draft;if(!d)return;const t=UI.tool,kind=t==='drawWater'?'water':t==='drawElec'?'elec':t==='drawBld'?'bld':'zone';
+ if((kind==='zone'||kind==='bld')&&d.length<3)return alert('ต้องมีอย่างน้อย 3 มุม');if(d.length<2)return alert('ต้องมีอย่างน้อย 2 จุด');
+ const id='s'+Date.now().toString(36);
+ if(kind==='bld'){S.blds.push({id,name:'อาคารใหม่',companyId:UI.drawCo,h:UI.drawH||8,pts:d});UI.draft=null;log('ผู้ดูแลระบบ',`วาดอาคาร (${co(UI.drawCo).name})`);save();render();return openBldModal(id);}
+ const sh={id,kind,pts:d};if(kind==='zone')sh.companyId=UI.drawCo;
+ S.shapes.push(sh);UI.draft=null;log('ผู้ดูแลระบบ',kind==='zone'?`วาดเขต ${co(UI.drawCo).name}`:`วาด${kind==='water'?'ท่อประปา':'สายไฟฟ้า'} ${d.length} จุด`);save();render();}
+function delFeature(f){const id=f.properties.id,isB=f.layer.id==='bld';
+ const sh=isB?bld(id):S.shapes.find(x=>x.id===id);if(!sh)return;
+ const nm=isB?sh.name:sh.kind==='zone'?'เขต '+co(sh.companyId).name:sh.kind==='water'?(sh.br?'ท่อแยกเข้าอาคารเส้นนี้':'ท่อประปาเส้นนี้'):'สายไฟฟ้าเส้นนี้';
+ if(!confirm('ลบ '+nm+'?'))return;
+ if(isB){S.blds=S.blds.filter(x=>x!==sh);S.meters.forEach(m=>{if(m.bldId===id)m.bldId='';});}else{S.shapes=S.shapes.filter(x=>x!==sh);if(sh.br&&sh.bldId){const n=S.settings.noBr||(S.settings.noBr=[]);if(!n.includes(sh.bldId))n.push(sh.bldId);}}
+ log('ผู้ดูแลระบบ','ลบ '+nm);save();render();}
+function modal(html){closeModal();const bg=document.createElement('div');bg.className='modal-bg';bg.id='mbg';bg.innerHTML=`<div class="modal" role="dialog" aria-modal="true">${html}</div>`;bg.addEventListener('click',e=>{if(e.target===bg)closeModal();});document.body.appendChild(bg);return bg;}
+function closeModal(){document.getElementById('mbg')?.remove();}
+const BTYPES=['อาคารกองร้อย','โรงนอนทหาร','กองบังคับการ / สำนักงาน','บ้านพัก / แฟลต','โรงเลี้ยง / โรงครัว','คลัง / ที่เก็บสิ่งอุปกรณ์','โรงรถ / โรงซ่อม','ห้องน้ำ / ห้องอาบน้ำ','อาคารฝึก / ห้องเรียน','สโมสร / ร้านค้า','ตลาด / ร้านค้าผู้ประกอบการ','ปั๊มน้ำ / ถังเก็บน้ำ','ป้อมยาม / ประตู','สนาม / ลานกีฬา'];
+const btype=b=>b&&b.type?b.type:'';
+function openBldModal(id){const b=bld(id);if(!b)return;const custom=b.type&&!BTYPES.includes(b.type);
+ modal(`<h3>ข้อมูลอาคาร</h3><label>ชื่ออาคาร<input type="text" id="bdName" value="${esc(b.name)}"></label>
+ <label>เป็นอาคาร/สถานที่อะไร<select id="bdType"><option value="">— ยังไม่ระบุ —</option>${BTYPES.map(t=>`<option>${esc(t)}</option>`).join('')}<option value="__other">อื่น ๆ (พิมพ์เอง)</option></select></label>
+ <label id="bdTypeOtherL" style="display:none">ระบุประเภทเอง<input type="text" id="bdTypeOther" maxlength="60" placeholder="เช่น โรงสูบน้ำ, อาคารพัสดุ" value="${custom?esc(b.type):''}"></label>
+ <label>กองร้อยผู้รับผิดชอบ<select id="bdCo">${S.companies.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
+ <label>ความสูงโดยประมาณ (เมตร · ชั้นละประมาณ 3.5 ม.)<input type="number" id="bdH" min="2" max="80" value="${b.h}"></label>
+ <p class="hint">มิเตอร์ในอาคารนี้: ${S.meters.filter(m=>m.bldId===b.id).map(m=>esc(m.code)).join(', ')||'ไม่มี'}</p>
+ <div class="row"><button class="primary" id="bdSave">บันทึก</button><button id="bdX">ปิด</button><button class="danger" id="bdDel" style="margin-left:auto">ลบอาคาร</button></div>`);
+ $('#bdCo').value=b.companyId;$('#bdType').value=custom?'__other':(b.type||'');
+ const tOther=()=>{const o=$('#bdType').value==='__other';$('#bdTypeOtherL').style.display=o?'':'none';if(o)$('#bdTypeOther').focus();};$('#bdType').onchange=tOther;if(custom)tOther();
+ $('#bdSave').onclick=()=>{const oc=b.companyId;const tv=$('#bdType').value;Object.assign(b,{type:tv==='__other'?$('#bdTypeOther').value.trim():tv,name:$('#bdName').value.trim()||'อาคาร',companyId:$('#bdCo').value,h:Math.max(2,Math.min(80,+$('#bdH').value||8))});
+  log('ผู้ดูแลระบบ',`แก้ข้อมูล ${b.name}${oc!==b.companyId?` (โอนให้ ${co(b.companyId).name})`:''}`);save();closeModal();render();};
+ $('#bdX').onclick=closeModal;
+ $('#bdDel').onclick=()=>{if(!confirm('ลบ '+b.name+'? (มิเตอร์ยังอยู่)'))return;S.blds=S.blds.filter(x=>x!==b);S.meters.forEach(m=>{if(m.bldId===b.id)m.bldId='';});log('ผู้ดูแลระบบ','ลบ '+b.name);save();closeModal();render();};}
+function openMeterModal(id){const m=meter(id);if(!m)return;
+ modal(`<h3>ข้อมูลมิเตอร์</h3><label>รหัสจุด (พิมพ์บนสติกเกอร์ QR)<input type="text" id="mmCode" value="${esc(m.code)}"></label>
+ <label>ชื่อ/ที่ตั้ง<input type="text" id="mmName" value="${esc(m.name)}"></label>
+ <label>ประเภท<select id="mmType"><option value="elec">⚡ ไฟฟ้า</option><option value="water">💧 ประปา</option></select></label>
+ <label>กองร้อยผู้รับผิดชอบ<select id="mmCo">${S.companies.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select></label>
+ <label>อาคาร<select id="mmBld"><option value="">— ไม่ระบุ —</option>${S.blds.map(b=>`<option value="${b.id}">${esc(b.name)}${btype(b)?' · '+esc(btype(b)):''}</option>`).join('')}</select></label>
+ <label>เลขผู้ใช้ไฟฟ้า/ประปา (ตามใบแจ้งหนี้)<input type="text" id="mmAcc" value="${esc(m.account||'')}"></label>
+ <label>ห้อง/แผง (ใส่เฉพาะมิเตอร์ย่อยของร้านในตลาด)<input type="text" id="mmRoom" maxlength="30" value="${esc(m.room||'')}"></label>
+ <label>ชื่อร้าน/ผู้ใช้<input type="text" id="mmShop" maxlength="60" value="${esc(m.shop||'')}"></label>
+ <p class="hint" style="margin-top:0">ใส่เลขห้องแล้ว คนทั่วไปจะเห็นแค่ยอดรวมของอาคาร ไม่เห็นเลขห้อง ชื่อร้าน หรือยอดรายห้อง</p>
+ <div style="margin-bottom:10px">${locBlock(m)}</div>
+ <div class="row" style="margin-bottom:10px"><button id="mmGps">📍 ใช้ตำแหน่งปัจจุบันของเครื่องนี้</button><span class="hint" id="mmGpsMsg">${m.lat.toFixed(6)}, ${m.lng.toFixed(6)}</span></div>
+ <div class="row"><button class="primary" id="mmSave">บันทึก</button><button id="mmX">ปิด</button><button class="danger" id="mmDel" style="margin-left:auto">ลบมิเตอร์</button></div>`);
+ $('#mmType').value=m.type;$('#mmCo').value=m.companyId;$('#mmBld').value=m.bldId||'';let gps=null;
+ $('#mmGps').onclick=()=>{if(!navigator.geolocation)return alert('เครื่องนี้ไม่รองรับตำแหน่ง');$('#mmGpsMsg').textContent='กำลังหาตำแหน่ง…';
+  navigator.geolocation.getCurrentPosition(p=>{gps=[r7(p.coords.longitude),r7(p.coords.latitude)];$('#mmGpsMsg').textContent=`${gps[1].toFixed(6)}, ${gps[0].toFixed(6)} (คลาดเคลื่อน ~${Math.round(p.coords.accuracy)} ม.) — กดบันทึก`;},
+  ()=>{$('#mmGpsMsg').textContent='หาตำแหน่งไม่ได้ (ต้องอนุญาตตำแหน่ง และใช้ผ่านเว็บ https)';},{enableHighAccuracy:true,timeout:15000});};
+ $('#mmSave').onclick=()=>{const code=$('#mmCode').value.trim();if(!code)return alert('ใส่รหัสจุด');if(S.meters.some(x=>x!==m&&x.code===code))return alert('รหัสนี้ซ้ำกับมิเตอร์อื่น');
+  const oldCo=m.companyId;Object.assign(m,{code,name:$('#mmName').value.trim()||code,type:$('#mmType').value,companyId:$('#mmCo').value,bldId:$('#mmBld').value,account:$('#mmAcc').value.trim(),room:$('#mmRoom').value.trim().slice(0,30),shop:$('#mmShop').value.trim().slice(0,60)});if(!m.room){delete m.room;delete m.shop;}
+  if(gps){m.lng=gps[0];m.lat=gps[1];}
+  log('ผู้ดูแลระบบ',`แก้ข้อมูลมิเตอร์ ${code}${oldCo!==m.companyId?` (โอนจาก ${co(oldCo).name} ให้ ${co(m.companyId).name})`:''}${gps?' + ตำแหน่ง GPS':''}`);save();closeModal();render();};
+ $('#mmX').onclick=closeModal;
+ $('#mmDel').onclick=()=>{const n=Object.keys(S.readings[m.id]||{}).length;if(!confirm(`ลบมิเตอร์ ${m.code}?${n?`\nข้อมูลที่บันทึกไว้ ${n} เดือนจะถูกลบด้วย`:''}`))return;
+  S.meters=S.meters.filter(x=>x!==m);delete S.readings[m.id];if(S.locPhotos)delete S.locPhotos[m.id];if(UI.sel===m.id)UI.sel=null;log('ผู้ดูแลระบบ',`ลบมิเตอร์ ${m.code}`);save();closeModal();render();};}
+function adminMeters(){return `<div class="card"><h3>รายการมิเตอร์ (${S.meters.length} จุด) · อาคาร ${S.blds.length} หลัง</h3><p class="hint" style="margin-top:0">เพิ่มมิเตอร์ใหม่ที่แท็บแผนที่ (แตะตำแหน่งบนแผนที่) · โอนความรับผิดชอบให้กองร้อยอื่นได้ที่ปุ่มแก้ไข</p><div class="tblwrap"><table><thead><tr><th>รหัส</th><th>ชื่อ/ที่ตั้ง</th><th>ประเภท</th><th>อาคาร</th><th>กองร้อยผู้รับผิดชอบ</th><th>เลขผู้ใช้</th><th class="num">บันทึกแล้ว</th><th></th></tr></thead><tbody>
+ ${sortedMeters().map(m=>`<tr><td><b>${esc(m.code)}</b></td><td>${esc(m.name)}${m.room?` <span class="muted">[ห้อง ${esc(m.room)}${m.shop?' '+esc(m.shop):''}]</span>`:''}</td><td>${TYPE[m.type].icon} ${TYPE[m.type].name}</td><td>${esc(bld(m.bldId)?.name||'–')}</td><td><i class="dot" style="background:${co(m.companyId).color}"></i> ${esc(co(m.companyId).name)}</td><td>${esc(m.account||'–')}</td><td class="num">${Object.keys(S.readings[m.id]||{}).length} เดือน</td><td><button data-edit="${esc(m.id)}">แก้ไข</button></td></tr>`).join('')}</tbody></table></div></div>`;}
+function adminMarket(){const gs=marketGroups(),have=new Set(gs.flatMap(g=>g.bids));
+ const cand=S.blds.filter(b=>have.has(b.id)||/ตลาด|ร้านค้า/.test(b.name+' '+(b.type||'')));
+ const others=S.blds.filter(b=>!cand.includes(b));
+ if(!UI.mkBld||!bld(UI.mkBld))UI.mkBld=(cand[0]||S.blds[0])?.id||'';
+ const bid=UI.mkBld,b=bld(bid),all=mkRooms(mkKey(bid)),rows=roomRows(all),fys=[...new Set([...fyList(),fyOf(openYm())])].sort((a,b)=>b-a),fy=UI.mkFy||fyOf(openYm()),ms=fyMonths(fy);
+ const opt=x=>`<option value="${x.id}">${esc(x.name)}${dupSide(x)}${have.has(x.id)?' · '+roomN(S.meters.filter(m=>isRoom(m)&&m.bldId===x.id))+' ห้อง':''}</option>`;
+ const sumTbl=t=>{const T=TYPE[t],list=rows.filter(r=>r[t]);if(!list.length)return '';const col=ym=>sumUnits(list.map(r=>r[t]),ym);
+  return `<h4 style="margin:14px 0 6px">${T.icon} ${T.name} (${T.unit})</h4><div class="tblwrap"><table class="mkt"><thead><tr><th>ห้อง</th><th>ร้าน/ผู้ใช้</th><th>รหัส</th>${ms.map(ym=>`<th class="num">${ymLabel(ym)}</th>`).join('')}<th class="num">รวม</th></tr></thead><tbody>
+  ${list.map(r=>{const m=r[t],u=ms.map(ym=>units(m.id,ym));return `<tr><td><b>${esc(r.room)}</b></td><td>${esc(r.shop||'–')}</td><td class="muted">${esc(m.code)}</td>${u.map(v=>`<td class="num">${v!=null?fmt(v):'<span class="muted">–</span>'}</td>`).join('')}<td class="num"><b>${fmt(u.reduce((a,v)=>a+(v||0),0))}</b></td></tr>`;}).join('')}
+  <tr><td colspan="3"><b>รวมทั้งตลาด</b></td>${ms.map(ym=>{const v=col(ym);return `<td class="num"><b>${v!=null?fmt(v):'–'}</b></td>`;}).join('')}<td class="num"><b>${fmt(ms.reduce((a,ym)=>a+(col(ym)||0),0))}</b></td></tr></tbody></table></div>`;};
+ return `<div class="card noprint"><div class="row"><h3 style="margin:0">🏪 ตลาดและร้านค้า</h3><label>อาคาร <select id="mkBld">${cand.length?`<optgroup label="ตลาด/ร้านค้า">${cand.map(opt).join('')}</optgroup>`:''}<optgroup label="อาคารอื่น">${others.map(opt).join('')}</optgroup></select></label></div>
+ <p class="hint">มิเตอร์ที่มี "ห้อง" คือมิเตอร์ย่อยของร้าน · ผู้กรอกของ ${esc(co(b?.companyId).name)} เห็นชื่อร้านและยอดรายห้อง · คนทั่วไปเห็นแค่กราฟรวมของตลาด · สรุปรายเดือนด้านล่างเห็นเฉพาะผู้ดูแล · ห้องแสดงที่หมุดเดิมของอาคารนั้น (เช่น E04 · 6 ห้อง) — เลือกอาคาร/ฝั่งที่จะเพิ่มห้องได้จากช่องอาคาร</p></div>
+ <div class="card noprint"><h3>➕ เพิ่มห้อง</h3><p class="hint" style="margin-top:0">พิมพ์บรรทัดละ 1 ห้อง: <b>เลขห้อง, ชื่อร้าน</b> (ชื่อร้านเว้นได้) · ระบบสร้างมิเตอร์ตามที่ติ๊ก และตั้งรหัสจุดต่อจากเลขเดิมให้เอง</p>
+ <textarea id="mkAdd" rows="5" style="width:100%" placeholder="ก-1, ร้านข้าวแกงป้าแดง&#10;ก-2, ร้านกาแฟ&#10;ก-3"></textarea>
+ <div class="row" style="margin-top:8px"><label class="chip on"><input type="checkbox" id="mkE" checked>⚡ ไฟฟ้า</label><label class="chip on"><input type="checkbox" id="mkW" checked>💧 ประปา</label><button class="primary" id="mkAddBtn" ${b?'':'disabled'}>เพิ่มเข้า ${esc(b?b.name+dupSide(b):'—')}</button></div></div>
+ <div class="card noprint"><h3>รายห้อง (${rows.length} ห้อง · ${all.length} มิเตอร์)</h3>${rows.length?`<div class="tblwrap"><table class="mkt"><thead><tr><th>ห้อง</th><th>ร้าน/ผู้ใช้</th><th>⚡ ไฟฟ้า</th><th>💧 ประปา</th><th>📍 รูปตำแหน่ง</th></tr></thead><tbody>
+  ${rows.map(r=>`<tr><td><b>${esc(r.room)}</b></td><td>${esc(r.shop||'–')}</td>${['elec','water'].map(k=>`<td>${r[k]?`${esc(r[k].code)} <button data-edit="${esc(r[k].id)}">แก้</button>`:'<span class="muted">–</span>'}</td>`).join('')}<td>${['elec','water'].some(k=>r[k]&&locOf(r[k].id))?'มีแล้ว':'<span class="muted">ยังไม่มี</span>'}</td></tr>`).join('')}
+ </tbody></table></div><p class="hint" style="margin-bottom:0">กด "แก้" เพื่อเปลี่ยนเลขห้อง ชื่อร้าน ใส่รูปตำแหน่ง หรือลบมิเตอร์</p>`:'<p class="hint" style="margin:0">ยังไม่มีห้องในอาคารนี้</p>'}</div>
+ <div class="card mksum"><div class="row"><h3 style="margin:0">สรุปการใช้รายห้อง · ${esc(b?b.name:'')} · ปีงบ ${fy}</h3><span class="noprint row" style="gap:8px"><select id="mkFy">${fys.map(y=>`<option value="${y}" ${y===fy?'selected':''}>ปีงบ ${y}</option>`).join('')}</select><button id="mkCsv">⬇ CSV</button><button id="mkPrint">🖨️ พิมพ์</button></span></div>
+ <p class="hint noprint" style="margin:6px 0 0">🔒 เห็นเฉพาะผู้ดูแลระบบ · ใช้แนบรายงานหรือเข้าแฟ้มบัญชีคุมมาตรวัด</p>
+ ${rows.length?sumTbl('elec')+sumTbl('water'):'<p class="hint">ยังไม่มีข้อมูล</p>'}</div>`;}
+function addRooms(){const b=bld(UI.mkBld);if(!b)return alert('เลือกอาคารก่อน');
+ const types=[$('#mkE').checked&&'elec',$('#mkW').checked&&'water'].filter(Boolean);if(!types.length)return alert('ติ๊กไฟฟ้าหรือประปาอย่างน้อย 1 อย่าง');
+ const lines=$('#mkAdd').value.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);if(!lines.length)return alert('พิมพ์เลขห้องอย่างน้อย 1 บรรทัด');
+ const pos=bldCenter(b)||cam().center;let n=0,k=0;const skip=[];
+ for(const ln of lines){const i=ln.search(/[,\t]/),room=(i<0?ln:ln.slice(0,i)).trim().slice(0,30),shop=(i<0?'':ln.slice(i+1)).trim().slice(0,60);if(!room)continue;
+  for(const type of types){if(S.meters.some(m=>m.room===room&&m.type===type&&mkKey(m.bldId||'')===mkKey(b.id))){skip.push(room+' '+TYPE[type].icon);continue;}
+   const pre=type==='elec'?'E':'W',num=Math.max(0,...S.meters.map(m=>(m.code.match(new RegExp('^'+pre+'(\\d+)$'))||[])[1]).filter(Boolean).map(Number))+1;
+   S.meters.push({id:'m'+Date.now().toString(36)+'r'+(k++),code:pre+pad(num),type,name:TYPE[type].name+' ห้อง '+room,lng:r7(pos[0]),lat:r7(pos[1]),companyId:b.companyId,bldId:b.id,account:'',room,shop});n++;}}
+ if(n){log('ผู้ดูแลระบบ',`เพิ่มมิเตอร์ห้องในตลาด ${b.name} ${n} จุด`);save();}
+ render();toast(`เพิ่ม ${n} มิเตอร์`);if(skip.length)alert('ข้ามห้องที่มีอยู่แล้ว: '+skip.join(', '));}
+function csvMarket(){const b=bld(UI.mkBld),fy=UI.mkFy||fyOf(openYm()),ms=fyMonths(fy),rows=[['ห้อง','ร้าน/ผู้ใช้','ประเภท','หน่วยนับ','รหัสจุด',...ms.map(ymLabel),'รวม']];
+ for(const r of roomRows(mkRooms(mkKey(UI.mkBld))))for(const t of ['elec','water']){const m=r[t];if(!m)continue;const u=ms.map(ym=>units(m.id,ym));rows.push([r.room,r.shop,TYPE[t].name,TYPE[t].unit,m.code,...u.map(v=>v??''),u.reduce((a,v)=>a+(v||0),0)]);}
+ download('﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n'),`สรุปตลาด ${b?b.name:''} ปีงบ ${fy}.csv`,'text/csv;charset=utf-8');}
+function adminData(){const fys=[...new Set([...fyList(),fyOf(openYm())])].sort((a,b)=>b-a),fy=UI.gridFy||fyOf(openYm()),ms=fyMonths(fy);
+ return `<div class="card"><div class="row"><h3 style="margin:0">ข้อมูลเลขมิเตอร์รายเดือน</h3><select id="gridFy">${fys.map(y=>`<option value="${y}" ${y===fy?'selected':''}>ปีงบ ${y}</option>`).join('')}</select><button id="csvExp">⬇ ส่งออก CSV (เปิดด้วย Excel)</button></div>
+ <p class="hint">แตะช่องเพื่อแก้เลขมิเตอร์ (ผู้ดูแลแก้ได้ทุกเดือน ทุกกองร้อย) · ตัวเลขบน = เลขมิเตอร์ · ตัวเลขล่าง = ใช้ไป · ทุกการแก้ถูกบันทึกในประวัติ</p>
+ <div class="tblwrap"><table><thead><tr><th>จุด</th><th>กองร้อย</th>${ms.map(ym=>`<th class="num">${ymLabel(ym)}</th>`).join('')}</tr></thead><tbody>
+ ${sortedMeters().map(m=>`<tr><td>${TYPE[m.type].icon} <b>${esc(m.code)}</b> <span class="muted">${esc(m.name)}</span></td><td><i class="dot" style="background:${co(m.companyId).color}"></i> ${esc(co(m.companyId).name)}</td>${ms.map(ym=>{const r=rd(m.id,ym),u=units(m.id,ym);return `<td class="num cell" data-cell="${esc(m.id)}|${ym}" style="cursor:pointer">${r?fmt(r.reading):'<span class="muted">+</span>'}${u!=null?`<br><small class="muted">${fmt(u)}</small>`:''}</td>`;}).join('')}</tr>`).join('')}</tbody></table></div></div>`;}
+function editCell(id,ym){const m=meter(id),r=rd(id,ym);
+ const v=prompt(`เลขมิเตอร์ ${m.code} เดือน ${ymLong(ym)}\n(เว้นว่างเพื่อลบข้อมูลเดือนนี้)`,r?r.reading:'');if(v===null)return;
+ if(v.trim()===''){if(r&&confirm('ลบข้อมูลเดือนนี้?')){delete S.readings[id][ym];log('ผู้ดูแลระบบ',`ลบเลข ${m.code} เดือน ${ymLabel(ym)}`);}}
+ else{const n=parseFloat(v.replace(/,/g,''));if(isNaN(n))return alert('ตัวเลขไม่ถูกต้อง');
+  (S.readings[id]||(S.readings[id]={}))[ym]={...(r||{}),reading:n,by:'ผู้ดูแลระบบ',at:new Date().toISOString()};
+  log('ผู้ดูแลระบบ',`แก้เลข ${m.code} เดือน ${ymLabel(ym)}: ${r?fmt(r.reading):'–'} → ${fmt(n)}`);}
+ save();render();}
+function csvFy(fy){const ms=fyMonths(fy),rows=[['รหัส','ชื่อ/ที่ตั้ง','ประเภท','หน่วยนับ','อาคาร','กองร้อยผู้รับผิดชอบ',...ms.map(ymLabel),'รวม']];
+ for(const m of sortedMeters()){const u=ms.map(ym=>units(m.id,ym));rows.push([m.code,m.name,TYPE[m.type].name,TYPE[m.type].unit,bld(m.bldId)?.name||'',co(m.companyId).name,...u.map(v=>v??''),u.reduce((a,v)=>a+(v||0),0)]);}
+ download('﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n'),`สรุปการใช้ไฟฟ้า-ประปา ปีงบ ${fy}.csv`,'text/csv;charset=utf-8');}
+function adminAccess(){const om=openYm(),opts=[];let x=nextYm(curYm());for(let i=0;i<14;i++){x=prevYm(x);opts.push(x);}
+ return (ACC()?usersCard():'')+`<div class="card"><h3>${ACC()?'กองร้อย และรหัสกลางของกองร้อย (ทางเลือก)':'กองร้อยและรหัสสำหรับกรอกข้อมูล'}</h3><p class="hint" style="margin-top:0">${ACC()?'ปกติให้แต่ละคนสมัครบัญชีของตัวเองตามด้านบน · รหัสกลาง 6 หลักของกองร้อยยังใช้เข้าสู่ระบบได้ (เมนู "ใช้รหัส 6 หลักแทน") ถ้าไม่ต้องการ ให้เปลี่ยนเป็นรหัสยาวที่ไม่มีใครรู้':'แต่ละกองร้อยใช้รหัสของตัวเอง เห็นและกรอกได้เฉพาะมิเตอร์ของกองร้อยนั้น · เปลี่ยนรหัสได้ทุกเมื่อ เช่น เมื่อเปลี่ยนตัวผู้กรอก'}</p>
+ <div class="tblwrap"><table><thead><tr><th>สี</th><th>ชื่อกองร้อย/หน่วยรอง</th><th>รหัสกรอกข้อมูล</th><th class="num">มิเตอร์</th><th class="num">อาคาร</th><th></th></tr></thead><tbody>
+ ${S.companies.map(c=>`<tr><td><input type="color" id="cc-${c.id}" value="${c.color}" aria-label="สี"></td><td><input type="text" id="cn-${c.id}" value="${esc(c.name)}" aria-label="ชื่อ"></td><td><input type="text" id="ck-${c.id}" value="${esc(c.code)}" style="width:110px" aria-label="รหัส"></td><td class="num">${S.meters.filter(m=>m.companyId===c.id).length}</td><td class="num">${S.blds.filter(b=>b.companyId===c.id).length}</td><td><button data-cosave="${c.id}">บันทึก</button> <button class="danger" data-codel="${c.id}">ลบ</button></td></tr>`).join('')}</tbody></table></div>
+ <button id="coAdd" style="margin-top:8px">+ เพิ่มกองร้อย/หน่วยรอง</button></div>
+ <div class="card"><h3>รอบการกรอกข้อมูล</h3><div class="row"><label>เดือนที่เปิดให้กรอก <select id="monYm"><option value="">อัตโนมัติ (เดือนที่แล้ว)</option>${opts.map(y=>`<option value="${y}" ${S.settings.openYm===y?'selected':''}>${ymLong(y)}</option>`).join('')}</select></label>
+ <label>กำหนดส่งภายในวันที่ <input type="number" id="monDay" min="1" max="28" value="${S.settings.closeDay}" style="width:80px"></label>
+ <label class="chip"><input type="checkbox" id="monClosed" ${S.settings.closed?'checked':''}> ปิดรับข้อมูล</label><button class="primary" id="monSave">บันทึก</button></div>
+ <p class="hint" style="margin-bottom:0">ตอนนี้เปิดให้กรอก: <b>${ymLong(om)}</b>${S.settings.closed?' (ปิดรับแล้ว)':''}</p></div>
+ ${API.on?`<div class="card"><h3>🔒 รหัสเข้าดูเว็บไซต์</h3><p class="hint" style="margin-top:0">${S.settings.viewCode?'<b class="ok">เปิดใช้อยู่</b> — คนที่ยังไม่ได้ใส่รหัสจะเห็นแค่หน้าใส่รหัส ไม่ได้รับข้อมูลใด ๆ':'<b class="bad">ยังไม่ได้ตั้ง</b> — ตอนนี้ใครเปิดลิงก์ก็เห็นแผนที่ แนวท่อ และกราฟได้'} · ให้รหัสนี้กับผู้ตรวจ จบ. และกำลังพลที่ต้องดู · เปลี่ยนรหัสเมื่อไร ทุกเครื่องที่เคยเข้าไว้ต้องใส่รหัสใหม่</p>
+ <div class="row"><input type="text" id="vwCode" value="${esc(S.settings.viewCode||'')}" placeholder="ตั้งรหัส 6 ตัวขึ้นไป" autocomplete="off" spellcheck="false" style="max-width:220px" aria-label="รหัสเข้าดู"><button class="primary" id="vwSave">${S.settings.viewCode?'เปลี่ยนรหัส':'เปิดใช้รหัส'}</button>${S.settings.viewCode?'<button class="danger" id="vwOff">ยกเลิกรหัส (เปิดให้ทุกคนดู)</button>':''}</div></div>`:''}
+ <div class="card"><h3>รหัสผู้ดูแลระบบ</h3><div class="row"><input type="password" id="admCode" placeholder="รหัสใหม่" autocomplete="new-password"><button class="primary" id="admSave">เปลี่ยนรหัส</button></div><p class="hint" style="margin-bottom:0">ตอนส่งมอบงาน: เปลี่ยนรหัสแล้วส่งรหัสใหม่ให้ผู้รับงานด้วยตัวเอง</p></div>`;}
+function usersCard(){const U=API.users;
+ if(!U)return '<div class="card"><h3>ผู้ใช้งานและคำขอสมัคร</h3><p class="hint">กำลังโหลด…</p></div>';
+ const pend=U.filter(u=>u.status==='pending'),rest=U.filter(u=>u.status!=='pending');
+ const coOpts=sel=>'<option value="">— เลือกกองร้อย —</option>'+S.companies.map(c=>`<option value="${esc(c.id)}" ${sel===c.id?'selected':''}>${esc(c.name)}</option>`).join('');
+ const reqName=u=>u.reqCo==='admin'?'ผู้ดูแลระบบ':(S.companies.find(c=>c.id===u.reqCo)?.name||'-');
+ const stName={active:'<span class="ok">✓ ใช้งาน</span>',disabled:'<span class="bad">⛔ ระงับ</span>',pending:'<span class="warn">⏳ รออนุมัติ</span>'};
+ const dt=v=>v?new Date(v).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'-';
+ const row=u=>{const role=u.role||(u.reqCo==='admin'?'admin':'company'),cid=u.co||(u.reqCo!=='admin'?u.reqCo:''),self=sess?.user===u.user;
+  return `<tr${u.status==='pending'?' class="pend"':''}><td><b>${esc(u.name)}</b><div class="hint">${esc(u.pos||'')}${u.phone?' · '+esc(u.phone):''}</div></td>
+  <td>${esc(u.user)}<div class="hint">ขอ: ${esc(reqName(u))} · สมัคร ${dt(u.at)}${u.lastLogin?' · เข้าล่าสุด '+dt(u.lastLogin):''}</div></td><td>${stName[u.status]||esc(u.status)}</td>
+  <td><select id="ur-${u.id}" data-urole="${u.id}" aria-label="สิทธิ์" ${self?'disabled':''}><option value="company" ${role==='company'?'selected':''}>กรอกข้อมูลกองร้อย</option><option value="admin" ${role==='admin'?'selected':''}>ผู้ดูแลระบบ</option></select>
+   <select id="uc-${u.id}" aria-label="กองร้อย" ${self||role==='admin'?'disabled':''}>${coOpts(cid)}</select></td>
+  <td>${self?'<span class="hint">บัญชีของคุณ</span>':`<button class="primary" data-uop="${u.status==='active'?'save':'approve'}" data-uid="${u.id}">${u.status==='active'?'บันทึกสิทธิ์':'✓ อนุมัติ'}</button> ${u.status==='active'?`<button data-uop="disable" data-uid="${u.id}">ระงับ</button> `:''}<button data-uop="reset" data-uid="${u.id}">ตั้งรหัสผ่านใหม่</button> <button class="danger" data-uop="delete" data-uid="${u.id}">ลบ</button>`}</td></tr>`;};
+ return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">ผู้ใช้งานและคำขอสมัคร ${pend.length?`<span class="badge" style="background:var(--bad)">${pend.length} รออนุมัติ</span>`:''}</h3><button id="uRefresh">↻ โหลดใหม่</button></div>
+ <p class="hint">แต่ละคนสมัครเองจากปุ่ม "เข้าสู่ระบบ › สมัครใช้งาน" แล้วผู้ดูแลอนุมัติและกำหนดกองร้อย · ผู้กรอกข้อมูลเห็นและกรอกได้เฉพาะมิเตอร์ของกองร้อยที่กำหนด · เปลี่ยนสิทธิ์ ระงับ หรือตั้งรหัสผ่านใหม่แล้วมีผลทันที</p>
+ ${U.length?`<div class="tblwrap"><table><thead><tr><th>ชื่อ / ตำแหน่ง</th><th>ชื่อผู้ใช้</th><th>สถานะ</th><th>สิทธิ์</th><th></th></tr></thead><tbody>${[...pend,...rest].map(row).join('')}</tbody></table></div>`:'<p class="muted" style="margin-bottom:0">ยังไม่มีผู้สมัคร</p>'}</div>`;}
+async function loadUsers(){API.usersBusy=true;try{API.users=(await api('/admin/users')).users;}catch(e){API.users=API.users||[];toast('โหลดรายชื่อผู้ใช้ไม่สำเร็จ: '+e.message);}finally{API.usersBusy=false;}if(sess?.role==='admin')render();}
+async function userOp(id,op){const u=(API.users||[]).find(x=>x.id===id);if(!u)return;const b={id,op};
+ if(op==='approve'||op==='save'){b.role=$('#ur-'+id).value;b.co=$('#uc-'+id).value;if(b.role==='company'&&!b.co)return alert('เลือกกองร้อยให้ '+u.name);
+  if(b.role==='admin'&&!confirm('ให้ '+u.name+' เป็นผู้ดูแลระบบ?\nผู้ดูแลแก้ได้ทุกอย่าง รวมถึงอนุมัติและระงับบัญชีอื่น'))return;}
+ if(op==='reset'){const p=prompt('ตั้งรหัสผ่านใหม่ให้ '+u.name+' (6 ตัวขึ้นไป)\nแจ้งรหัสนี้ให้เจ้าตัวด้วยตัวเอง แล้วให้เปลี่ยนเองที่ปุ่ม 🔒 รหัสผ่าน');if(p==null)return;if(p.length<6)return alert('รหัสผ่านต้องยาว 6 ตัวขึ้นไป');b.pass=p;}
+ if(op==='disable'&&!confirm('ระงับบัญชี '+u.name+'?\nเข้าสู่ระบบและกรอกข้อมูลไม่ได้ทันที เปิดใช้อีกครั้งได้ด้วยปุ่ม "อนุมัติ"'))return;
+ if(op==='delete'&&!confirm('ลบบัญชี '+u.name+' ('+u.user+')?\nถ้าจะให้กลับมาใช้ ต้องสมัครใหม่'))return;
+ try{API.users=(await api('/admin/user',{method:'POST',body:b})).users;toast({approve:'อนุมัติแล้ว ✓',save:'บันทึกสิทธิ์แล้ว ✓',disable:'ระงับแล้ว',reset:'ตั้งรหัสผ่านใหม่แล้ว',delete:'ลบแล้ว'}[op]);}
+ catch(e){alert('ไม่สำเร็จ: '+e.message);if(e.status===401){setSess(null);UI.page='view';await loadOnline();}}render();}
+function pwModal(){modal(`<h3>เปลี่ยนรหัสผ่านของฉัน</h3><p class="hint" style="margin-top:0">บัญชี ${esc(sess?.user||'')}</p>
+ <label>รหัสผ่านเดิม<input type="password" id="pwOld" autocomplete="current-password"></label>
+ <label>รหัสผ่านใหม่ (6 ตัวขึ้นไป)<input type="password" id="pwNew" autocomplete="new-password"></label>
+ <label>ยืนยันรหัสผ่านใหม่<input type="password" id="pwNew2" autocomplete="new-password"></label>
+ <p id="lgErr" class="bad" style="min-height:1.5em;margin:0"></p><div class="row"><button class="primary" id="pwGo">เปลี่ยนรหัสผ่าน</button><button id="lgX">ยกเลิก</button></div>`);
+ $('#lgX').onclick=closeModal;$('#pwOld').focus();
+ $('#pwGo').onclick=()=>{const o=$('#pwOld').value,n=$('#pwNew').value;if(n.length<6)return $('#lgErr').textContent='รหัสผ่านใหม่ต้องยาว 6 ตัวขึ้นไป';if(n!==$('#pwNew2').value)return $('#lgErr').textContent='ยืนยันรหัสผ่านไม่ตรงกัน';
+  $('#lgErr').textContent='กำลังบันทึก…';$('#pwGo').disabled=true;
+  api('/me/password',{method:'POST',body:{old:o,pass:n}}).then(r=>{setSess({...sess,token:r.token});closeModal();toast('เปลี่ยนรหัสผ่านแล้ว ✓');})
+   .catch(e=>{$('#lgErr').textContent=e.message;$('#pwGo').disabled=false;});};}
+function codeTaken(code,exceptId){return code===S.settings.adminCode||S.companies.some(c=>c.id!==exceptId&&c.code===code);}
+function coSave(id){const c=S.companies.find(x=>x.id===id),name=$('#cn-'+id).value.trim(),code=$('#ck-'+id).value.trim();
+ if(!name||!code)return alert('ใส่ชื่อและรหัสให้ครบ');if(codeTaken(code,id))return alert('รหัสนี้ซ้ำกับหน่วยอื่นหรือรหัสผู้ดูแล');
+ const ch=c.code!==code;Object.assign(c,{name,code,color:$('#cc-'+id).value});log('ผู้ดูแลระบบ',`แก้ข้อมูล ${name}${ch?' (เปลี่ยนรหัสกรอกข้อมูล)':''}`);save();render();toast('บันทึกแล้ว');}
+function coDel(id){const n=S.meters.filter(m=>m.companyId===id).length+S.blds.filter(b=>b.companyId===id).length;if(n)return alert('ยังมีมิเตอร์หรืออาคารในความรับผิดชอบ โอนให้กองร้อยอื่นก่อน');
+ const c=co(id);if(!confirm('ลบ '+c.name+'?'))return;S.companies=S.companies.filter(x=>x.id!==id);S.shapes=S.shapes.filter(s=>!(s.kind==='zone'&&s.companyId===id));log('ผู้ดูแลระบบ','ลบ '+c.name);save();render();}
+function coAdd(){let code;do{code=String(1000+Math.floor(Math.random()*9000));}while(codeTaken(code));
+ S.companies.push({id:'c'+Date.now().toString(36),name:'หน่วยใหม่',color:'#64748b',code});log('ผู้ดูแลระบบ','เพิ่มหน่วยรอง');save();render();}
+function adminQr(){return `<div class="card"><div class="noprint"><h3>QR โค้ด</h3>
+ <label class="hint" style="display:flex;flex-direction:column;gap:4px">ที่อยู่เว็บ (เว็บจริง https://intakaew.github.io/meter-map/)<input type="url" id="qrBase" value="${esc(UI.qrBase||location.href.split('#')[0])}"></label>
+ <div class="row" style="margin-top:8px"><button class="primary" id="qrGen">สร้าง QR ใหม่</button><button id="qrPrint">🖨️ พิมพ์</button></div>
+ <p class="hint">QR ใหญ่: ติดหน้าห้อง/ใส่แฟ้มรับตรวจ ให้ผู้ตรวจสแกนดูภาพรวม · QR เล็ก: พิมพ์เป็นสติกเกอร์ติดที่ตัวมิเตอร์ สแกนแล้วเปิดกราฟของมิเตอร์ลูกนั้น (ถ้าผู้กรอกของกองร้อยเข้าสู่ระบบไว้ จะเปิดช่องกรอกของจุดนั้นให้ทันที)</p></div>
+ <div id="qrPrintArea"></div></div>`;}
+function genQr(){const area=$('#qrPrintArea');if(!area)return;if(!window.QRCode){area.innerHTML='<p class="bad">สร้าง QR ไม่ได้ (ต้องต่ออินเทอร์เน็ตเพื่อโหลดตัวสร้าง QR)</p>';return;}
+ const base=UI.qrBase||location.href.split('#')[0];
+ area.innerHTML=`<div class="qrbig"><div id="qrMain"></div><div><b style="font-size:20px">สแกนดูแผนที่มิเตอร์ไฟฟ้า–น้ำประปา</b><br>ม.๑ พัน.๓ รอ. · การปฏิบัติตามมาตรการประหยัดใน ทบ.</div></div>
+ <div class="qrgrid">${sortedMeters().map(m=>`<div class="qrcard"><div id="qr-${esc(m.id)}"></div><b>${TYPE[m.type].icon} ${esc(m.code)}</b><br><small>${esc(m.name)}</small><br><small>ผู้รับผิดชอบ: ${esc(co(m.companyId).name)}</small></div>`).join('')}</div>`;
+ new QRCode($('#qrMain'),{text:base+'#/',width:170,height:170,correctLevel:QRCode.CorrectLevel.M});
+ for(const m of sortedMeters())new QRCode(document.getElementById('qr-'+m.id),{text:base+'#/m/'+encodeURIComponent(m.id),width:120,height:120,correctLevel:QRCode.CorrectLevel.M});}
+function adminLog(){return `<div class="card"><h3>ประวัติการแก้ไข (ล่าสุด ${Math.min(S.log.length,300)} รายการ)</h3><div class="tblwrap"><table><thead><tr><th>เวลา</th><th>ผู้ทำ</th><th>รายการ</th></tr></thead><tbody>
+ ${S.log.slice(0,300).map(l=>{const d=new Date(l.at);return `<tr><td>${d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})} ${d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</td><td>${esc(l.who)}</td><td style="white-space:normal">${esc(l.text)}</td></tr>`;}).join('')}</tbody></table></div></div>`;}
+function adminHandover(){return `<div class="card"><h3>สำรองข้อมูล</h3><div class="row"><button id="expJson" class="primary">⬇ ดาวน์โหลดไฟล์สำรอง</button><label class="btn">⬆ นำเข้าไฟล์สำรอง<input type="file" accept=".json,application/json" id="impJson" hidden></label>${API.on?'':'<button class="danger" id="resetDemo">รีเซ็ตเป็นข้อมูลตัวอย่าง</button>'}<button class="danger" id="clearSample">🧹 ล้างหมุดมิเตอร์และตัวเลขตัวอย่าง (เริ่มปักจริง)</button></div>
+ <p class="hint" style="margin-bottom:0">${API.on?'ข้อมูลจริงเก็บออนไลน์ในบัญชีของหน่วย ไฟล์สำรองนี้ใช้เก็บกับแฟ้มรับตรวจหรือย้ายระบบ':'ต้นแบบนี้เก็บข้อมูลไว้ในเบราว์เซอร์เครื่องนี้เท่านั้น ระบบจริงเก็บใน Google Sheet ของหน่วย ทุกเครื่องเห็นข้อมูลชุดเดียวกัน'}</p></div>
+ <div class="card"><h3>ขั้นตอนส่งมอบงานเมื่อย้ายสายงาน (ระบบจริง)</h3><ol style="margin:0;padding-left:22px">
+ <li>ข้อมูลอยู่ใน Google Sheet + Drive ของ Gmail หน่วย หน้าเว็บอยู่ที่ GitHub Pages (ดูบัญชีและรหัสในแฟ้มส่งมอบงาน)</li>
+ <li>เปลี่ยนรหัสผู้ดูแลระบบ (แท็บ "กองร้อยและสิทธิ์") แล้วส่งรหัสใหม่และรหัสผ่านบัญชีหน่วยให้ผู้รับงานด้วยตัวเอง ไม่ส่งในกลุ่มแชต</li>
+ <li>ตรวจชื่อกองร้อยและรหัสกรอกข้อมูลให้เป็นปัจจุบัน</li>
+ <li>ดาวน์โหลดไฟล์สำรองเก็บไว้กับแฟ้มรับตรวจ</li>
+ <li>ให้ผู้รับงานทดลองเข้าสู่ระบบและปิดรอบข้อมูลร่วมกัน 1 เดือนก่อนย้าย</li></ol></div>`;}
+
+/* ---------- ส่วนหัว / เข้าสู่ระบบ ---------- */
+function renderHeader(){const nav=[['view','🗺️ หน้าแสดงผล']];
+ if(sess?.role==='company')nav.push(['company','✏️ กรอกข้อมูล '+co(sess.co).name]);
+ if(sess?.role==='admin')nav.push(['admin','⚙️ ผู้ดูแลระบบ']);
+ $('#nav').innerHTML=nav.length>1?nav.map(([k,n])=>`<button data-page="${k}" class="${UI.page===k?'on':''}">${n}</button>`).join(''):'';
+ $('#who').innerHTML=sess?`<span class="muted">${esc(whoName())}</span>${sess.user?'<button id="myPw" title="เปลี่ยนรหัสผ่าน">🔒 รหัสผ่าน</button>':''}<button id="logout">ออกจากระบบ</button>`:`<button id="login">🔑 เข้าสู่ระบบ</button>`;}
+function afterLogin(){const mt=location.hash.match(/^#\/m\/(.+)$/),hm=mt&&meter(decodeURIComponent(mt[1]));
+ if(hm&&sess.role==='company'&&hm.companyId===sess.co)return handleHash();
+ try{history.replaceState(null,'','#/');}catch(_){}UI.sel=null;render();}
+function loginModal(mode){const acc=ACC();mode=mode||(acc?'user':'code');
+ const tabs=acc&&mode!=='code'?`<div class="lgtabs"><button data-lgm="user" class="${mode==='user'?'on':''}">เข้าสู่ระบบ</button><button data-lgm="reg" class="${mode==='reg'?'on':''}">สมัครใช้งาน</button></div>`:'';
+ const errP='<p id="lgErr" class="bad" style="min-height:1.5em;margin:0"></p>';
+ let body;
+ if(mode==='reg'&&API.gate&&!S.companies.length)body=`<p style="margin-top:0">ใส่รหัสเข้าดูเว็บไซต์ก่อน แล้วจึงสมัครใช้งาน (รายชื่อกองร้อยจะขึ้นหลังใส่รหัส)</p><div class="row"><button class="primary" id="lgX">ตกลง</button></div>`;
+ else if(mode==='reg')body=`<p class="hint" style="margin-top:0">สมัครแล้วรอผู้ดูแลระบบอนุมัติ ผู้ดูแลจะกำหนดว่ากรอกข้อมูลของกองร้อยไหนได้</p>
+  <label>ยศ ชื่อ สกุล<input type="text" id="rgName" autocomplete="name" maxlength="80" placeholder="เช่น ส.อ.สมชาย ใจดี"></label>
+  <label>ตำแหน่ง<input type="text" id="rgPos" maxlength="80" placeholder="เช่น เสมียน ร้อย.ม.๑"></label>
+  <label>ขอสิทธิ์กรอกข้อมูลของ<select id="rgCo"><option value="">— เลือก —</option>${S.companies.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}<option value="admin">ผู้ดูแลระบบ</option></select></label>
+  <label>เบอร์โทร (ไม่บังคับ)<input type="tel" id="rgPhone" maxlength="20" autocomplete="tel"></label>
+  <label>ชื่อผู้ใช้ (a-z ตัวเลข . _ -)<input type="text" id="rgUser" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น somchai.m1"></label>
+  <label>รหัสผ่าน (6 ตัวขึ้นไป)<input type="password" id="rgPass" autocomplete="new-password"></label>
+  <label>ยืนยันรหัสผ่าน<input type="password" id="rgPass2" autocomplete="new-password"></label>${errP}
+  <div class="row"><button class="primary" id="rgGo">ส่งคำขอสมัคร</button><button id="lgX">ยกเลิก</button></div>`;
+ else if(mode==='user')body=`<p class="hint" style="margin-top:0">สำหรับผู้กรอกข้อมูลและผู้ดูแล${API.gate||API.st?.gate?' · ผู้ตรวจและคนทั่วไปใช้รหัสเข้าดูที่หน้าแรก':' · คนทั่วไปดูหน้าแสดงผลได้โดยไม่ต้องเข้าสู่ระบบ'}</p>
+  <label>ชื่อผู้ใช้<input type="text" id="lgUser" autocomplete="username" autocapitalize="none" spellcheck="false"></label>
+  <label>รหัสผ่าน<input type="password" id="lgPass" autocomplete="current-password"></label>${errP}
+  <div class="row"><button class="primary" id="lgGo">เข้าสู่ระบบ</button><button id="lgX">ยกเลิก</button></div>
+  <p class="hint" style="margin-bottom:0">ยังไม่มีบัญชี กดแท็บ "สมัครใช้งาน" · <a href="#" id="lgAlt">ใช้รหัส 6 หลักแทน</a></p>`;
+ else body=`<p class="hint" style="margin-top:0">${acc?'รหัสผู้ดูแลหลัก หรือรหัสกลางของกองร้อย':'ใส่รหัสของกองร้อย (สำหรับผู้กรอกข้อมูล) หรือรหัสผู้ดูแลระบบ · คนทั่วไปดูหน้าแสดงผลได้โดยไม่ต้องเข้าสู่ระบบ'}</p>
+  <label>รหัส<input type="password" inputmode="numeric" id="lgCode" autocomplete="off"></label>${errP}
+  <div class="row"><button class="primary" id="lgGo">เข้าสู่ระบบ</button><button id="lgX">ยกเลิก</button></div>${acc?'<p class="hint" style="margin-bottom:0"><a href="#" id="lgAlt">← เข้าด้วยชื่อผู้ใช้</a></p>':API.on?'':'<p class="hint">ต้นแบบนี้: ผู้ดูแล 9999 · กองร้อย 1111 ถึง 5555</p>'}`;
+ modal(`<h3>${mode==='reg'?'สมัครใช้งาน':'เข้าสู่ระบบ'}</h3>`+tabs+body);
+ const err=t=>{$('#lgErr').textContent=t;};
+ document.querySelectorAll('[data-lgm]').forEach(x=>x.onclick=()=>loginModal(x.dataset.lgm));
+ $('#lgX').onclick=closeModal;
+ const alt=$('#lgAlt');if(alt)alt.onclick=e=>{e.preventDefault();loginModal(mode==='code'?'user':'code');};
+ const done=async r=>{if(r.view)setViewTok(r.view,30);setSess({role:r.role,co:r.co,token:r.token,name:r.name||null,user:r.user||null});UI.page=r.role==='admin'?'admin':'company';UI.fitFor=null;
+  if(API.on)await loadOnline();log(whoName(),'เข้าสู่ระบบ');closeModal();afterLogin();};
+ if(mode==='reg'&&!$('#rgGo'))return;
+ if(mode==='reg'){$('#rgGo').onclick=()=>{const v=k=>$(k).value.trim(),b={name:v('#rgName'),pos:v('#rgPos'),co:$('#rgCo').value,phone:v('#rgPhone'),user:v('#rgUser').toLowerCase(),pass:$('#rgPass').value};
+   if(b.name.length<2)return err('ใส่ยศ ชื่อ สกุล');if(!b.co)return err('เลือกกองร้อยที่ขอสิทธิ์');
+   if(!/^[a-z0-9._-]{3,30}$/.test(b.user))return err('ชื่อผู้ใช้ใช้ได้เฉพาะ a-z ตัวเลข . _ - ยาว 3–30 ตัว');
+   if(b.pass.length<6)return err('รหัสผ่านต้องยาว 6 ตัวขึ้นไป');if(b.pass!==$('#rgPass2').value)return err('ยืนยันรหัสผ่านไม่ตรงกัน');
+   err('กำลังส่งคำขอ…');$('#rgGo').disabled=true;
+   api('/register',{method:'POST',body:b}).then(()=>{modal(`<h3>ส่งคำขอแล้ว ✓</h3><p>บัญชี <b>${esc(b.user)}</b> รอผู้ดูแลระบบอนุมัติ เมื่ออนุมัติแล้วเข้าสู่ระบบด้วยชื่อผู้ใช้และรหัสผ่านที่ตั้งไว้</p><div class="row"><button class="primary" id="lgX">ตกลง</button></div>`);$('#lgX').onclick=closeModal;})
+    .catch(e=>{err(e.message);$('#rgGo').disabled=false;});};
+  $('#rgName').focus();return;}
+ if(mode==='user'){const go=()=>{const u=$('#lgUser').value.trim(),p=$('#lgPass').value;if(!u||!p)return err('ใส่ชื่อผู้ใช้และรหัสผ่าน');err('กำลังตรวจ…');$('#lgGo').disabled=true;
+   api('/login',{method:'POST',body:{user:u,pass:p}}).then(done).catch(e=>{err(e.message);$('#lgGo').disabled=false;});};
+  $('#lgGo').onclick=go;$('#lgPass').onkeydown=e=>{if(e.key==='Enter')go();};$('#lgUser').onkeydown=e=>{if(e.key==='Enter')$('#lgPass').focus();};$('#lgUser').focus();return;}
+ const go=()=>{const v=$('#lgCode').value.trim();
+  if(API.on){if(!v)return;err('กำลังตรวจรหัส…');$('#lgGo').disabled=true;
+   api('/login',{method:'POST',body:{code:v}}).then(done).catch(e=>{err(e.message);$('#lgGo').disabled=false;});return;}
+  if(v&&v===S.settings.adminCode){setSess({role:'admin'});UI.page='admin';}
+  else{const c=S.companies.find(c=>c.code===v);if(!c){err('รหัสไม่ถูกต้อง');return;}setSess({role:'company',co:c.id});UI.page='company';UI.fitFor=null;}
+  log(whoName(),'เข้าสู่ระบบ');save();closeModal();afterLogin();};
+ $('#lgGo').onclick=go;$('#lgCode').onkeydown=e=>{if(e.key==='Enter')go();};$('#lgCode').focus();}
+function initTheme(){let t=null;try{t=localStorage.getItem('mmTheme');}catch(e){}if(!t)t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';setTheme(t);}
+function setTheme(t){document.documentElement.dataset.theme=t;$('#themeBtn').textContent=t==='dark'?'☀️':'🌙';}
+function toggleTheme(){const t=document.documentElement.dataset.theme==='dark'?'light':'dark';setTheme(t);try{localStorage.setItem('mmTheme',t);}catch(e){}render();}
+function setVal(sel,v){const el=$(sel);if(el&&v!=null)el.value=String(v);}
+
+function render(){
+ for(const k in CH){CH[k].destroy();delete CH[k];}
+ if(sess?.role==='company'&&!S.companies.some(c=>c.id===sess.co))setSess(null);
+ if(UI.page==='company'&&sess?.role!=='company')UI.page='view';
+ if(UI.page==='admin'&&sess?.role!=='admin')UI.page='view';
+ if(UI.page!=='company')UI.fitFor=null;
+ if(UI.sel&&(!meter(UI.sel)||meter(UI.sel).agg))UI.sel=null;
+ if(UI.selMk!=null&&!mkRooms(UI.selMk).length)UI.selMk=null;
+ const keep={};if(UI.page==='company')document.querySelectorAll('input[id^="r-"]').forEach(i=>{if(i.value!==i.defaultValue)keep[i.id]=i.value;});
+ renderHeader();
+ const main=$('#main');main.className=UI.page==='admin'?'admin':'';
+ const note=API.on&&UI.page!=='admin'&&(API.err||API.empty)?`<div class="card"><b>${API.err?'⚠️ โหลดข้อมูลไม่สำเร็จ':'ระบบยังไม่มีข้อมูล'}</b><p class="hint" style="margin:4px 0 0">${API.err?esc(API.err)+' · ลองรีเฟรชหน้าอีกครั้ง':'ผู้ดูแลระบบกำลังตั้งค่าเริ่มต้น'}</p></div>`:'';
+ if(API.gate&&!sess){main.innerHTML=pageGate();const i=$('#gtCode');if(i){i.onkeydown=e=>{if(e.key==='Enter')gateGo();};$('#gtGo').onclick=gateGo;i.focus();}return;}
+ main.innerHTML=note+(UI.page==='view'?pageView():UI.page==='company'?pageCompany():pageAdmin());
+ setVal('#ovType',UI.ovType);setVal('#ovYear',UI.ovYear);setVal('#cmpMode',UI.cmpMode);setVal('#mYear',UI.mYear);setVal('#mCmpMode',UI.mCmpMode);setVal('#mCmpMeter',UI.mCmpMeter);setVal('#drawCo',UI.drawCo);setVal('#mkType',UI.mkType);setVal('#mkChartT',UI.mkChartT);setVal('#mkYear',UI.mkYear);setVal('#mkBld',UI.mkBld);
+ mountMap();
+ if(UI.page==='view'){const m=UI.sel&&meter(UI.sel);m?drawMeter(m):UI.selMk!=null?drawMarket(UI.selMk):drawOverview();}
+ if(UI.page==='company'){for(const k in keep){const i=document.getElementById(k);if(i){i.value=keep[k];i.dispatchEvent(new Event('input',{bubbles:true}));}}
+  for(const id in PENDING)showPending(id);}
+ if(UI.page==='admin'&&UI.adminTab==='qr')genQr();}
+function showPending(id){const pv=document.getElementById('pv-'+id);if(!pv)return;
+ pv.innerHTML=pv.classList.contains('pvs')?'📷 รอกดบันทึก':`<img class="photo" src="${PENDING[id]}" style="max-height:160px" alt=""><div class="hint">ยังไม่บันทึก — กด "บันทึก"</div>`;}
+function handleHash(){const mk=location.hash.match(/^#\/k\/(.*)$/);
+ if(mk){const bid=decodeURIComponent(mk[1]);if(!mkRooms(bid).length)return false;
+  if(sess?.role==='company'&&mkRooms(bid).some(m=>m.companyId===sess.co&&!m.agg)){UI.page='company';render();setTimeout(()=>document.getElementById('mk-'+bid)?.scrollIntoView({behavior:'smooth',block:'start'}),60);}
+  else selectMarket(bid);return true;}
+ const mt=location.hash.match(/^#\/m\/(.+)$/);if(!mt)return false;const id=decodeURIComponent(mt[1]),m=meter(id);if(!m||m.agg)return false;
+ if(sess?.role==='company'&&m.companyId===sess.co){UI.page='company';render();setTimeout(()=>document.getElementById('f-'+id)?.scrollIntoView({behavior:'smooth',block:'center'}),60);}
+ else{UI.page='view';selectMeter(id);}return true;}
+
+/* ---------- เหตุการณ์ ---------- */
+document.addEventListener('click',e=>{const t=e.target,q=s=>t.closest(s);let el;
+ if(el=q('[data-page]')){UI.page=el.dataset.page;render();return;}
+ if(q('#themeBtn'))return toggleTheme();
+ if(q('#login'))return loginModal();
+ if(q('#logout')){log(whoName(),'ออกจากระบบ');if(API.on){clearTimeout(API.lt);const wasAdmin=sess?.role==='admin';(async()=>{if(API.t){clearTimeout(API.t);await pushNow();}await flushLog();setSess(null);UI.page='view';UI.selMk=null;await loadOnline();render();})();return;}save();setSess(null);UI.page='view';render();return;}
+ if(q('#upInit'))return upInit();
+ if(q('#msLink')){api('/auth/link',{method:'POST'}).then(r=>{location.href=r.url;}).catch(e=>alert('เริ่มเชื่อมไม่ได้: '+e.message));return;}
+ if(q('#v3d'))return setView3d(true);
+ if(q('#v2d'))return setView3d(false);
+ if(q('#vHome'))return goHome();
+ if(el=q('[data-mk]')){e.preventDefault();return onMarketClick(el.dataset.mk);}
+ if(el=q('[data-m]')){e.preventDefault();return selectMeter(el.dataset.m);}
+ if(el=q('[data-mksave]'))return saveMarket(el.dataset.mksave);
+ if(el=q('[data-chk]'))return chkModal(...el.dataset.chk.split('|'));
+ if(el=q('[data-poster]'))return posterPrint(el.dataset.poster);
+ if(el=q('[data-lpdel]')){if(!confirm('ลบรูปตำแหน่งนี้?'))return;return setLoc(el.dataset.lpdel,null);}
+ if(q('#mkAddBtn'))return addRooms();
+ if(q('#mkCsv'))return csvMarket();
+ if(q('#mkPrint'))return window.print();
+ if(el=q('[data-fco]')){UI.filterCo=el.dataset.fco||null;UI.sel=null;render();return;}
+ if(el=q('.bar[data-co]')){UI.filterCo=UI.filterCo===el.dataset.co?null:el.dataset.co;UI.sel=null;render();return;}
+ if(q('#clrCo')){UI.filterCo=null;render();return;}
+ if(q('#cmpBtn')){UI.cmpOn=!UI.cmpOn;if(UI.cmpOn){if(!UI.cmpYears.length)UI.cmpYears=fyList().slice(0,2);if(!UI.cmpCos.length)UI.cmpCos=S.companies.map(c=>c.id);}render();return;}
+ if(q('#backOv')){UI.sel=null;UI.selMk=null;try{history.replaceState(null,'','#/');}catch(_){}render();return;}
+ if(q('#mCmpBtn')){UI.mCmpOn=!UI.mCmpOn;if(UI.mCmpOn&&!UI.mCmpYears.length)UI.mCmpYears=fyList().slice(0,2);render();return;}
+ if(el=q('[data-save]'))return saveReading(el.dataset.save);
+ if(el=q('[data-atab]')){UI.adminTab=el.dataset.atab;UI.draft=null;render();return;}
+ if(el=q('[data-bed]'))return openBldModal(el.dataset.bed);
+ if(el=q('[data-tool]')){UI.tool=el.dataset.tool;UI.draft=null;if(UI.tool!=='select'&&UI.tool!=='del'&&UI.is3d)setView3d(false);render();return;}
+ if(q('#genBr')){if(!confirm('วางท่อแยกเข้าอาคารใหม่ทั้งหมดจากท่อเมนตอนนี้?\n(ท่อแยกที่ระบบเคยวางจะถูกแทนที่ ท่อที่วาดเองไม่ถูกแตะ)'))return;const r=applyBranches(S);log('ผู้ดูแลระบบ',`วางท่อแยกเข้าอาคาร ${r.branches.length} เส้น`);save();render();alert(`วางท่อแยกแล้ว ${r.branches.length} อาคาร · ติดท่อเมนอยู่แล้ว ${r.skip.length} · วางไม่ได้ ${r.fail.length}${r.fail.length?' ('+r.fail.map(i=>bld(i)?.name).join(', ')+') — วาดเองด้วยเครื่องมือวาดท่อ':''}`);return;}
+ if(q('#drFin'))return finishDraft();
+ if(q('#drUndo')){UI.draft.pop();if(!UI.draft.length)UI.draft=null;render();return;}
+ if(q('#drCancel')){UI.draft=null;render();return;}
+ if(el=q('[data-edit]'))return openMeterModal(el.dataset.edit);
+ if(el=q('[data-cell]'))return editCell(...el.dataset.cell.split('|'));
+ if(el=q('[data-uop]'))return userOp(el.dataset.uid,el.dataset.uop);
+ if(q('#uRefresh')){loadUsers();return;}
+ if(q('#myPw'))return pwModal();
+ if(el=q('[data-cosave]'))return coSave(el.dataset.cosave);
+ if(el=q('[data-codel]'))return coDel(el.dataset.codel);
+ if(q('#coAdd'))return coAdd();
+ if(q('#camSave')){if(!MAP)return;const p=MAP.getPitch();S.settings.cam={center:MAP.getCenter().toArray().map(r7),zoom:+MAP.getZoom().toFixed(2),pitch:p>5?+p.toFixed(1):DEF_CAM.pitch,bearing:+MAP.getBearing().toFixed(1)};
+  log('ผู้ดูแลระบบ','ตั้งมุมกล้องเริ่มต้น');save();render();toast('ตั้งมุมเริ่มต้นแล้ว');return;}
+ if(q('#camReset')){S.settings.cam=null;save();render();goHome();return;}
+ if(q('#monSave')){S.settings.openYm=$('#monYm').value||null;S.settings.closeDay=Math.min(28,Math.max(1,+$('#monDay').value||3));S.settings.closed=$('#monClosed').checked;
+  log('ผู้ดูแลระบบ',`ตั้งรอบกรอก ${ymLong(openYm())}${S.settings.closed?' (ปิดรับ)':' (เปิดรับ)'}`);save();render();toast('บันทึกแล้ว');return;}
+ if(q('#admSave')){const v=$('#admCode').value.trim();if(v.length<4)return alert('รหัสต้องยาวอย่างน้อย 4 ตัว');if(S.companies.some(c=>c.code===v))return alert('รหัสซ้ำกับรหัสกองร้อย');
+  S.settings.adminCode=v;log('ผู้ดูแลระบบ','เปลี่ยนรหัสผู้ดูแลระบบ');save();render();toast('เปลี่ยนรหัสแล้ว');return;}
+ if(q('#vwSave')){const v=$('#vwCode').value.trim();if(v.length<6||v.length>40)return alert('รหัสเข้าดูต้องยาว 6–40 ตัว');
+  if(v===S.settings.adminCode||S.companies.some(c=>c.code===v))return alert('รหัสเข้าดูต้องไม่ซ้ำกับรหัสผู้ดูแลหรือรหัสกองร้อย');
+  const had=!!S.settings.viewCode;S.settings.viewCode=v;log('ผู้ดูแลระบบ',had?'เปลี่ยนรหัสเข้าดูเว็บไซต์':'เปิดใช้รหัสเข้าดูเว็บไซต์');save();render();toast(had?'เปลี่ยนรหัสเข้าดูแล้ว':'เปิดใช้รหัสเข้าดูแล้ว');return;}
+ if(q('#vwOff')){if(!confirm('ยกเลิกรหัสเข้าดู? ใครเปิดลิงก์ก็จะเห็นแผนที่ แนวท่อ และกราฟทั้งหมด'))return;delete S.settings.viewCode;log('ผู้ดูแลระบบ','ยกเลิกรหัสเข้าดูเว็บไซต์');save();render();toast('ยกเลิกรหัสเข้าดูแล้ว');return;}
+ if(q('#qrGen')){UI.qrBase=$('#qrBase').value.trim();return genQr();}
+ if(q('#qrPrint'))return window.print();
+ if(q('#csvExp'))return csvFy(UI.gridFy||fyOf(openYm()));
+ if(q('#expJson')){S.settings.lastBackup=new Date().toISOString();download(JSON.stringify(S),'สำรองข้อมูล-แผนที่มิเตอร์-'+new Date().toISOString().slice(0,10)+'.json','application/json');log('ผู้ดูแลระบบ','ดาวน์โหลดไฟล์สำรอง');save();return;}
+ if(q('#clearSample')){if(!confirm('ลบหมุดมิเตอร์และตัวเลขตัวอย่างทั้งหมด?\n(อาคาร เขตรับผิดชอบ แนวท่อประปา ชื่อกองร้อยและรหัส ยังอยู่)'))return;
+  S.meters=[];S.readings={};UI.sel=null;UI.filterCo=null;log('ผู้ดูแลระบบ','ล้างหมุดมิเตอร์ตัวอย่าง เริ่มปักจุดจริง');save();UI.adminTab='map';render();toast('ล้างแล้ว เริ่มปักหมุดมิเตอร์จริงได้เลย');return;}
+ if(q('#resetDemo')){if(!confirm('ล้างข้อมูลทั้งหมดแล้วกลับไปใช้ข้อมูลตัวอย่าง?'))return;S=seed();save();UI.sel=null;UI.filterCo=null;render();goHome();toast('รีเซ็ตแล้ว');return;}
+});
+document.addEventListener('change',async e=>{const t=e.target;
+ if(t.dataset?.urole){const c=document.getElementById('uc-'+t.dataset.urole);if(c)c.disabled=t.value==='admin';return;}
+ switch(t.id){
+  case 'ovType':UI.ovType=t.value;return render();
+  case 'ovYear':UI.ovYear=t.value;return render();
+  case 'cmpMode':UI.cmpMode=t.value;return render();
+  case 'mYear':UI.mYear=t.value;return render();
+  case 'mCmpMode':UI.mCmpMode=t.value;return render();
+  case 'mCmpMeter':UI.mCmpMeter=t.value;return render();
+  case 'drawCo':UI.drawCo=t.value;return;
+  case 'drawH':UI.drawH=Math.max(2,Math.min(80,+t.value||8));return;
+  case 'gridFy':UI.gridFy=+t.value;return render();
+  case 'mkType':UI.mkType=t.value;return render();
+  case 'mkYear':UI.mkYear=t.value;return render();
+  case 'mkChartT':UI.mkChartT=t.value;if(t.value==='line'&&!UI.mkYears.length)UI.mkYears=fyList().slice(0,FY_MAX);return render();
+  case 'mkBld':UI.mkBld=t.value;return render();
+  case 'mkFy':UI.mkFy=+t.value;return render();
+  case 'impJson':{const f=t.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.meters||!d.readings||!d.companies||!d.settings)throw 0;if(!confirm('แทนที่ข้อมูลทั้งหมดด้วยไฟล์สำรองนี้?'))return;d.blds=d.blds||[];d.shapes=d.shapes||[];d.log=d.log||[];S=d;if(API.on&&API.empty){API.empty=false;API.etag=null;API.syncCfg=null;API.syncRd={};}log('ผู้ดูแลระบบ','นำเข้าไฟล์สำรอง');save();render();toast('นำเข้าแล้ว');}catch(_){alert('ไฟล์สำรองไม่ถูกต้อง');}return;}
+ }
+ if(t.dataset.grp){const k={cy:'cmpYears',cc:'cmpCos',my:'mCmpYears',mky:'mkYears'}[t.dataset.grp],val=t.dataset.grp==='cc'?t.value:+t.value;
+  if(t.checked&&t.dataset.grp!=='cc'&&UI[k].length>=FY_MAX){t.checked=false;toast(`เปรียบเทียบได้ไม่เกิน ${FY_MAX} ปีงบประมาณ`);return;}
+  UI[k]=t.checked?[...UI[k],val]:UI[k].filter(x=>x!==val);return render();}
+ if(t.dataset.layer){UI.layers[t.dataset.layer]=t.checked;return render();}
+ if(t.dataset?.lp){const f=t.files[0];if(f)setLoc(t.dataset.lp,f);return;}
+ if(t.id&&t.id.startsWith('p-')){const id=t.id.slice(2),f=t.files[0];if(!f)return;try{PENDING[id]=await readImg(f);}catch(_){return alert('เปิดรูปไม่ได้');}showPending(id);}
+});
+document.addEventListener('input',e=>{const t=e.target;if(!t.id||!t.id.startsWith('r-'))return;const id=t.id.slice(2),out=document.getElementById('u-'+id);if(!out)return;
+ const prev=rd(id,prevYm(openYm())),v=parseFloat(t.value);if(!prev||isNaN(v)){out.textContent='–';out.style.color='var(--text-primary)';return;}
+ const u=rollU(prev.reading,v);out.textContent=fmt(u)+(isRoll(prev.reading,v)?' (วนรอบ)':'');out.style.color=u<0?'var(--bad)':'var(--text-primary)';});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#mbg'))closeModal();else if(UI.draft){UI.draft=null;render();}}});
+window.addEventListener('hashchange',handleHash);
+
+async function boot(){initTheme();
+ if(GAS_URL){API.on=true;try{API.st=await api('/ping');}catch(e){API.st={storage:'google'};API.err='เชื่อมระบบ Google ไม่ได้: '+e.message;}}
+ else try{const p=await fetch('/api/ping',{cache:'no-store'});if(p.ok){const j=await p.json().catch(()=>null);if(j&&j.app==='meter-map'){API.on=true;API.st=j;}}}catch(_){}
+ if(API.on){const d=$('#demoBar');if(d)d.style.display='none';$('#main').innerHTML='<div class="card"><p class="hint">กำลังโหลดข้อมูล…</p></div>';if(!API.err)await loadOnline();}
+ if(!handleHash())render();}
+window.addEventListener('beforeunload',e=>{if(API.on&&(API.t||API.busy)){e.preventDefault();e.returnValue='';}});
+boot();
+</script>
+</body>
+</html>
