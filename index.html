@@ -641,7 +641,7 @@ function legendHtml(){const f=UI.filterCo,v=UI.page==='view';
  if(!v)return '';
  return `<div class="row" style="gap:6px"><span class="hint">ดูเฉพาะ:</span><div class="chips"><button class="chip ${!f?'on':''}" data-fco="">ทุกกองร้อย</button>${S.companies.map(c=>`<button class="chip ${f===c.id?'on':''}" data-fco="${c.id}"><i class="dot" style="background:${c.color}"></i>${esc(c.name)}</button>`).join('')}</div></div>`;}
 function mapToolbar(title){const L=UI.layers,c=(k,lab)=>`<label class="chip ${L[k]?'on':''}"><input type="checkbox" data-layer="${k}" ${L[k]?'checked':''}>${lab}</label>`;
- return `<div class="row" style="justify-content:space-between"><h2 style="margin:0;font-size:1.17em">${title}</h2><div class="chips">${c('elec','⚡ ไฟฟ้า')}${c('water','💧 ประปา')}${c('pipes','แนวท่อ/สายไฟ')}${c('blds','อาคาร 3D')}${c('zones','เขตรับผิดชอบ')}</div></div>`;}
+ return `<div class="row" style="justify-content:space-between"><h2 style="margin:0;font-size:17px;line-height:1.3">${title}</h2><div class="chips">${c('elec','⚡ ไฟฟ้า')}${c('water','💧 ประปา')}${c('pipes','แนวท่อ/สายไฟ')}${c('blds','อาคาร 3D')}${c('zones','เขตรับผิดชอบ')}</div></div>`;}
 const chipHtml=(grp,val,label,on)=>`<label class="chip ${on?'on':''}"><input type="checkbox" data-grp="${grp}" value="${val}" ${on?'checked':''}>${label}</label>`;
 
 /* ---------- ชั้น ๑ แสดงผล ---------- */
