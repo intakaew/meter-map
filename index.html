@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>แผนที่มิเตอร์ ม.๑ พัน.๓ รอ.</title>
+<meta name="description" content="แผนที่และแดชบอร์ดมิเตอร์ไฟฟ้า–น้ำประปาของ ม.๑ พัน.๓ รอ. ดูตำแหน่งมิเตอร์ ตัวเลขรายเดือน และผลการประหยัดพลังงานตามมาตรการของ ทบ.">
+<meta name="theme-color" content="#eef2f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070b14" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%232457e6'/%3E%3Cpath d='M36 8 16 36h14l-4 20 22-30H34z' fill='%23fff'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
@@ -30,7 +34,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 header.top{position:sticky;top:0;z-index:20;background:var(--surface);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 18px}
 .brand{display:flex;gap:12px;align-items:center;margin-right:auto;min-width:0}
 .logo{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#2457e6,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 6px 16px rgba(36,87,230,.35);flex:none}
-header .title{font-weight:700;font-size:18px;line-height:1.25}
+header .title{margin:0;font-weight:700;font-size:18px;line-height:1.25}
 header .title small{display:block;font-weight:400;font-size:13px;color:var(--text-muted)}
 .nav{display:flex;gap:6px;flex-wrap:wrap}
 .demo{background:linear-gradient(90deg,rgba(234,179,8,.16),rgba(234,179,8,.06));color:#6b4a00;border-bottom:1px solid rgba(234,179,8,.35);padding:6px 18px;font-size:14px}
@@ -43,6 +47,8 @@ main{padding:18px;max-width:1480px;margin:0 auto}
 .card h3{margin:0 0 8px;font-size:17px;line-height:1.3}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .muted{color:var(--text-muted)}.credit{text-align:center;font-size:13px;color:var(--text-muted);padding:8px 16px 18px}.credit a{color:inherit}
+@media (pointer:coarse){.credit a{display:inline-flex;align-items:center;min-height:44px;padding:0 6px}}
+@media (max-width:700px),(pointer:coarse){input,select,textarea{font-size:16px}}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:999px;padding:4px 12px;background:var(--surface-solid);cursor:pointer;font-size:14px;user-select:none;min-height:32px;color:var(--text-primary);box-shadow:none;font-weight:400}
 .chip input{margin:0;accent-color:var(--accent)}
@@ -141,7 +147,7 @@ details summary{cursor:pointer}
 </head>
 <body>
 <header class="top">
-  <div class="brand"><div class="logo" aria-hidden="true">⚡</div><div class="title">แผนที่มิเตอร์ไฟฟ้า–น้ำประปา<small>ม.๑ พัน.๓ รอ. · การปฏิบัติตามมาตรการประหยัดใน ทบ.</small></div></div>
+  <div class="brand"><div class="logo" aria-hidden="true">⚡</div><h1 class="title">แผนที่มิเตอร์ไฟฟ้า–น้ำประปา<small>ม.๑ พัน.๓ รอ. · การปฏิบัติตามมาตรการประหยัดใน ทบ.</small></h1></div>
   <nav class="nav" id="nav"></nav>
   <div class="row" id="who"></div>
   <button id="themeBtn" title="สลับโหมดสว่าง/มืด" aria-label="สลับโหมดสว่าง/มืด">🌙</button>
@@ -635,7 +641,7 @@ function legendHtml(){const f=UI.filterCo,v=UI.page==='view';
  if(!v)return '';
  return `<div class="row" style="gap:6px"><span class="hint">ดูเฉพาะ:</span><div class="chips"><button class="chip ${!f?'on':''}" data-fco="">ทุกกองร้อย</button>${S.companies.map(c=>`<button class="chip ${f===c.id?'on':''}" data-fco="${c.id}"><i class="dot" style="background:${c.color}"></i>${esc(c.name)}</button>`).join('')}</div></div>`;}
 function mapToolbar(title){const L=UI.layers,c=(k,lab)=>`<label class="chip ${L[k]?'on':''}"><input type="checkbox" data-layer="${k}" ${L[k]?'checked':''}>${lab}</label>`;
- return `<div class="row" style="justify-content:space-between"><h3 style="margin:0">${title}</h3><div class="chips">${c('elec','⚡ ไฟฟ้า')}${c('water','💧 ประปา')}${c('pipes','แนวท่อ/สายไฟ')}${c('blds','อาคาร 3D')}${c('zones','เขตรับผิดชอบ')}</div></div>`;}
+ return `<div class="row" style="justify-content:space-between"><h2 style="margin:0;font-size:1.17em">${title}</h2><div class="chips">${c('elec','⚡ ไฟฟ้า')}${c('water','💧 ประปา')}${c('pipes','แนวท่อ/สายไฟ')}${c('blds','อาคาร 3D')}${c('zones','เขตรับผิดชอบ')}</div></div>`;}
 const chipHtml=(grp,val,label,on)=>`<label class="chip ${on?'on':''}"><input type="checkbox" data-grp="${grp}" value="${val}" ${on?'checked':''}>${label}</label>`;
 
 /* ---------- ชั้น ๑ แสดงผล ---------- */
