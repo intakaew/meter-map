@@ -18,7 +18,7 @@ await t('empty state', () => { assert.equal(get('state').data.config, null); });
 await t('temp admin login', () => { const r = call('login', { code: TEMP }); assert.ok(r.ok, JSON.stringify(r)); A = r.data.token; });
 const cfg = { v: 3, companies: [{ id: 'c1', name: 'ร้อย.ก', color: '#f00', code: '111111' }, { id: 'c2', name: 'ร้อย.ข', color: '#0f0', code: '222222' }],
   meters: [{ id: 'E01', code: 'E01', type: 'elec', companyId: 'c1', name: 'ไฟ ก' }, { id: 'W02', code: 'W02', type: 'water', companyId: 'c2' }], blds: [], shapes: [], settings: { adminCode: '888888', openYm: null, closed: false } };
-await t('first config upload + meters mirrored to sheet', () => { const r = call('admin/config', { config: cfg, etag: null }, A, 'PUT'); assert.ok(r.ok, JSON.stringify(r)); ET = r.data.etag; assert.equal(g.sheet('มิเตอร์')._rows()[1][0], 'E01'); assert.equal(g.sheet('มิเตอร์')._rows()[1][3], 'ร้อย.ก'); });
+await t('first config upload + meters mirrored to sheet', () => { const r = call('admin/config', { config: cfg, etag: null }, A, 'PUT'); assert.ok(r.ok, JSON.stringify(r)); ET = r.data.etag; assert.equal(g.sheet('มิเตอร์')._rows()[1][0], 'E01'); A = call('login', { code: '888888' }).data.token; /* รหัสผู้ดูแลเปลี่ยนจากรหัสชั่วคราว → โทเค็นเดิมหมดอายุ */ assert.equal(g.sheet('มิเตอร์')._rows()[1][3], 'ร้อย.ก'); });
 await t('blind second upload rejected', () => { assert.equal(call('admin/config', { config: cfg, etag: null }, A, 'PUT').status, 409); });
 await t('public state hides codes', () => { const s = JSON.stringify(get('state')); assert.ok(!s.includes('111111') && !s.includes('888888')); });
 await t('temp code dead once config has admin code', () => { assert.equal(call('login', { code: TEMP }).status, 401); const r = call('login', { code: '888888' }); assert.equal(r.data.role, 'admin'); A = r.data.token; });
@@ -235,7 +235,33 @@ await t('changing view code kills old view tokens; removing it reopens', () => {
   s = call('admin/state', null, A, 'GET').data; delete s.config.settings.viewCode; assert.ok(call('admin/config', { config: s.config, etag: s.etag }, A, 'PUT').ok);
   assert.ok(get('state').ok); assert.equal(get('ping').data.gate, false);
 });
-await t('global throttle after 50 failures', () => { let r; for (let i = 0; i < 51; i++) r = call('login', { code: String(900000 + i) }); assert.equal(r.status, 429); });
+await t('code token dies when its code changes; short/duplicate codes rejected; bad colour reset', () => {
+  let s0 = call('admin/state', null, A, 'GET').data, cfg0 = s0.config;
+  const co = cfg0.companies[0], oldCode = String(co.code);
+  const tk = call('login', { code: oldCode }).data.token; assert.ok(call('state', null, tk, 'GET').ok);
+  let c2 = JSON.parse(JSON.stringify(cfg0)); c2.companies[0].code = '12345';
+  assert.equal(call('admin/config', { config: c2, etag: s0.etag }, A, 'PUT').status, 400);
+  c2.companies[0].code = String(c2.companies[1].code); assert.equal(call('admin/config', { config: c2, etag: s0.etag }, A, 'PUT').status, 400);
+  c2.companies[0].code = '7654321'; c2.companies[0].color = 'red;background:url(x)';
+  assert.ok(call('admin/config', { config: c2, etag: s0.etag }, A, 'PUT').ok);
+  const st = call('admin/state', null, A, 'GET').data; assert.equal(st.config.companies[0].color, '#888888');
+  assert.equal(call('me/password', { pass: 'xxxxxxxx', old: 'y' }, tk).status, 401); /* state เปิดสาธารณะเมื่อไม่ตั้งรหัสเข้าดู จึงตรวจด้วยเส้นทางที่ต้องเข้าสู่ระบบ */
+  assert.ok(call('login', { code: '7654321' }).ok);
+  const legacy = g.ctx.sign_({ r: 'admin', exp: Date.now() + 3600e3 }); assert.equal(call('admin/state', null, legacy, 'GET').status, 401);
+  st.config.companies[0].code = oldCode; st.config.companies[0].color = co.color; assert.ok(call('admin/config', { config: st.config, etag: st.etag }, A, 'PUT').ok);
+});
+await t('history overflow is archived, not deleted', () => {
+  const sh = g.sheet('ประวัติ'), before = sh.getLastRow(); g.ctx.LOG_MAX = 10;
+  for (let i = 0; i < 12; i++) call('log', { entries: Array.from({ length: 50 }, (_, j) => 'x' + i + '-' + j) }, A);
+  const ar = g.sheet('ประวัติเก่า'); assert.ok(ar, 'archive sheet'); assert.ok(ar.getLastRow() >= 501);
+  assert.ok(sh.getLastRow() <= 10 + 500 + 50); g.ctx.LOG_MAX = 5000;
+});
+await t('throttle per target: 30 bad codes lock code login, user login still works', () => {
+  let r; for (let i = 0; i < 31; i++) r = call('login', { code: String(900000 + i) }); assert.equal(r.status, 429);
+  assert.notEqual(call('login', { user: 'nobody', pass: 'x' }).status, 429);
+  for (let i = 0; i < 11; i++) r = call('login', { user: 'victim', pass: 'bad' + i }); assert.equal(r.status, 429);
+  assert.notEqual(call('login', { user: 'other', pass: 'x' }).status, 429);
+});
 await t('sheet formula injection is neutralised', () => {
   assert.equal(g.ctx.cell_('=HYPERLINK("x")'), "'=HYPERLINK(\"x\")"); assert.equal(g.ctx.cell_('+1'), "'+1"); assert.equal(g.ctx.cell_('@a'), "'@a");
   assert.equal(g.ctx.cell_('ร้อย.ก'), 'ร้อย.ก'); assert.equal(g.ctx.cell_(12), 12);
