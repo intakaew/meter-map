@@ -236,5 +236,25 @@ await t('changing view code kills old view tokens; removing it reopens', () => {
   assert.ok(get('state').ok); assert.equal(get('ping').data.gate, false);
 });
 await t('global throttle after 50 failures', () => { let r; for (let i = 0; i < 51; i++) r = call('login', { code: String(900000 + i) }); assert.equal(r.status, 429); });
+await t('sheet formula injection is neutralised', () => {
+  assert.equal(g.ctx.cell_('=HYPERLINK("x")'), "'=HYPERLINK(\"x\")"); assert.equal(g.ctx.cell_('+1'), "'+1"); assert.equal(g.ctx.cell_('@a'), "'@a");
+  assert.equal(g.ctx.cell_('ร้อย.ก'), 'ร้อย.ก'); assert.equal(g.ctx.cell_(12), 12);
+  call('log', { entries: ['=IMPORTXML("http://x")'] }, A);
+  const sh = g.sheet('ประวัติ'), rows = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getValues(); assert.ok(rows.some(r => String(r[2]).startsWith("'=IMPORTXML")));
+});
+await t('photo URL must match drive thumbnail exactly', () => {
+  assert.ok(g.ctx.PHOTO_RE.test('https://drive.google.com/thumbnail?id=abcDEF123_-xyz&sz=w1600'));
+  assert.ok(!g.ctx.PHOTO_RE.test('https://drive.google.com/thumbnail?id=abcDEF123_-xyz&sz=w1600" onerror="alert(1)'));
+});
+await t('proxy key gate: /exec direct = 403 once PROXY_KEY is set', () => {
+  g.db.props.PROXY_KEY = 'k'.repeat(40);
+  assert.equal(get('ping').status, 403); assert.equal(call('login', { code: TEMP }).status, 403);
+  const viaProxy = JSON.parse(g.ctx.doPost({ postData: { contents: JSON.stringify({ r: 'ping', m: 'GET', px: 'k'.repeat(40) }) } }).content);
+  assert.ok(viaProxy.ok); assert.equal(viaProxy.data.app, 'meter-map');
+  const wrong = JSON.parse(g.ctx.doPost({ postData: { contents: JSON.stringify({ r: 'ping', m: 'GET', px: 'k'.repeat(39) + 'x' }) } }).content);
+  assert.equal(wrong.status, 403);
+  assert.ok(JSON.parse(g.ctx.doGet({ parameter: { r: 'ping', px: 'k'.repeat(40) } }).content).ok);
+  delete g.db.props.PROXY_KEY; assert.ok(get('ping').ok);
+});
 await t('unknown route', () => { assert.equal(call('nope', null, A).status, 404); });
 console.log(`\nผ่าน ${ok} ข้อ`);
