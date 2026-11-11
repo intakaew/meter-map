@@ -232,7 +232,7 @@ function seed(){
 /* ---------- สถานะ ---------- */
 // อาคารที่เพิ่มภายหลัง — เติมให้ข้อมูลที่บันทึกไว้แล้วในเบราว์เซอร์ (ครั้งเดียว ถ้าผู้ดูแลลบทิ้งจะไม่กลับมา)
 const ADD_BLDS=[]; // ประวัติการเพิ่มอาคารของหน่วยจริงย้ายไปอยู่ในข้อมูลบน Google แล้ว (settings.addBlds) ไม่เก็บพิกัดจริงไว้ในโค้ด
-function migrate(d){d.settings=d.settings||{};const done=d.settings.addBlds||0;
+function migrate(d){d.settings=d.settings||{};(d.companies||[]).forEach(c=>{if(!/^#[0-9a-fA-F]{3,8}$/.test(c.color||''))c.color='#888888';});const done=d.settings.addBlds||0;
  ADD_BLDS.filter(a=>a.v>done).forEach(a=>{(a.blds||[]).forEach(g=>{if(d.blds.some(b=>b.id===g.id))return;const c=d.companies.find(x=>x.id===g.companyId);if(!c)return;
   const n=d.blds.filter(b=>b.companyId===g.companyId).length+1;d.blds.push({id:g.id,name:`อาคาร ${c.name} หลังที่ ${n}`,companyId:g.companyId,type:'',h:7,pts:g.pts});});
   Object.entries(a.reshape||{}).forEach(([id,pts])=>{const b=d.blds.find(x=>x.id===id);if(b)b.pts=pts;});
@@ -252,9 +252,11 @@ function load(){let d=null;try{const j=localStorage.getItem(KEY);if(j)d=JSON.par
 function save(){if(API.on){if(sess?.role==='admin'&&!API.empty)schedulePush();return;}try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){alert('บันทึกไม่ได้: พื้นที่เก็บในเบราว์เซอร์เต็ม (ลองลดจำนวนรูป)');}}
 /* ---------- ระบบออนไลน์ (OneDrive ผ่าน Netlify) — ถ้าไม่มี /api จะทำงานแบบต้นแบบในเบราว์เซอร์ ---------- */
 // ลิงก์เว็บแอป Google Apps Script (ได้จากขั้น "ทำให้ใช้งานได้") — เว้นว่าง = ใช้ /api ของ Netlify หรือโหมดต้นแบบ
-const GAS_URL='https://script.google.com/macros/s/AKfycbzj5zwphSuonYbOlkAo71A_wueQg-W63GXt9jhO_V08Rq30dsOeP8vvLh415ev9KDz1/exec';
+const GAS_URL='';
 // ?demo = โหมดตัวอย่าง (ค่ายสมมติ เก็บในเบราว์เซอร์ ไม่ต่อระบบจริง) ใช้เป็นลิงก์ผลงานให้คนทั่วไปลองเล่น
 const DEMO=/[?&]demo(?:[=&]|$)/.test(location.search),GAS=DEMO?'':GAS_URL;
+// ฉบับบน GitHub เป็นโค้ดเปิด/โหมดตัวอย่างเท่านั้น ระบบจริงของหน่วยอยู่หลังด่านยืนยันตัวตน
+if(!DEMO&&!GAS_URL&&/\.github\.io$/.test(location.hostname))location.replace('https://meter-m1pan3.pages.dev/'+location.hash);
 const API={on:false,sheetUrl:null,st:null,etag:null,empty:false,err:null,gate:false,syncCfg:null,syncRd:null,q:[],t:null,lt:null,busy:false,sync:''};
 // รหัสเข้าดูเว็บไซต์: ตัวกลางให้โทเค็นแบบดูอย่างเดียว เก็บในเครื่องนี้ 30 วัน (ผู้ดูแลเปลี่ยนรหัสเมื่อไร โทเค็นเก่าใช้ไม่ได้ทันที)
 const VKEY='mmView';
@@ -325,7 +327,10 @@ function onlineCard(){if(!API.on)return '';const st=API.st||{};
  ${backupNote()}${API.empty&&st.connected!==false?`<p style="margin:10px 0 6px">ระบบยังไม่มีข้อมูล — กดปุ่มนี้เพื่อเริ่มใช้งานด้วยอาคาร เขตรับผิดชอบ แนวท่อ และกองร้อยชุดที่เห็นบนแผนที่ตอนนี้</p><button class="primary" id="upInit">⬆ อัปโหลดข้อมูลตั้งต้นขึ้นระบบ</button>`:''}</div>`;}
 let S=load();
 let sess=(()=>{try{return JSON.parse(sessionStorage.getItem('mmSess')||'null');}catch(e){return null;}})();
-function setSess(v){sess=v;if(!v)API.users=null;try{v?sessionStorage.setItem('mmSess',JSON.stringify(v)):sessionStorage.removeItem('mmSess');}catch(e){}}
+const IDLE_MS=30*60e3;let idleT=null;
+function idleReset(){clearTimeout(idleT);if(!sess)return;idleT=setTimeout(()=>{const b=document.getElementById('logout');if(sess&&b){b.click();setTimeout(()=>alert('ออกจากระบบอัตโนมัติ เพราะไม่ได้ใช้งาน 30 นาที'),300);}},IDLE_MS);}
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,idleReset,{passive:true}));
+function setSess(v){sess=v;setTimeout(idleReset,0);if(!v)API.users=null;try{v?sessionStorage.setItem('mmSess',JSON.stringify(v)):sessionStorage.removeItem('mmSess');}catch(e){}}
 const UI={page:'view',ovType:'elec',ovYear:'all',cmpOn:false,cmpMode:'year',cmpYears:[],cmpCos:[],filterCo:null,sel:null,
  mYear:'all',mCmpOn:false,mCmpMode:'year',mCmpYears:[],mCmpMeter:'',layers:{elec:true,water:true,pipes:true,zones:true,blds:true},
  is3d:true,tool:'select',draft:null,drawCo:'c1',drawH:8,adminTab:'map',gridFy:null,qrBase:'',fitFor:null,selMk:null,mkType:'elec',mkYear:'all',mkChartT:'bar',mkYears:[],mkBld:'',mkFy:null};
@@ -693,7 +698,7 @@ function viewMeter(m){
  ${UI.mCmpOn?`<div class="card" style="background:var(--surface2);box-shadow:none;margin:8px 0 0"><label>เปรียบเทียบ <select id="mCmpMode"><option value="year">ระหว่างปีงบ</option><option value="meter">กับมิเตอร์อื่น</option></select></label>
   <div style="margin-top:8px">${UI.mCmpMode==='year'?`<div class="chips">${years.map(y=>chipHtml('my',y,'ปีงบ '+y,UI.mCmpYears.includes(y))).join('')}</div>`:`<select id="mCmpMeter"><option value="">— เลือกมิเตอร์ที่จะเทียบ —</option>${others.map(o=>`<option value="${esc(o.id)}">${TYPE[o.type].icon} ${esc(o.code)} ${esc(o.name)} (${esc(co(o.companyId).name)})</option>`).join('')}</select>`}</div></div>`:''}
  <div class="chartbox" style="margin-top:10px"><canvas id="mChart" aria-label="กราฟการใช้ของ ${esc(m.code)}"></canvas></div>
- ${ph?`<h3 style="margin-top:14px">รูปหน้าปัดล่าสุด (${ymLabel(ph)})</h3><img class="photo" src="${rd(m.id,ph).photo}" alt="รูปหน้าปัดมิเตอร์ ${esc(m.code)}">`:''}
+ ${ph?`<h3 style="margin-top:14px">รูปหน้าปัดล่าสุด (${ymLabel(ph)})</h3><img class="photo" src="${esc(rd(m.id,ph).photo)}" alt="รูปหน้าปัดมิเตอร์ ${esc(m.code)}">`:''}
  ${anomTable({key:m.id,ms:[m],type:m.type,co:m.companyId,name:`${T.icon} ${m.code} ${m.name}`},months)}
  ${locBlock(m)}
  ${m.room?`<div style="margin-top:10px"><button data-mk="${esc(mkKey(m.bldId||''))}">🏪 ดูทั้งตลาด</button></div>`:''}
@@ -767,7 +772,7 @@ function meterForm(m,ym,closed){const T=TYPE[m.type],cur=rd(m.id,ym),prev=rd(m.i
  <label>เลขมิเตอร์เดือนนี้<input type="number" inputmode="decimal" min="0" id="r-${esc(m.id)}" value="${cur?cur.reading:''}" ${closed?'disabled':''}></label>
  <label>ใช้ไป (${T.unit})<b id="u-${esc(m.id)}" style="color:${u<0?'var(--bad)':'var(--text-primary)'};font-size:18px">${u!=null?fmt(u):'–'}</b></label></div>
  <label style="margin-top:8px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--text-muted)">รูปหน้าปัดมิเตอร์ (ถ่ายใหม่หรือเลือกจากเครื่อง)<input type="file" accept="image/*" id="p-${esc(m.id)}" ${closed?'disabled':''}></label>
- <div id="pv-${esc(m.id)}">${cur?.photo?`<img class="photo" src="${cur.photo}" style="max-height:160px" alt="รูปหน้าปัดมิเตอร์">`:''}</div>
+ <div id="pv-${esc(m.id)}">${cur?.photo?`<img class="photo" src="${esc(cur.photo)}" style="max-height:160px" alt="รูปหน้าปัดมิเตอร์">`:''}</div>
  <div class="row" style="margin-top:8px"><button class="primary" data-save="${esc(m.id)}" ${closed?'disabled':''}>บันทึก</button>${!prev?'<span class="hint">ครั้งแรกของมิเตอร์นี้ — ระบบจะใช้เป็นเลขตั้งต้น</span>':''}</div>
  <details style="margin-top:8px"><summary class="muted">📍 รูปตำแหน่งที่ติดมิเตอร์${locOf(m.id)?' (มีแล้ว)':''}</summary>${locBlock(m)}</details>
  ${hist.length?`<details style="margin-top:8px"><summary class="muted">ดูย้อนหลัง ${hist.length} เดือน</summary><table><thead><tr><th>เดือน</th><th class="num">เลขมิเตอร์</th><th class="num">ใช้ไป</th></tr></thead><tbody>${hist.map(y=>`<tr><td>${ymLabel(y)}</td><td class="num">${fmt(rd(m.id,y).reading)}</td><td class="num">${fmt(units(m.id,y))}</td></tr>`).join('')}</tbody></table></details>`:''}</div>`;}
@@ -1080,7 +1085,7 @@ function render(){
   for(const id in PENDING)showPending(id);}
  if(UI.page==='admin'&&UI.adminTab==='qr')genQr();}
 function showPending(id){const pv=document.getElementById('pv-'+id);if(!pv)return;
- pv.innerHTML=pv.classList.contains('pvs')?'📷 รอกดบันทึก':`<img class="photo" src="${PENDING[id]}" style="max-height:160px" alt=""><div class="hint">ยังไม่บันทึก — กด "บันทึก"</div>`;}
+ pv.innerHTML=pv.classList.contains('pvs')?'📷 รอกดบันทึก':`<img class="photo" src="${esc(PENDING[id])}" style="max-height:160px" alt=""><div class="hint">ยังไม่บันทึก — กด "บันทึก"</div>`;}
 function handleHash(){const mk=location.hash.match(/^#\/k\/(.*)$/);
  if(mk){const bid=decodeURIComponent(mk[1]);if(!mkRooms(bid).length)return false;
   if(sess?.role==='company'&&mkRooms(bid).some(m=>m.companyId===sess.co&&!m.agg)){UI.page='company';render();setTimeout(()=>document.getElementById('mk-'+bid)?.scrollIntoView({behavior:'smooth',block:'start'}),60);}
