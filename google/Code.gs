@@ -7,6 +7,7 @@
 var SH_RD = 'ตัวเลขรายเดือน', SH_M = 'มิเตอร์', SH_LOG = 'ประวัติ';
 var RD_HEAD = ['รหัสมิเตอร์ (id)', 'เดือน (ค.ศ. ปี-เดือน)', 'เลขมิเตอร์', 'รูปหน้าปัด', 'ผู้บันทึก', 'เวลาบันทึก'];
 var TOKEN_H = 12, LOG_MAX = 5000;
+var PHOTO_RE = /^https:\/\/drive\.google\.com\/thumbnail\?id=[A-Za-z0-9_-]{10,100}&sz=w\d{2,4}$/;
 var YM = /^\d{4}-(0[1-9]|1[0-2])$/, SAFE_ID = /^[A-Za-z0-9_-]{1,40}$/;
 
 function props_() { return PropertiesService.getScriptProperties(); }
@@ -77,6 +78,7 @@ function mirrorMeters_(cfg) {
   (cfg.blds || []).forEach(function (b) { bl[b.id] = b.name; });
   var rows = (cfg.meters || []).map(function (m) { return [m.code, (m.name || '') + (m.room ? ' [ห้อง ' + m.room + (m.shop ? ' ' + m.shop : '') + ']' : ''), m.type === 'elec' ? 'ไฟฟ้า' : 'ประปา', co[m.companyId] || '', m.account || '', bl[m.bldId] || '', m.id]; });
   if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 7).clearContent();
+  rows = rows.map(function (r) { return r.map(cell_); });
   if (rows.length) sh.getRange(2, 1, rows.length, 7).setValues(rows);
 }
 function isDate_(v) { return v != null && typeof v === "object" && typeof v.getTime === "function"; }
@@ -93,7 +95,7 @@ function readReadings_() {
 }
 function writeAllReadings_(map) {
   var sh = ss_().getSheetByName(SH_RD), rows = [];
-  Object.keys(map).sort().forEach(function (id) { Object.keys(map[id]).sort().forEach(function (ym) { var r = map[id][ym]; rows.push([id, ym, r.reading, r.photo || '', r.by || '', r.at || '']); }); });
+  Object.keys(map).sort().forEach(function (id) { Object.keys(map[id]).sort().forEach(function (ym) { var r = map[id][ym]; rows.push([id, ym, r.reading, r.photo || '', cell_(r.by || ''), r.at || '']); }); });
   if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, 6).clearContent();
   if (rows.length) { sh.getRange(2, 1, rows.length, 2).setNumberFormat('@'); sh.getRange(2, 6, rows.length, 1).setNumberFormat('@'); sh.getRange(2, 1, rows.length, 6).setValues(rows); }
 }
@@ -102,13 +104,15 @@ function upsertReading_(id, ym, rec) {
   if (n > 1) { var keys = sh.getRange(2, 1, n - 1, 2).getValues(); for (var i = 0; i < keys.length; i++) if (String(keys[i][0]).trim() === id && ymText_(keys[i][1]) === ym) { row = i + 2; break; } }
   if (row < 0) row = n + 1;
   sh.getRange(row, 1, 1, 2).setNumberFormat('@'); sh.getRange(row, 6).setNumberFormat('@');
-  sh.getRange(row, 1, 1, 6).setValues([[id, ym, rec.reading, rec.photo || '', rec.by || '', rec.at || '']]);
+  sh.getRange(row, 1, 1, 6).setValues([[id, ym, rec.reading, rec.photo || '', cell_(rec.by || ''), rec.at || '']]);
 }
+// ข้อความจากผู้ใช้ที่ขึ้นต้นด้วย = + - @ จะถูกชีตตีเป็นสูตร → ใส่ ' นำหน้าให้เป็นข้อความ
+function cell_(v) { return typeof v === 'string' && /^[=+\-@\t\r]/.test(v) ? "'" + v : v; }
 function addLog_(who, texts) {
   texts = (Array.isArray(texts) ? texts : [texts]).filter(function (t) { return typeof t === 'string' && t.trim(); }).slice(0, 50);
   if (!texts.length) return;
   var sh = ss_().getSheetByName(SH_LOG), at = new Date().toISOString();
-  var rows = texts.map(function (t) { return [at, who, t.slice(0, 300)]; });
+  var rows = texts.map(function (t) { return [at, cell_(who), cell_(t.slice(0, 300))]; });
   sh.getRange(sh.getLastRow() + 1, 1, rows.length, 3).setValues(rows);
   if (sh.getLastRow() > LOG_MAX + 500) sh.deleteRows(2, 500);
 }
@@ -151,9 +155,10 @@ function byName_(s, c) {
 /* ---------- โทเค็น ---------- */
 function sig_(s) { return Utilities.base64EncodeWebSafe(Utilities.computeHmacSha256Signature(s, props_().getProperty('SECRET'))); }
 function sign_(o) { var p = Utilities.base64EncodeWebSafe(JSON.stringify(o), Utilities.Charset.UTF_8); return p + '.' + sig_(p); }
+function same_(x, y) { x = String(x); y = String(y); if (x.length !== y.length) return false; var d = 0; for (var i = 0; i < x.length; i++) d |= x.charCodeAt(i) ^ y.charCodeAt(i); return d === 0; }
 function verify_(t) {
   if (!t || typeof t !== 'string' || t.indexOf('.') < 0) return null;
-  var a = t.split('.'); if (a.length !== 2 || sig_(a[0]) !== a[1]) return null;
+  var a = t.split('.'); if (a.length !== 2 || !same_(sig_(a[0]), a[1])) return null;
   try { var o = JSON.parse(Utilities.newBlob(Utilities.base64DecodeWebSafe(a[0])).getDataAsString('UTF-8')); return o.exp > Date.now() ? o : null; } catch (e) { return null; }
 }
 /* ---------- รหัสเข้าดูเว็บไซต์ ----------
@@ -204,7 +209,7 @@ function cleanRec_(meterId, ym, rec, byName) {
   if (!isFinite(n) || n < 0 || n > 1e12) throw err_(400, 'เลขมิเตอร์ไม่ถูกต้อง');
   var photo = rec.photo || null;
   if (photo && photo.indexOf('data:') === 0) photo = savePhoto_(meterId, ym, photo);
-  else if (photo && photo.indexOf('https://drive.google.com/thumbnail?id=') !== 0) photo = null;
+  else if (photo && !PHOTO_RE.test(photo)) photo = null;
   return { reading: n, photo: photo, by: byName != null ? byName : String(rec.by || '').slice(0, 60), at: rec.at && byName == null ? String(rec.at).slice(0, 30) : new Date().toISOString() };
 }
 function locked_(fn) { var l = LockService.getScriptLock(); l.waitLock(25000); try { return fn(); } finally { l.releaseLock(); } }
@@ -476,13 +481,23 @@ function handle_(method, route, body, token) {
   } catch (e) {
     var st = e.status || 500;
     if (st === 500) console.error(e && e.stack || e);
-    return { ok: false, status: st, error: st === 500 ? 'ระบบขัดข้อง: ' + (e.message || e) : e.message };
+    return { ok: false, status: st, error: st === 500 ? 'ระบบขัดข้อง กรุณาลองใหม่ (เวลา ' + new Date().toISOString() + ')' : e.message };
   }
 }
 function json_(o) { return ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON); }
 // เว็บส่งทุกคำขอเป็น POST แบบ text/plain: {r: เส้นทาง, m: GET|POST|PUT, t: โทเค็น, b: ข้อมูล}
+/* ด่านตัวส่งต่อ: เว็บจริงอยู่หลัง Cloudflare Access แล้วส่งคำขอต่อมาที่นี่พร้อมกุญแจ px
+ ตั้งกุญแจที่ ตั้งค่าโครงการ › พร็อพเพอร์ตีของสคริปต์ › PROXY_KEY (ค่าเดียวกับ PROXY_KEY ใน Cloudflare)
+ เมื่อตั้งแล้ว ใครเรียกลิงก์ /exec ตรง ๆ โดยไม่ผ่านด่านจะได้ 403 ทุกเส้นทาง · ลบพร็อพเพอร์ตีนี้ = กลับไปเปิดตรงเหมือนเดิม */
+function proxyOk_(px) { var k = props_().getProperty('PROXY_KEY'); return !k || (typeof px === 'string' && same_(px, k)); }
+var DENY_ = { ok: false, status: 403, error: 'ต้องเข้าผ่านเว็บของหน่วยเท่านั้น' };
 function doPost(e) {
   var q = {}; try { q = JSON.parse(e.postData.contents); } catch (x) {}
+  if (!proxyOk_(q.px)) return json_(DENY_);
   return json_(handle_(q.m || 'POST', String(q.r || ''), q.b || null, q.t || ''));
 }
-function doGet(e) { return json_(handle_('GET', String((e.parameter && e.parameter.r) || 'ping'), null, '')); }
+function doGet(e) {
+  var p = e.parameter || {};
+  if (!proxyOk_(p.px)) return json_(DENY_);
+  return json_(handle_('GET', String(p.r || 'ping'), null, ''));
+}
