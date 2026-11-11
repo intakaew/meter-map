@@ -4,7 +4,7 @@
          โฟลเดอร์ Drive "meter-map ข้อมูลระบบ" เก็บ config.json (อาคาร แนวท่อ กองร้อย รหัส) และรูปหน้าปัด
  ห้ามแชร์ชีตหรือโฟลเดอร์นี้ให้คนอื่นแก้ไข — config.json มีรหัสของทุกกองร้อย */
 
-var SH_RD = 'ตัวเลขรายเดือน', SH_M = 'มิเตอร์', SH_LOG = 'ประวัติ';
+var SH_RD = 'ตัวเลขรายเดือน', SH_M = 'มิเตอร์', SH_LOG = 'ประวัติ', SH_LOG_OLD = 'ประวัติเก่า';
 var RD_HEAD = ['รหัสมิเตอร์ (id)', 'เดือน (ค.ศ. ปี-เดือน)', 'เลขมิเตอร์', 'รูปหน้าปัด', 'ผู้บันทึก', 'เวลาบันทึก'];
 var TOKEN_H = 12, LOG_MAX = 5000;
 var PHOTO_RE = /^https:\/\/drive\.google\.com\/thumbnail\?id=[A-Za-z0-9_-]{10,100}&sz=w\d{2,4}$/;
@@ -114,7 +114,12 @@ function addLog_(who, texts) {
   var sh = ss_().getSheetByName(SH_LOG), at = new Date().toISOString();
   var rows = texts.map(function (t) { return [at, cell_(who), cell_(t.slice(0, 300))]; });
   sh.getRange(sh.getLastRow() + 1, 1, rows.length, 3).setValues(rows);
-  if (sh.getLastRow() > LOG_MAX + 500) sh.deleteRows(2, 500);
+  if (sh.getLastRow() > LOG_MAX + 500) { // ย้ายแถวเก่าไปชีต "ประวัติเก่า" แทนการลบทิ้ง (เก็บร่องรอยตรวจสอบ)
+    var ss = ss_(), ar = ss.getSheetByName(SH_LOG_OLD);
+    if (!ar) { ar = ss.insertSheet(SH_LOG_OLD); ar.getRange(1, 1, 1, 3).setValues([['เวลา', 'ผู้ทำ', 'รายการ']]); }
+    ar.getRange(ar.getLastRow() + 1, 1, 500, 3).setValues(sh.getRange(2, 1, 500, 3).getValues());
+    sh.deleteRows(2, 500);
+  }
 }
 function readLog_() {
   var sh = ss_().getSheetByName(SH_LOG), n = sh.getLastRow();
@@ -167,9 +172,16 @@ function verify_(t) {
 var VIEW_DAYS = 30;
 function viewKey_(c) { var v = c && c.settings && c.settings.viewCode; return v ? sig_('view|' + v).slice(0, 16) : null; }
 function viewTok_(c) { var k = viewKey_(c); return k ? sign_({ r: 'view', k: k, exp: Date.now() + VIEW_DAYS * 864e5 }) : null; }
+// โทเค็นจากรหัส 6 หลัก (ผู้ดูแล/กองร้อย) ผูกกับรหัสปัจจุบัน — ผู้ดูแลเปลี่ยนรหัสเมื่อไร โทเค็นเก่าใช้ไม่ได้ทันที
+function codeVer_(s, c) {
+  var code = s.r === 'admin' ? ((c && c.settings && c.settings.adminCode) || props_().getProperty('ADMIN_CODE'))
+    : (((c && c.companies) || []).filter(function (x) { return x.id === s.c; })[0] || {}).code;
+  return code ? sig_('cv|' + s.r + '|' + code).slice(0, 12) : null;
+}
 function who_(t, need) {
   var s = verify_(t);
   if (!s) throw err_(401, 'ต้องเข้าสู่ระบบใหม่');
+  if (!s.u && s.r !== 'view' && (!s.cv || s.cv !== codeVer_(s, readConfig_().data))) throw err_(401, 'รหัสถูกเปลี่ยนแล้ว กรุณาเข้าสู่ระบบใหม่');
   if (s.r === 'view') { // โทเค็นดูอย่างเดียว ใช้ได้แค่ดูหน้าแสดงผล
     if (need !== 'view') throw err_(401, 'ต้องเข้าสู่ระบบ');
     if (s.k !== viewKey_(readConfig_().data)) throw err_(401, 'รหัสเข้าดูถูกเปลี่ยนแล้ว ใส่รหัสใหม่');
@@ -213,10 +225,16 @@ function cleanRec_(meterId, ym, rec, byName) {
   return { reading: n, photo: photo, by: byName != null ? byName : String(rec.by || '').slice(0, 60), at: rec.at && byName == null ? String(rec.at).slice(0, 30) : new Date().toISOString() };
 }
 function locked_(fn) { var l = LockService.getScriptLock(); l.waitLock(25000); try { return fn(); } finally { l.releaseLock(); } }
-function throttle_(ok) {
-  var c = CacheService.getScriptCache(), n = Number(c.get('fails') || 0);
-  if (ok === undefined) { if (n >= 50) throw err_(429, 'มีการใส่รหัสผิดจำนวนมาก ระบบพักการเข้าสู่ระบบ 10 นาที'); return; }
-  if (!ok) c.put('fails', String(n + 1), 600);
+// กันเดารหัส: นับแยกตามเป้าหมาย (บัญชีผู้ใช้ / รหัส 6 หลัก / รหัสเข้าดู) + เพดานรวมทั้งระบบ · พัก 10 นาที
+var FAIL_MAX = { user: 10, code: 30, view: 30, all: 100 };
+function throttle_(ok, key) {
+  var c = CacheService.getScriptCache(), kind = String(key || 'code').split(':')[0];
+  var nAll = Number(c.get('fails') || 0), nKey = Number(c.get('fails:' + key) || 0);
+  if (ok === undefined) {
+    if (nAll >= FAIL_MAX.all || nKey >= (FAIL_MAX[kind] || FAIL_MAX.code)) throw err_(429, 'มีการใส่รหัสผิดจำนวนมาก ระบบพักการเข้าสู่ระบบ 10 นาที');
+    return;
+  }
+  if (!ok) { c.put('fails', String(nAll + 1), 600); c.put('fails:' + key, String(nKey + 1), 600); }
 }
 
 /* ---------- ตลาด: มิเตอร์รายห้อง ----------
@@ -310,12 +328,12 @@ var ROUTES = {
     return { ok: true };
   },
   'POST login': function (b) {
-    throttle_();
     if (b && b.user != null) {
       var un = str_(b.user, 30).toLowerCase(), pw = String(b.pass || '');
+      throttle_(undefined, 'user:' + un);
       var u = readUsers_().filter(function (x) { return x.user === un; })[0];
-      var good = !!u && u.hash === hashPw_(u.salt, pw);
-      throttle_(good);
+      var good = !!u && same_(u.hash, hashPw_(u.salt, pw));
+      throttle_(good, 'user:' + un);
       if (!good) { Utilities.sleep(400); throw err_(401, 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง'); }
       if (u.status === 'pending') throw err_(403, 'ส่งคำขอแล้ว รอผู้ดูแลระบบอนุมัติ');
       if (u.status !== 'active') throw err_(403, 'บัญชีนี้ถูกระงับ ติดต่อผู้ดูแลระบบ');
@@ -324,18 +342,21 @@ var ROUTES = {
       return { token: sign_({ u: u.id, v: u.v, exp: Date.now() + TOKEN_H * 3600e3 }), role: u.role, co: u.co || null, name: u.name, user: u.user, view: viewTok_(readConfig_().data) };
     }
     if (b && b.view != null) {
-      var cv = readConfig_().data, want = cv && cv.settings && cv.settings.viewCode, gv = !!want && String(b.view).trim() === String(want);
-      throttle_(gv);
+      throttle_(undefined, 'view');
+      var cv = readConfig_().data, want = cv && cv.settings && cv.settings.viewCode, gv = !!want && same_(String(b.view).trim(), String(want));
+      throttle_(gv, 'view');
       if (!gv) { Utilities.sleep(400); throw err_(401, want ? 'รหัสเข้าดูไม่ถูกต้อง' : 'ระบบนี้ไม่ได้ตั้งรหัสเข้าดู'); }
       return { token: viewTok_(cv), role: 'view' };
     }
     var code = String((b && b.code) || '').trim();
     if (!code) throw err_(400, 'ใส่รหัส');
+    throttle_(undefined, 'code');
     var c = readConfig_().data, adminCode = (c && c.settings && c.settings.adminCode) || props_().getProperty('ADMIN_CODE'), s = null;
-    if (adminCode && code === String(adminCode)) s = { r: 'admin' };
-    else { var co = ((c && c.companies) || []).filter(function (x) { return x.code && String(x.code) === code; })[0]; if (co) s = { r: 'company', c: co.id }; }
-    throttle_(!!s);
+    if (adminCode && same_(code, String(adminCode))) s = { r: 'admin' };
+    else { var co = ((c && c.companies) || []).filter(function (x) { return x.code && same_(String(x.code), code); })[0]; if (co) s = { r: 'company', c: co.id }; }
+    throttle_(!!s, 'code');
     if (!s) { Utilities.sleep(400); throw err_(401, 'รหัสไม่ถูกต้อง'); }
+    s.cv = codeVer_(s, c);
     s.exp = Date.now() + TOKEN_H * 3600e3;
     return { token: sign_(s), role: s.r === 'admin' ? 'admin' : 'company', co: s.c || null, view: viewTok_(c) };
   },
@@ -388,6 +409,18 @@ var ROUTES = {
     if (!config || !Array.isArray(config.companies) || !Array.isArray(config.meters) || !config.settings) throw err_(400, 'ข้อมูลไม่ครบ');
     var vc = config.settings.viewCode;
     if (vc != null && (typeof vc !== 'string' || vc.trim().length < 6 || vc.length > 40)) throw err_(400, 'รหัสเข้าดูต้องยาว 6–40 ตัว');
+    // รหัสผู้ดูแล/กองร้อย: อย่างน้อย 6 ตัว ไม่เกิน 40 และห้ามซ้ำกัน · สีกองร้อยต้องเป็นรหัสสี #xxxxxx
+    var seen = {}, ac = config.settings.adminCode;
+    if (ac != null && ac !== '') { ac = String(ac).trim(); if (ac.length < 6 || ac.length > 40) throw err_(400, 'รหัสผู้ดูแลต้องยาว 6–40 ตัว'); seen[ac] = 1; }
+    config.companies.forEach(function (co) {
+      if (co && co.code != null && co.code !== '') {
+        var k = String(co.code).trim();
+        if (k.length < 6 || k.length > 40) throw err_(400, 'รหัสของ ' + str_(co.name, 40) + ' ต้องยาว 6–40 ตัว');
+        if (seen[k]) throw err_(400, 'รหัสของ ' + str_(co.name, 40) + ' ซ้ำกับรหัสอื่น');
+        seen[k] = 1;
+      }
+      if (co && !/^#[0-9a-fA-F]{3,8}$/.test(String(co.color || ''))) co.color = '#888888';
+    });
     return locked_(function () {
       var cur = readConfig_();
       if (cur.data && !b.etag) throw err_(409, 'มีข้อมูลอยู่แล้ว');
