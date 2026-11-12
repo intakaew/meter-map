@@ -77,7 +77,7 @@ export function loadGas({ persist } = {}) {
       base64Decode: s => Buffer.from(s, 'base64'),
       computeHmacSha256Signature: (v, k) => crypto.createHmac('sha256', k).update(v).digest(),
       newBlob: (bytes, type, name) => ({ bytes: bytesOf(bytes), type, name, getDataAsString: () => bytesOf(bytes).toString('utf8') }),
-      formatDate: (d, tz, f) => { const x = new Date(d.getTime() + 7 * 3600e3); return x.getUTCFullYear() + '-' + String(x.getUTCMonth() + 1).padStart(2, '0'); },
+      formatDate: (d, tz, f) => { const x = new Date(d.getTime() + 7 * 3600e3); return x.getUTCFullYear() + '-' + String(x.getUTCMonth() + 1).padStart(2, '0') + (/dd/.test(f || '') ? '-' + String(x.getUTCDate()).padStart(2, '0') : ''); },
     },
     ContentService: { MimeType: { JSON: 'json' }, createTextOutput: s => ({ setMimeType() { return { content: s }; } }) },
   };
