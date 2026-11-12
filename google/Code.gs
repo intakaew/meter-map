@@ -150,7 +150,8 @@ function hashPw_(salt, pw) {
 }
 function checkPw_(pw) { pw = String(pw || ''); if (pw.length < 6 || pw.length > 100) throw err_(400, 'รหัสผ่านต้องยาว 6 ตัวขึ้นไป'); return pw; }
 function str_(v, max) { return String(v == null ? '' : v).replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, max); }
-function coName_(c, id) { return (((c && c.companies) || []).filter(function (x) { return x.id === id; })[0] || {}).name || ''; }
+// ชื่อหน่วยที่บัญชีผู้กรอกสังกัดได้: กองร้อยใน config หรือสายงานใน บก.พัน. (hq1–hq5 กรอกเฉพาะรายงานมาตรการประหยัด ไม่มีมิเตอร์)
+function coName_(c, id) { return (((c && c.companies) || []).filter(function (x) { return x.id === id; })[0] || {}).name || RPT_HQ_NAME[id] || ''; }
 function pubUser_(u) { return { id: u.id, user: u.user, name: u.name, pos: u.pos, phone: u.phone, reqCo: u.reqCo, note: u.note || '', status: u.status, role: u.role || null, co: u.co || null, at: u.at, lastLogin: u.lastLogin || null }; }
 function byName_(s, c) {
   if (s.n) return s.r === 'admin' ? s.n + ' (ผู้ดูแล)' : s.n + (coName_(c, s.c) ? ' (' + coName_(c, s.c) + ')' : '');
@@ -285,6 +286,42 @@ function writeChecks_(o) {
   if (id) DriveApp.getFileById(id).setContent(txt);
   else p.setProperty('CHK_ID', folder_().createFile('checks.json', txt, 'application/json').getId());
 }
+/* ---------- ศูนย์รายงานมาตรการประหยัด (เฉพาะผู้ดูแล) ----------
+ เก็บใน reports.json (พร็อพ RPT_ID) แยกจาก config จึงไม่ถูกส่งให้ผู้ชมหรือผู้กรอก
+ recs[หน่วย][เดือน] = ตัวเลขรายงานประจำเดือนตามแบบที่ ๕ (๗ ด้านตามหัวข้อการตรวจของ จบ.)
+ หน่วย = รหัสกองร้อยใน config · hq1–hq5 (สายงานใน บก.พัน.) · bn (ข้อมูลระดับกองพัน) */
+var RPT_HQ = ['hq1', 'hq2', 'hq3', 'hq4', 'hq5'];
+var RPT_HQ_NAME = { hq1: 'ตอนธุรการ ฯ', hq2: 'ตอนการข่าว ฯ', hq3: 'ตอนยุทธการ ฯ', hq4: 'ตอนส่งกำลัง ฯ', hq5: 'ฝ่ายการเงิน' };
+// สายงานใน บก.พัน. มีหน้าที่รายงานเฉพาะ โทรศัพท์ทางไกล เครื่องถ่ายสำเนา และวัสดุสำนักงาน (ช่องอื่นเป็นงานของกองร้อย)
+var RPT_HQ_KEYS = { phoneN: 1, phoneMin: 1, copySheets: 1, copyPages: 1, matIn: 1, matOut: 1, matOk: 1, sentDate: 1, docNo: 1, problem: 1, note: 1 };
+var RPT_HQ_MK = { r11: 1, r12: 1, r13: 1 };
+var RPT_NUM = ['days', 'daysOf', 'weeks', 'defFound', 'defFixed', 'trainN', 'trainPers', 'trainFam', 'signs', 'stickers', 'campPers',
+  'cars', 'carDays', 'pm', 'elecViol', 'acWashed', 'acTotal', 'led', 'leakFound', 'leakSelf', 'leakReq', 'phoneN', 'phoneMin',
+  'copySheets', 'copyPages', 'matIn', 'matOut', 'trees',
+  'elecU', 'elecB', 'elecBase', 'waterU', 'waterB', 'waterBase', 'fuelL', 'fuelB', 'fuelBase', 'pers', 'area', 'meet', 'camp'];
+var RPT_TXT = ['trainTopic', 'photoSent', 'waterNote', 'matOk', 'auditFix', 'problem', 'sentDate', 'docNo', 'note'];
+function readReports_() {
+  var id = props_().getProperty('RPT_ID');
+  if (!id) return { recs: {} };
+  var o = JSON.parse(DriveApp.getFileById(id).getBlob().getDataAsString('UTF-8')) || {};
+  o.recs = o.recs || {};
+  return o;
+}
+function writeReports_(o) {
+  var p = props_(), id = p.getProperty('RPT_ID'), txt = JSON.stringify(o);
+  if (id) DriveApp.getFileById(id).setContent(txt);
+  else p.setProperty('RPT_ID', folder_().createFile('reports.json', txt, 'application/json').getId());
+}
+function cleanReport_(r, unit) {
+  var o = {}, mk = {}, hq = RPT_HQ.indexOf(unit) >= 0;
+  if (hq) { var r2 = {}; Object.keys(RPT_HQ_KEYS).forEach(function (k) { r2[k] = r[k]; }); r2.mk = {}; Object.keys(r.mk || {}).forEach(function (k) { if (RPT_HQ_MK[k]) r2.mk[k] = r.mk[k]; }); r = r2; }
+  RPT_NUM.forEach(function (k) { if (r[k] != null && r[k] !== '') { var n = Number(r[k]); if (!isFinite(n) || n < 0 || n > 1e9) throw err_(400, 'ตัวเลขไม่ถูกต้อง: ' + k); o[k] = n; } });
+  RPT_TXT.forEach(function (k) { if (r[k] != null && r[k] !== '') o[k] = String(r[k]).slice(0, 400); });
+  if (o.sentDate && !/^\d{4}-\d{2}-\d{2}$/.test(o.sentDate)) throw err_(400, 'วันที่ส่งรายงานไม่ถูกต้อง');
+  if (r.mk && typeof r.mk === 'object') Object.keys(r.mk).slice(0, 30).forEach(function (k) { if (/^r\d{1,2}$/.test(k) && /^[yn-]$/.test(String(r.mk[k]))) mk[k] = String(r.mk[k]); });
+  if (Object.keys(mk).length) o.mk = mk;
+  return o;
+}
 function pickChecks_(meters) {
   var all = readChecks_(), ok = {}, o = {};
   (meters || []).forEach(function (m) { if (!m.agg) ok[m.id] = 1; });
@@ -363,7 +400,63 @@ var ROUTES = {
   'GET admin/state': function (b, t) {
     who_(t, 'admin');
     var c = readConfig_();
-    return { config: c.data, etag: c.etag, readings: readReadings_(), log: readLog_(), locPhotos: readLoc_(), checks: readChecks_(), sheetUrl: ss_().getUrl(), folderUrl: folder_().getUrl() };
+    return { config: c.data, etag: c.etag, readings: readReadings_(), log: readLog_(), locPhotos: readLoc_(), checks: readChecks_(), reports: readReports_(), sheetUrl: ss_().getUrl(), folderUrl: folder_().getUrl() };
+  },
+  'POST admin/report': function (b, t) {
+    var me = who_(t, 'admin'); b = b || {};
+    var unit = String(b.unit || ''), ym = String(b.ym || ''), c = readConfig_().data;
+    if (!YM.test(ym)) throw err_(400, 'เดือนไม่ถูกต้อง');
+    var isCo = ((c && c.companies) || []).some(function (x) { return x.id === unit; });
+    if (!isCo && RPT_HQ.indexOf(unit) < 0 && unit !== 'bn') throw err_(400, 'ไม่พบหน่วย');
+    var rec = b.rec == null ? null : cleanReport_(b.rec, unit);
+    if (rec) { rec.by = byName_(me, c); rec.at = new Date().toISOString(); }
+    locked_(function () {
+      var o = readReports_(); o.recs[unit] = o.recs[unit] || {};
+      if (rec) o.recs[unit][ym] = rec; else { delete o.recs[unit][ym]; if (!Object.keys(o.recs[unit]).length) delete o.recs[unit]; }
+      writeReports_(o);
+    });
+    addLog_(byName_(me, c), (rec ? 'บันทึก' : 'ลบ') + 'รายงานมาตรการประหยัด ' + (unit === 'bn' ? 'ระดับกองพัน' : isCo ? coName_(c, unit) : 'บก.พัน. สายงานที่ ' + unit.slice(2)) + ' เดือน ' + ym);
+    return { rec: rec };
+  },
+  // ผู้รับผิดชอบของหน่วย (บัญชีผู้กรอกของกองร้อย หรือสายงานใน บก.พัน.) กรอกรายงานของหน่วยตัวเองได้ เห็นเฉพาะของหน่วยตัวเอง
+  'GET my/reports': function (b, t) {
+    var s = who_(t);
+    if (s.r !== 'company' || !s.c) throw err_(403, 'เฉพาะผู้กรอกข้อมูลของหน่วย');
+    return { unit: s.c, recs: readReports_().recs[s.c] || {} };
+  },
+  'POST my/report': function (b, t) {
+    var s = who_(t); b = b || {};
+    if (s.r !== 'company' || !s.c) throw err_(403, 'เฉพาะผู้กรอกข้อมูลของหน่วย');
+    var c = readConfig_().data, unit = s.c, ym = String(b.ym || '');
+    if (!coName_(c, unit)) throw err_(403, 'ยังไม่ได้กำหนดหน่วยให้บัญชีนี้');
+    if (!YM.test(ym)) throw err_(400, 'เดือนไม่ถูกต้อง');
+    var now = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyy-MM'), min = now;
+    for (var i = 0; i < 4; i++) min = prevYm_(min);
+    if (ym > now || ym < min) throw err_(403, 'กรอกได้เฉพาะเดือนปัจจุบันและย้อนหลังไม่เกิน 4 เดือน เดือนอื่นให้ติดต่อผู้ดูแลระบบ');
+    if (b.rec == null) throw err_(400, 'ไม่มีข้อมูล');
+    var rec = cleanReport_(b.rec, unit), out = null;
+    delete rec.note; delete rec.sentDate;
+    if (!Object.keys(rec).length) throw err_(400, 'ยังไม่ได้กรอกข้อมูล');
+    locked_(function () {
+      var o = readReports_(), old = (o.recs[unit] || {})[ym] || {};
+      rec.sentDate = old.sentDate || Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyy-MM-dd'); // วันที่ส่งครั้งแรก ผู้กรอกแก้เองไม่ได้
+      if (old.note) rec.note = old.note;
+      rec.by = byName_(s, c); rec.at = new Date().toISOString();
+      (o.recs[unit] = o.recs[unit] || {})[ym] = rec; writeReports_(o); out = rec;
+    });
+    addLog_(byName_(s, c), 'ส่งรายงานมาตรการประหยัด ' + coName_(c, unit) + ' เดือน ' + ym);
+    return { rec: out };
+  },
+  'POST admin/reports-import': function (b, t) {
+    var me = who_(t, 'admin'), src = b && b.reports && b.reports.recs, out = { recs: {} }, n = 0;
+    if (!src || typeof src !== 'object') throw err_(400, 'ข้อมูลไม่ถูกต้อง');
+    Object.keys(src).slice(0, 60).forEach(function (u) {
+      if (!SAFE_ID.test(u)) return;
+      Object.keys(src[u] || {}).slice(0, 600).forEach(function (ym) { if (YM.test(ym)) { var x = cleanReport_(src[u][ym] || {}, u); ['by', 'at'].forEach(function (k) { if (src[u][ym] && src[u][ym][k]) x[k] = String(src[u][ym][k]).slice(0, 80); }); (out.recs[u] = out.recs[u] || {})[ym] = x; n++; } });
+    });
+    locked_(function () { writeReports_(out); });
+    addLog_(byName_(me, readConfig_().data), 'นำเข้ารายงานมาตรการประหยัดจากไฟล์สำรอง ' + n + ' รายการ');
+    return { n: n };
   },
   'GET admin/users': function (b, t) {
     who_(t, 'admin');
