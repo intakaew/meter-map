@@ -126,7 +126,7 @@ td.num,th.num{text-align:right}
 .mform .hd{display:flex;gap:8px;align-items:center;font-weight:700;flex-wrap:wrap}
 .mform .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
 .mform label{display:flex;flex-direction:column;font-size:14px;color:var(--text-muted);gap:4px}
-.ok{color:var(--ok)}tr.pend td{background:rgba(245,158,11,.10)}.lgtabs{display:flex;gap:6px;margin:0 0 12px}.lgtabs button.on{background:var(--accent,#2563eb);color:#fff;border-color:transparent} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.rpt h4{margin:16px 0 6px}.rpt .rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}.rpt .rg label{margin:0}.rpt .rg .rw{grid-column:1/-1}.rpt .rg input,.rpt .rg select{width:100%;min-width:0}.rtbl th,.rtbl td{padding:6px 8px}.rtbl .rc{text-align:center;cursor:pointer;min-width:44px}.rtbl .rok{color:var(--ok);font-weight:700}.rtbl .rlate{color:var(--warn);font-weight:700}.rtbl .rmiss{color:var(--bad);font-weight:700}.rtbl td.rc:hover{background:var(--surface2)}.rgrp{font-weight:700;background:var(--surface2)}.rsum td{font-weight:700;border-top:2px solid var(--border)}.rkey{display:inline-block;min-width:22px;text-align:center;font-weight:700;margin-left:10px}.rkey.rok{color:var(--ok)}.rkey.rlate{color:var(--warn)}.rkey.rmiss{color:var(--bad)}.rform td{white-space:normal;vertical-align:top}.rform .rarea{font-weight:700;min-width:130px}.rform .rwhat{min-width:200px;max-width:320px}.rwrap{white-space:normal!important}@media print{.rpt table{font-size:11px}.rpt .card{break-inside:avoid}}.ok{color:var(--ok)}tr.pend td{background:rgba(245,158,11,.10)}.lgtabs{display:flex;gap:6px;margin:0 0 12px}.lgtabs button.on{background:var(--accent,#2563eb);color:#fff;border-color:transparent} .warn{color:var(--warn)} .bad{color:var(--bad)}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
 .modal-bg{position:fixed;inset:0;background:rgba(3,7,15,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
 .modal{background:var(--surface-solid);border-radius:18px;padding:18px;width:min(470px,100%);max-height:90vh;overflow:auto;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.4)}
@@ -247,7 +247,7 @@ function migrate(d){d.settings=d.settings||{};(d.companies||[]).forEach(c=>{if(!
   (a.noBr||[]).forEach(id=>{const n=d.settings.noBr||(d.settings.noBr=[]);if(!n.includes(id))n.push(id);d.shapes=d.shapes.filter(x=>!(x.br&&x.auto&&x.bldId===id));});
   // ค่าที่ใส่ไว้ตอนทดสอบระบบ ไม่ใช่ของผู้ใช้
   Object.entries(a.untest||{}).forEach(([id,t])=>{const b=d.blds.find(x=>x.id===id);if(b&&b.type===t)b.type='';});});
- d.settings.addBlds=Math.max(done,...ADD_BLDS.map(a=>a.v));d.locPhotos=d.locPhotos||{};d.checks=d.checks||{};return d;}
+ d.settings.addBlds=Math.max(done,...ADD_BLDS.map(a=>a.v));d.locPhotos=d.locPhotos||{};d.checks=d.checks||{};d.reports=d.reports&&d.reports.recs?d.reports:{recs:{}};return d;}
 function load(){let d=null;try{const j=localStorage.getItem(KEY);if(j)d=JSON.parse(j);}catch(e){}return d?migrate(d):migrate(seed());}
 function save(){if(API.on){if(sess?.role==='admin'&&!API.empty)schedulePush();return;}try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){alert('บันทึกไม่ได้: พื้นที่เก็บในเบราว์เซอร์เต็ม (ลองลดจำนวนรูป)');}}
 /* ---------- ระบบออนไลน์ (OneDrive ผ่าน Netlify) — ถ้าไม่มี /api จะทำงานแบบต้นแบบในเบราว์เซอร์ ---------- */
@@ -256,7 +256,7 @@ const GAS_URL='';
 // ?demo = โหมดตัวอย่าง (ค่ายสมมติ เก็บในเบราว์เซอร์ ไม่ต่อระบบจริง) ใช้เป็นลิงก์ผลงานให้คนทั่วไปลองเล่น
 const DEMO=/[?&]demo(?:[=&]|$)/.test(location.search),GAS=DEMO?'':GAS_URL;
 // ฉบับบน GitHub เป็นโค้ดเปิด/โหมดตัวอย่างเท่านั้น ระบบจริงของหน่วยอยู่หลังด่านยืนยันตัวตน
-if(!DEMO&&!GAS_URL&&/\.github\.io$/.test(location.hostname))location.replace('https://meter-m1pan3.pages.dev/'+location.hash);
+if(!DEMO&&!GAS_URL&&/.github.io$/.test(location.hostname))location.replace('https://meter-m1pan3.pages.dev/'+location.hash);
 const API={on:false,sheetUrl:null,st:null,etag:null,empty:false,err:null,gate:false,syncCfg:null,syncRd:null,q:[],t:null,lt:null,busy:false,sync:''};
 // รหัสเข้าดูเว็บไซต์: ตัวกลางให้โทเค็นแบบดูอย่างเดียว เก็บในเครื่องนี้ 30 วัน (ผู้ดูแลเปลี่ยนรหัสเมื่อไร โทเค็นเก่าใช้ไม่ได้ทันที)
 const VKEY='mmView';
@@ -293,7 +293,7 @@ async function flushLog(){if(!API.q.length||!sess?.token)return;const e=API.q.sp
 async function loadOnline(){API.err=null;API.sync="";API.gate=false;
  if(sess?.role==='admin'){if(ACC()&&!API.usersBusy)loadUsers();try{const j=await api('/admin/state');API.etag=j.etag;API.sheetUrl=j.sheetUrl||null;
    if(!j.config){API.empty=true;S=migrate(seed());S.log=[];API.syncCfg=null;API.syncRd={};}
-   else{API.empty=false;S={...j.config,readings:j.readings||{},log:j.log||[],locPhotos:j.locPhotos||{},checks:j.checks||{}};const before=JSON.stringify(cfgOf(S));migrate(S);markSynced();API.syncCfg=before;if(JSON.stringify(cfgOf(S))!==before)schedulePush();}
+   else{API.empty=false;S={...j.config,readings:j.readings||{},log:j.log||[],locPhotos:j.locPhotos||{},checks:j.checks||{},reports:j.reports||{recs:{}}};const before=JSON.stringify(cfgOf(S));migrate(S);markSynced();API.syncCfg=before;if(JSON.stringify(cfgOf(S))!==before)schedulePush();}
    return;}catch(e){if(e.status===401||e.status===403)setSess(null);else{API.err=e.message;S=blankS();return;}}}
  try{const j=await api('/state');if(!j.config){API.empty=true;S=blankS();}else{API.empty=false;S={...j.config,readings:j.readings||{},log:[],locPhotos:j.locPhotos||{},checks:j.checks||{}};migrate(S);}}
  catch(e){S=blankS();if(e.status===401){if(sess)setSess(null);setViewTok(null);API.gate=true;}else API.err=e.message;}}
@@ -336,7 +336,7 @@ const UI={page:'view',ovType:'elec',ovYear:'all',cmpOn:false,cmpMode:'year',cmpY
  is3d:true,tool:'select',draft:null,drawCo:'c1',drawH:8,adminTab:'map',gridFy:null,qrBase:'',fitFor:null,selMk:null,mkType:'elec',mkYear:'all',mkChartT:'bar',mkYears:[],mkBld:'',mkFy:null};
 const PENDING={};const CH={};
 
-const co=id=>S.companies.find(c=>c.id===id)||{id:'',name:'(ไม่ระบุ)',color:'#888888'};
+const co=id=>S.companies.find(c=>c.id===id)||(h=>h?{id,name:h[1],color:'#64748b'}:{id:'',name:'(ไม่ระบุ)',color:'#888888'})(RPT_HQ.find(x=>x[0]===id));
 const meter=id=>S.meters.find(m=>m.id===id);
 const bld=id=>S.blds.find(b=>b.id===id);
 const rd=(id,ym)=>S.readings[id]?.[ym];
@@ -740,7 +740,8 @@ function drawMarket(bid){const ms=mkRooms(bid).filter(m=>m.type===UI.mkType),T=T
  chart('mkChart',{type:'bar',data:{labels:mo.map(ymLabel),datasets:[{label:'รวมทุกห้อง',backgroundColor:mo.map(ym=>anomFor(ms,ym)?'#ef4444':c.color),borderRadius:4,data:mo.map(ym=>sumUnits(ms,ym))}]},options:o});}
 
 /* ---------- ชั้น ๒ กองร้อย ---------- */
-function pageCompany(){const c=co(sess.co),ym=openYm(),closed=S.settings.closed,list=S.meters.filter(m=>m.companyId===c.id&&!m.agg),done=list.filter(m=>rd(m.id,ym)).length;
+function pageCompany(){return RPT_HQ.some(x=>x[0]===sess.co)?rptMine():pageCompany0()+rptMine();}
+function pageCompany0(){const c=co(sess.co),ym=openYm(),closed=S.settings.closed,list=S.meters.filter(m=>m.companyId===c.id&&!m.agg),done=list.filter(m=>rd(m.id,ym)).length;
  const plain=list.filter(m=>!m.room),mks=[...new Set(list.filter(m=>m.room).map(m=>mkKey(m.bldId||'')))];
  return `<div class="card"><div class="row"><span class="badge" style="background:${c.color};font-size:15px">${esc(c.name)}</span><h2 style="margin:0">กรอกเลขมิเตอร์ประจำเดือน ${ymLong(ym)}</h2></div>
  <p class="${closed?'bad':'ok'}" style="margin:6px 0">${closed?'🔒 ปิดรับข้อมูลแล้ว — ถ้าต้องแก้ ติดต่อผู้ดูแลระบบ':`🟢 เปิดรับข้อมูล · กำหนดส่งภายในวันที่ ${S.settings.closeDay} ${ymLong(nextYm(ym))}`}</p>
@@ -797,10 +798,10 @@ function saveReading(id,batch){
  save();if(!batch){render();toast('บันทึกแล้ว ✓');}else{const i=document.getElementById('r-'+id);if(i)i.defaultValue=i.value;}return true;}
 
 /* ---------- ชั้น ๓ ผู้ดูแล ---------- */
-const ATABS=[['map','🗺️ แผนที่ อาคาร แนวท่อ'],['meters','📟 มิเตอร์'],['data','📊 ข้อมูลรายเดือน'],['market','🏪 ตลาด'],['access','🔑 ผู้ใช้และสิทธิ์'],['qr','▦ QR โค้ด'],['log','🕘 ประวัติการแก้ไข'],['handover','📦 สำรองและส่งมอบงาน']];
+const ATABS=[['map','🗺️ แผนที่ อาคาร แนวท่อ'],['meters','📟 มิเตอร์'],['data','📊 ข้อมูลรายเดือน'],['market','🏪 ตลาด'],['rpt','📋 ศูนย์รายงาน'],['access','🔑 ผู้ใช้และสิทธิ์'],['qr','▦ QR โค้ด'],['log','🕘 ประวัติการแก้ไข'],['handover','📦 สำรองและส่งมอบงาน']];
 const TOOLS=[['select','✋ เลือก/ลากหมุด'],['addElec','⚡ เพิ่มมิเตอร์ไฟฟ้า'],['addWater','💧 เพิ่มมิเตอร์ประปา'],['drawBld','🏢 วาดอาคาร 3D'],['drawWater','〰 วาดท่อประปา'],['drawElec','〰 วาดสายไฟฟ้า'],['drawZone','⬠ วาดเขตกองร้อย'],['del','🗑 ลบเส้น/อาคาร/เขต']];
 const HINT={select:'ลากหมุดเพื่อย้ายตำแหน่ง · แตะหมุดเพื่อแก้ข้อมูลมิเตอร์ · แตะอาคารเพื่อแก้ชื่อ/กองร้อย/ความสูง',addElec:'แตะบนแผนที่ตรงจุดที่ติดตั้งมิเตอร์ไฟฟ้า',addWater:'แตะบนแผนที่ตรงจุดที่ติดตั้งมิเตอร์ประปา',drawBld:'เลือกกองร้อยและความสูง แล้วแตะมุมหลังคาอาคารทีละมุม แล้วกด "เสร็จ"',drawWater:'แตะทีละจุดตามแนวท่อประปา แล้วกด "เสร็จ"',drawElec:'แตะทีละจุดตามแนวสายไฟ แล้วกด "เสร็จ"',drawZone:'เลือกกองร้อย แล้วแตะมุมของเขตทีละมุม (อย่างน้อย 3 มุม) แล้วกด "เสร็จ"',del:'แตะเส้นท่อ สายไฟ อาคาร หรือเขตที่ต้องการลบ'};
-function pageAdmin(){const np=(API.users||[]).filter(u=>u.status==='pending').length;return onlineCard()+`<div class="tabs noprint">${ATABS.map(([k,n])=>`<button data-atab="${k}" class="${UI.adminTab===k?'on':''}">${n}${k==='access'&&np?` <span class="badge" style="background:var(--bad);padding:0 8px">${np}</span>`:''}</button>`).join('')}</div>`+({map:adminMap,meters:adminMeters,data:adminData,market:adminMarket,access:adminAccess,qr:adminQr,log:adminLog,handover:adminHandover}[UI.adminTab])();}
+function pageAdmin(){const np=(API.users||[]).filter(u=>u.status==='pending').length;return onlineCard()+`<div class="tabs noprint">${ATABS.map(([k,n])=>`<button data-atab="${k}" class="${UI.adminTab===k?'on':''}">${n}${k==='access'&&np?` <span class="badge" style="background:var(--bad);padding:0 8px">${np}</span>`:''}</button>`).join('')}</div>`+({map:adminMap,meters:adminMeters,data:adminData,market:adminMarket,rpt:adminReports,access:adminAccess,qr:adminQr,log:adminLog,handover:adminHandover}[UI.adminTab])();}
 function adminMap(){const t=UI.tool,needCo=t==='drawZone'||t==='drawBld';
  return `<div class="card"><div class="row">${TOOLS.map(([k,n])=>`<button data-tool="${k}" class="${t===k?'on':''}">${n}</button>`).join('')}</div>
  <div class="row" style="margin-top:8px;min-height:40px"><span class="hint">👉 ${HINT[t]}</span>
@@ -910,6 +911,166 @@ function addRooms(){const b=bld(UI.mkBld);if(!b)return alert('เลือกอ
 function csvMarket(){const b=bld(UI.mkBld),fy=UI.mkFy||fyOf(openYm()),ms=fyMonths(fy),rows=[['ห้อง','ร้าน/ผู้ใช้','ประเภท','หน่วยนับ','รหัสจุด',...ms.map(ymLabel),'รวม']];
  for(const r of roomRows(mkRooms(mkKey(UI.mkBld))))for(const t of ['elec','water']){const m=r[t];if(!m)continue;const u=ms.map(ym=>units(m.id,ym));rows.push([r.room,r.shop,TYPE[t].name,TYPE[t].unit,m.code,...u.map(v=>v??''),u.reduce((a,v)=>a+(v||0),0)]);}
  download('﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\r\n'),`สรุปตลาด ${b?b.name:''} ปีงบ ${fy}.csv`,'text/csv;charset=utf-8');}
+/* ---------- ศูนย์รายงานมาตรการประหยัด (เฉพาะผู้ดูแลระบบ) ----------
+ รวมตัวเลขที่ ร้อย.นขต. และสายงานใน บก.พัน. ต้องรายงานทุกเดือนตามคำสั่ง ม.๑ พัน.๓ รอ. ที่ ๑๙๗/๒๕๖๙ ข้อ ๓.๒
+ (แบบที่ ๕ รายงานผลการปฏิบัติประจำเดือน ๗ ด้านตามหัวข้อการตรวจของ จบ.) + ข้อมูลระดับกองพันที่ใช้รายงานหน่วยเหนือ (ข้อ ๔)
+ ข้อมูลเก็บใน reports.json แยกจากข้อมูลแผนที่ ผู้ชมและผู้กรอกไม่ได้รับข้อมูลชุดนี้ */
+const RPT_HQ=[['hq1','ตอนธุรการ ฯ'],['hq2','ตอนการข่าว ฯ'],['hq3','ตอนยุทธการ ฯ'],['hq4','ตอนส่งกำลัง ฯ'],['hq5','ฝ่ายการเงิน']];
+const RPT_ROWS=[
+ ['๑. การกำกับดูแล (ข้อ ๓.๒)','บันทึกแบบตรวจสอบมาตรการประหยัดประจำวัน / ผู้บังคับหน่วยลงนามตรวจทุกสัปดาห์',[['days','บันทึก (วัน)'],['daysOf','จากทั้งเดือน (วัน)'],['weeks','ลงนามตรวจ (สัปดาห์)'],['defFound','พบข้อบกพร่อง (ครั้ง)'],['defFixed','แก้ไขแล้ว (ครั้ง)']]],
+ ['๒. รณรงค์ สร้างจิตสำนึก (ข้อ ๒.๖.๑–๒.๖.๓)','อบรมชี้แจงกำลังพลและครอบครัวตามตาราง',[['trainN','อบรม (ครั้ง)'],['trainPers','ผู้เข้ารับ (นาย)'],['trainFam','ครอบครัว (คน)'],['trainTopic','หัวข้อ/วันที่อบรม','t']]],
+ ['','ป้ายรณรงค์และสติกเกอร์ในเขตรับผิดชอบ สภาพเรียบร้อย ส่งภาพให้ จนท.ประชาสัมพันธ์',[['signs','ป้าย (จุด)'],['stickers','สติกเกอร์ (จุด)'],['photoSent','ส่งภาพเมื่อ (ว.ด.ป.)','t']]],
+ ['','กิจกรรมรณรงค์ของหน่วย (ธ.ค. / มิ.ย.)',[['campPers','เข้าร่วม (นาย)']]],
+ ['๓. น้ำมันเชื้อเพลิง (ข้อ ๒.๑)','ใช้รถเท่าที่จำเป็น นำสารด้วยจักรยาน จักรยานยนต์ หรือเดิน',[['cars','รถของหน่วย (คัน)'],['carDays','ใช้ (วัน)']]],
+ ['','ตรวจลมยางก่อนใช้ ปรนนิบัติบำรุงตามวงรอบ กวดขันความเร็ว ๘๐–๙๐',[['pm','ปบ. ตามวงรอบ (คัน)']]],
+ ['๔. ไฟฟ้า (ข้อ ๒.๒)','แอร์ ๐๘๓๐–๑๖๓๐ ที่ ๒๕–๒๖ องศา ปิดพักเที่ยง ปิดไฟ/ถอดปลั๊กหลังเลิกงาน',[['elecViol','พบไม่ปฏิบัติ (ครั้ง)']]],
+ ['','ล้างแผ่นกรองแอร์ประจำเดือน / เปลี่ยนหลอดชำรุดเป็น LED',[['acWashed','ล้างแล้ว (เครื่อง)'],['acTotal','แอร์ทั้งหมด (เครื่อง)'],['led','เปลี่ยน LED (หลอด)']]],
+ ['๕. น้ำประปา (ข้อ ๒.๓)','ตรวจรั่วไหล ก๊อก สุขภัณฑ์ ท่อ ทุกวัน ซ่อมหรือแจ้งซ่อมทันที',[['leakFound','พบรั่ว (จุด)'],['leakSelf','ซ่อมเอง (จุด)'],['leakReq','แจ้งซ่อม (จุด)']]],
+ ['','ไม่ใช้น้ำประปาในกิจการส่วนตัว รดน้ำต้นไม้จากแหล่งน้ำธรรมชาติ',[['waterNote','รายละเอียด','t']]],
+ ['๖. โทรศัพท์ (ข้อ ๒.๔)','ใช้โทรศัพท์ ๕ ตัว ทบ. เป็นหลัก ทางไกลเท่าที่จำเป็นและขออนุมัติ',[['phoneN','ขอใช้ทางไกล (ครั้ง)'],['phoneMin','รวมเวลา (นาที)']]],
+ ['๗. วัสดุสำนักงาน (ข้อ ๒.๕)','ถ่ายสำเนาเท่าที่จำเป็น ใช้ ๒ หน้า ลงบันทึกทุกครั้ง',[['copySheets','กระดาษ (แผ่น)'],['copyPages','พิมพ์/ถ่าย (หน้า)']]],
+ ['','ส่งเอกสารทางอิเล็กทรอนิกส์แทนการพิมพ์ / บัญชีรับ–จ่ายวัสดุ',[['matIn','รับ (รายการ)'],['matOut','จ่าย (รายการ)'],['matOk','คงเหลือตรงบัญชี','s']]],
+ ['อื่น ๆ','ปลูกและดูแลต้นไม้ (ข้อ ๒.๖.๔)',[['trees','ต้นไม้ที่ปลูก/ดูแล (ต้น)']]],
+ ['','แก้ไขข้อบกพร่องจากการตรวจของ จบ. (ข้อ ๕.๑)',[['auditFix','ผลการแก้ไข','t']]]];
+const RPT_BN=[['elecU','ไฟฟ้า ปีนี้ (หน่วย kWh)'],['elecB','ไฟฟ้า (บาท)'],['elecBase','ไฟฟ้า ปีฐาน (หน่วย)'],['waterU','น้ำประปา ปีนี้ (ลบ.ม.)'],['waterB','น้ำประปา (บาท)'],['waterBase','น้ำประปา ปีฐาน (ลบ.ม.)'],
+ ['fuelL','น้ำมันงานธุรการ (ลิตร)'],['fuelB','น้ำมันงานธุรการ (บาท)'],['fuelBase','น้ำมันงานธุรการ ปีฐาน (ลิตร)'],['pers','จำนวนบุคลากร (นาย)'],['area','พื้นที่ให้บริการ (ตร.ม.)'],['meet','ประชุมคณะทำงาน (ครั้ง)'],['camp','กิจกรรมรณรงค์ของหน่วย (ครั้ง)']];
+const RPT_SUM=['days','daysOf','weeks','defFound','defFixed','trainN','trainPers','trainFam','signs','stickers','campPers','cars','carDays','pm','elecViol','acWashed','acTotal','led','leakFound','leakSelf','leakReq','phoneN','phoneMin','copySheets','copyPages','matIn','matOut','trees'];
+function rptAll(){S.reports=S.reports||{recs:{}};S.reports.recs=S.reports.recs||{};return S.reports.recs;}
+function rptRec(u,ym){return (rptAll()[u]||{})[ym]||null;}
+function rptUnits(){return [...S.companies.map(c=>({id:c.id,name:c.name,grp:'co'})),...RPT_HQ.map(([id,name])=>({id,name,grp:'hq'}))];}
+function rptDue(ym){const[y,m]=ym.split('-').map(Number);return (m===12?y+1:y)+'-'+pad(m===12?1:m+1)+'-03';}
+const rptPct=r=>r&&r.copySheets>0&&r.copyPages!=null?Math.min(100,Math.round(r.copyPages/(r.copySheets*2)*100)):null;
+const rptD=d=>{if(!d)return '';const[y,m,dd]=d.split('-').map(Number);return dd+' '+TH_M[m-1]+' '+pad((y+543)%100);};
+const rptN=v=>v==null?'–':Number(v).toLocaleString('th-TH');
+function rptAgg(recs){const o={n:0};for(const r of recs){if(!r)continue;o.n++;for(const k of RPT_SUM)if(r[k]!=null)o[k]=(o[k]||0)+r[k];}return o;}
+function rptOf(u,yms){return yms.length===1?rptRec(u,yms[0]):(()=>{const a=rptAgg(yms.map(ym=>rptRec(u,ym)));return a.n?a:null;})();}
+function rptState(){const fy=UI.rFy||fyOf(openYm()),ms=fyMonths(fy);if(!UI.rYm||!ms.includes(UI.rYm))UI.rYm=ms.includes(openYm())?openYm():ms[0];
+ const us=rptUnits();if(!UI.rUnit||!us.some(u=>u.id===UI.rUnit))UI.rUnit=us[0]?.id||'hq1';return {fy,ms,ym:UI.rYm,us,view:UI.rView||'status',scope:UI.rScope||'m'};}
+function adminReports(){const st=rptState(),{fy,ms,ym,view}=st,cur=fyOf(openYm()),fys=[...new Set([cur+1,cur,cur-1,cur-2,fy])].sort((a,b)=>b-a);
+ const V=[['status','📅 สถานะการส่ง'],['form','✍️ กรอกรายงานของหน่วย'],['sum','📑 สรุปและบัญชี'],['bn','🏛️ ข้อมูลระดับกองพัน']];
+ return `<div class="rpt"><div class="card noprint"><div class="row" style="justify-content:space-between"><h3 style="margin:0">📋 ศูนย์รายงานมาตรการประหยัด</h3>
+  <span class="row" style="gap:8px"><select id="rptFy" aria-label="ปีงบประมาณ">${fys.map(y=>`<option value="${y}" ${y===fy?'selected':''}>ปีงบ ${y}</option>`).join('')}</select>
+  <select id="rptYm" aria-label="เดือน">${ms.map(m=>`<option value="${m}" ${m===ym?'selected':''}>${ymLabel(m)}</option>`).join('')}</select></span></div>
+  <p class="hint" style="margin:6px 0 10px">🔒 เห็นเฉพาะผู้ดูแลระบบ · รวมตัวเลขที่ ร้อย.นขต. และสายงานใน บก.พัน. รายงานทุกเดือน (คำสั่ง ม.๑ พัน.๓ รอ. ที่ ๑๙๗/๒๕๖๙ ข้อ ๓.๒ · แบบที่ ๕) เรียงตามหัวข้อการตรวจ ๗ ด้านของ จบ. เพื่อนำไปทำรายงานและเข้าแฟ้มรับตรวจ</p>
+  <div class="lgtabs" style="flex-wrap:wrap;margin:0">${V.map(([k,n])=>`<button data-rv="${k}" class="${view===k?'on':''}">${n}</button>`).join('')}</div></div>
+  ${({status:rptStatus,form:rptForm,sum:rptSummary,bn:rptBn}[view])(st)}</div>`;}
+function rptStatus({fy,ms,us}){const today=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);let sent=0,late=0,miss=0;
+ const cell=(u,m)=>{const r=rptRec(u.id,m),due=rptDue(m);
+  if(r){sent++;const ok=!r.sentDate||r.sentDate<=due;if(!ok)late++;return `<td class="rc ${ok?'rok':'rlate'}" data-rcell="${u.id}|${m}" title="${esc(u.name)} ${ymLabel(m)}${r.sentDate?' · ส่ง '+rptD(r.sentDate):''}">${ok?'✓':'ช้า'}</td>`;}
+  if(today>due){miss++;return `<td class="rc rmiss" data-rcell="${u.id}|${m}" title="เลยกำหนด ยังไม่มีรายงาน">✗</td>`;}
+  return `<td class="rc" data-rcell="${u.id}|${m}" title="ยังไม่ถึงกำหนด">·</td>`;};
+ const rows=us.map((u,i)=>`${u.grp==='hq'&&us[i-1]?.grp!=='hq'?`<tr><td colspan="${ms.length+2}" class="rgrp">บก.พัน. (๕ สายงาน)</td></tr>`:''}<tr><td>${esc(u.name)}</td>${ms.map(m=>cell(u,m)).join('')}<td class="num">${ms.filter(m=>rptRec(u.id,m)).length}/${ms.length}</td></tr>`).join('');
+ const bn=`<tr><td colspan="${ms.length+2}" class="rgrp">ระดับกองพัน</td></tr><tr><td>ข้อมูลกองพัน (ไฟฟ้า ประปา น้ำมัน)</td>${ms.map(m=>`<td class="rc ${rptRec('bn',m)?'rok':''}" data-rbn="${m}">${rptRec('bn',m)?'✓':'·'}</td>`).join('')}<td class="num">${ms.filter(m=>rptRec('bn',m)).length}/${ms.length}</td></tr>`;
+ return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">สถานะการส่งรายงานประจำเดือน · ปีงบ ${fy}</h3><span class="noprint"><button id="rptPrint">🖨️ พิมพ์</button></span></div>
+ <p class="hint" style="margin:6px 0 8px">ผู้รับผิดชอบของแต่ละหน่วยเข้าสู่ระบบแล้วกรอกเองได้ (อนุมัติบัญชีที่แท็บ ผู้ใช้และสิทธิ์) หรือผู้ดูแลกดที่ช่องเพื่อกรอกแทน · กำหนดส่งภายในวันที่ 3 ของเดือนถัดไป (ตามคู่มือการปฏิบัติของกองร้อย ปีงบ 70) · ลงแล้ว ${sent} ฉบับ ส่งช้า ${late} เลยกำหนดยังไม่มี ${miss}</p>
+ <div style="overflow:auto"><table class="rtbl"><thead><tr><th>หน่วย</th>${ms.map(m=>`<th class="rc">${ymLabel(m)}</th>`).join('')}<th class="num">ครบ</th></tr></thead><tbody>${rows}${bn}</tbody></table></div>
+ <p class="hint" style="margin:8px 0 0"><span class="rkey rok">✓</span> ลงรายงานแล้ว <span class="rkey rlate">ช้า</span> ส่งหลังกำหนด <span class="rkey rmiss">✗</span> เลยกำหนดแล้วยังไม่มีรายงาน <span class="rkey">·</span> ยังไม่ถึงกำหนด</p></div>`;}
+function rptInput([k,label,kind],r){const v=r&&r[k]!=null?r[k]:'';
+ if(kind==='t')return `<label class="rw">${label}<input type="text" data-k="${k}" maxlength="400" value="${esc(v)}"></label>`;
+ if(kind==='s')return `<label>${label}<select data-k="${k}"><option value=""></option><option value="y" ${v==='y'?'selected':''}>ตรง</option><option value="n" ${v==='n'?'selected':''}>ไม่ตรง</option></select></label>`;
+ return `<label>${label}<input type="number" min="0" step="any" inputmode="decimal" data-k="${k}" value="${esc(v)}"></label>`;}
+function rptForm({ym,us}){const u=us.find(x=>x.id===UI.rUnit);return rptFormCard(u,ym,rptRec(u.id,ym)||{},us,null);}
+function rptFormCard(u,ym,r,us,mine){const mk=r.mk||{},pct=rptPct(r),hq=u.grp==='hq',has=!!r.at;
+ const rows=RPT_ROWS.map((x,i)=>[x,i]).filter(([,i])=>!hq||(i>=10&&i<=12)).map(([[area,what,ins],i])=>{const key='r'+(i+1),v=mk[key]||'';
+  return `<tr>${area?`<td class="rarea" rowspan="${(()=>{let n=1;while(RPT_ROWS[i+n]&&!RPT_ROWS[i+n][0])n++;return n;})()}">${area}</td>`:''}<td class="rwhat">${what}</td>
+  <td><select data-mk="${key}" aria-label="ผล"><option value=""></option><option value="y" ${v==='y'?'selected':''}>✓ ครบ</option><option value="n" ${v==='n'?'selected':''}>✗ ไม่ครบ</option><option value="-" ${v==='-'?'selected':''}>– ไม่มีกรณี</option></select></td>
+  <td><div class="rg">${ins.map(x=>rptInput(x,r)).join('')}${i===11?`<label>ใช้ ๒ หน้า (ร้อยละ)<b id="rptPct" style="font-size:18px">${pct==null?'–':pct}</b></label>`:''}</div></td></tr>`;}).join('');
+ return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">รายงานผลการปฏิบัติตามมาตรการประหยัด · ${esc(u.name)} · ${ymLabel(ym)}</h3>
+  <span class="row noprint" style="gap:8px">${mine?`<label style="margin:0">เดือน <select id="myRptYm">${mine.yms.map(m=>`<option value="${m}" ${m===ym?'selected':''}>${ymLabel(m)}</option>`).join('')}</select></label>`:`<label style="margin:0">หน่วย <select id="rptUnit">${us.map((x,i)=>`${x.grp==='hq'&&us[i-1]?.grp!=='hq'?'<optgroup label="บก.พัน.">':''}<option value="${x.id}" ${x.id===u.id?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup></select></label>`}</span></div>
+ <p class="hint" style="margin:6px 0 10px">${hq?'สายงานใน บก.พัน. รายงานเฉพาะ 3 เรื่อง: การใช้โทรศัพท์ทางไกล การใช้เครื่องถ่ายเอกสาร และการเบิกรับวัสดุสำนักงาน (การอบรมประจำวันและการจดมิเตอร์เป็นหน้าที่ของกองร้อย)':'กรอกตามแบบที่ ๕ เรียงตามหัวข้อการตรวจของ จบ. อ้างข้อตามคำสั่ง ม.๑ พัน.๓ รอ. ที่ ๑๙๗/๒๕๖๙'} · ช่องที่ไม่มีข้อมูลเว้นว่างได้${mine&&r.sentDate?` · ส่งครั้งแรก ${rptD(r.sentDate)}`:''}${r.at?` · บันทึกล่าสุด ${rptD(new Date(new Date(r.at).getTime()+7*3600e3).toISOString().slice(0,10))} โดย ${esc(r.by||'')}`:''}</p>
+ <div class="rg" style="margin-bottom:10px">${mine?'':`<label>วันที่หน่วยส่งรายงาน<input type="date" data-k="sentDate" value="${esc(r.sentDate||'')}"></label>`}<label>ที่หนังสือ (ถ้ามี)<input type="text" data-k="docNo" maxlength="60" value="${esc(r.docNo||'')}"></label></div>
+ <div style="overflow:auto"><table class="rform"><thead><tr><th>ด้าน</th><th>สิ่งที่ต้องปฏิบัติ</th><th>ผล</th><th>ตัวเลข / รายละเอียด</th></tr></thead><tbody>${rows}</tbody></table></div>
+ <div class="rg" style="margin-top:10px"><label class="rw">ข้อบกพร่องหรือปัญหาที่ขอให้กองพันช่วยแก้ไข<input type="text" data-k="problem" maxlength="400" value="${esc(r.problem||'')}"></label>${mine?'':`<label class="rw">หมายเหตุของผู้ดูแล<input type="text" data-k="note" maxlength="400" value="${esc(r.note||'')}"></label>`}</div>
+ <div class="row noprint" style="margin-top:12px">${mine?`<button id="myRptSave" class="primary">📨 ${has?'บันทึกการแก้ไข':'ส่งรายงาน'}</button>`:`<button id="rptSave" class="primary">💾 บันทึกรายงาน</button>${has?'<button id="rptDel" class="danger">ลบรายงานเดือนนี้</button>':''}`}<button id="rptPrint">🖨️ พิมพ์</button></div></div>`;}
+function rptMyYms(){const out=[];let m=new Date(Date.now()+7*3600e3).toISOString().slice(0,7);for(let i=0;i<5;i++){out.push(m);m=prevYm(m);}return out;}
+function rptMine(){const id=sess.co,hq=RPT_HQ.some(x=>x[0]===id),u={id,name:co(id).name,grp:hq?'hq':'co'},yms=rptMyYms(),who=(sess.user||'')+'|'+id;
+ if(UI.myFor!==who){UI.myFor=who;UI.myRpt=null;UI.myErr=null;}
+ if(!UI.myYm||!yms.includes(UI.myYm))UI.myYm=yms.includes(openYm())?openYm():yms[1]||yms[0];
+ if(API.on&&!UI.myRpt){if(!UI.myBusy){UI.myBusy=true;api('/my/reports').then(j=>{UI.myRpt=j.recs||{};}).catch(e=>{UI.myRpt={};UI.myErr=e.message;}).finally(()=>{UI.myBusy=false;render();});}
+  return '<div class="card"><p class="hint">กำลังโหลดรายงานมาตรการประหยัดของหน่วย…</p></div>';}
+ const recs=API.on?UI.myRpt:(rptAll()[id]||{}),today=new Date(Date.now()+7*3600e3).toISOString().slice(0,10);
+ const chip=m=>{const r=recs[m],late=!r&&today>rptDue(m)&&fyOf(m)===fyOf(yms[0]);return `<span class="badge" style="background:${r?'var(--ok)':late?'var(--bad)':'var(--text-muted)'}">${ymLabel(m)} ${r?'✓ ส่งแล้ว':late?'เลยกำหนด':'ยังไม่ส่ง'}</span>`;};
+ return `<div class="rpt"><div class="card"><div class="row"><span class="badge" style="background:${co(id).color};font-size:15px">${esc(u.name)}</span><h2 style="margin:0">📋 รายงานมาตรการประหยัดประจำเดือน</h2></div>
+ <p class="muted" style="margin:6px 0 8px">ผู้รับผิดชอบของหน่วยกรอกและส่งเดือนละ 1 ครั้ง ภายในวันที่ 3 ของเดือนถัดไป · หน้านี้เห็นและแก้ได้เฉพาะรายงานของ ${esc(u.name)} · แก้ย้อนหลังได้ไม่เกิน 4 เดือน${UI.myErr?` · <span class="bad">โหลดไม่สำเร็จ: ${esc(UI.myErr)}</span>`:''}</p>
+ <div class="row" style="gap:6px;flex-wrap:wrap">${yms.slice().reverse().map(chip).join('')}</div></div>${rptFormCard(u,UI.myYm,recs[UI.myYm]||{},[],{yms})}</div>`;}
+async function rptMySave(){const ym=UI.myYm,id=sess.co;
+ try{const rec=rptCollect();delete rec.sentDate;delete rec.note;if(!Object.keys(rec).length){toast('ยังไม่ได้กรอกข้อมูล');return;}
+  if(rec.daysOf!=null&&rec.days>rec.daysOf)throw new Error('จำนวนวันที่บันทึกมากกว่าจำนวนวันทั้งเดือน');
+  if(rec.acTotal!=null&&rec.acWashed>rec.acTotal)throw new Error('จำนวนแอร์ที่ล้างมากกว่าจำนวนแอร์ทั้งหมด');
+  if(rec.copySheets>0&&rec.copyPages>rec.copySheets*2)throw new Error('จำนวนหน้ามากกว่า 2 เท่าของจำนวนแผ่น ตรวจตัวเลขถ่ายสำเนาอีกครั้ง');
+  if(API.on){const j=await api('/my/report',{method:'POST',body:{ym,rec}});UI.myRpt[ym]=j.rec;}
+  else{const all=rptAll(),old=(all[id]||{})[ym]||{};rec.sentDate=old.sentDate||new Date(Date.now()+7*3600e3).toISOString().slice(0,10);if(old.note)rec.note=old.note;rec.by=whoName();rec.at=new Date().toISOString();(all[id]=all[id]||{})[ym]=rec;save();}
+  toast('ส่งรายงานแล้ว ✓');render();}
+ catch(e){alert('ส่งไม่ได้: '+e.message);}}
+function rptSummary({fy,ms,ym,us,scope}){const yms=scope==='y'?ms:[ym],ttl=scope==='y'?'ทั้งปีงบ '+fy:'ประจำเดือน '+ymLabel(ym);
+ const get=u=>rptOf(u.id,yms),cos=us.filter(u=>u.grp==='co'),hqs=us.filter(u=>u.grp==='hq');
+ const hqA=rptAgg(hqs.map(get)),coA=rptAgg(cos.map(get)),pair=(a,b)=>a==null&&b==null?'–':rptN(a)+' / '+rptN(b);
+ const sent=u=>scope==='y'?ms.filter(m=>rptRec(u.id,m)).length+'/'+ms.length:(r=>r?(r.sentDate?rptD(r.sentDate):'ลงแล้ว'):'–')(rptRec(u.id,ym));
+ const line=(name,r,s,cls)=>`<tr class="${cls||''}"><td>${name}</td><td>${s}</td><td class="num">${r?pair(r.days,r.daysOf):'–'}</td><td class="num">${r?pair(r.defFound,r.defFixed):'–'}</td><td class="num">${r?rptN(r.trainN):'–'}</td><td class="num">${r?pair(r.trainPers,r.trainFam):'–'}</td><td class="num">${r?pair(r.signs,r.stickers):'–'}</td><td class="num">${r?rptN(r.elecViol):'–'}</td><td class="num">${r?pair(r.acWashed,r.acTotal):'–'}</td><td class="num">${r?rptN(r.led):'–'}</td><td class="num">${r?rptN(r.leakFound)+' / '+rptN(r.leakSelf)+' / '+rptN(r.leakReq):'–'}</td><td class="num">${r?pair(r.cars,r.pm):'–'}</td><td class="num">${r?rptN(r.trees):'–'}</td></tr>`;
+ const A=`<table class="rtbl"><thead><tr><th>หน่วย</th><th>${scope==='y'?'ส่งแล้ว':'ส่งเมื่อ'}</th><th class="num">บันทึกประจำวัน<br>วัน / ทั้งหมด</th><th class="num">ข้อบกพร่อง<br>พบ / แก้</th><th class="num">อบรม<br>(ครั้ง)</th><th class="num">ผู้เข้ารับ<br>นาย / ครอบครัว</th><th class="num">ป้าย /<br>สติกเกอร์</th><th class="num">ไม่ปฏิบัติ<br>ด้านไฟฟ้า</th><th class="num">ล้างแอร์<br>แล้ว / ทั้งหมด</th><th class="num">LED<br>(หลอด)</th><th class="num">น้ำรั่ว พบ /<br>ซ่อมเอง / แจ้ง</th><th class="num">รถ (คัน) /<br>ปบ. แล้ว</th><th class="num">ต้นไม้</th></tr></thead><tbody>
+  ${cos.map(u=>line(esc(u.name),get(u),sent(u))).join('')}${line('รวม ๕ กองร้อย',coA.n?coA:null,'','rsum')}<tr><td colspan="13" class="rgrp rwrap">บก.พัน. (๕ สายงาน) รายงานเฉพาะโทรศัพท์ทางไกล เครื่องถ่ายเอกสาร และวัสดุสำนักงาน (ดูตารางที่ ๒–๓) · ${scope==='y'?'ส่งแล้ว':'ส่งเมื่อ'}: ${hqs.map(u=>esc(u.name)+' '+sent(u)).join(' · ')}</td></tr></tbody></table>`;
+ const acct=[...cos.map(u=>[u.name,get(u)]),['บก.พัน. ฯ',hqA.n?hqA:null]],tot=rptAgg(acct.map(x=>x[1]));
+ const B=`<table class="rtbl"><thead><tr><th class="num">ลำดับ</th><th>หน่วย</th><th class="num">จำนวนครั้งที่ใช้ (ครั้ง)</th><th class="num">รวมเวลาที่ใช้ (นาที)</th></tr></thead><tbody>${acct.map(([n,r],i)=>`<tr><td class="num">${i+1}</td><td>${esc(n)}</td><td class="num">${r?rptN(r.phoneN):'–'}</td><td class="num">${r?rptN(r.phoneMin):'–'}</td></tr>`).join('')}<tr class="rsum"><td></td><td>รวม</td><td class="num">${rptN(tot.phoneN)}</td><td class="num">${rptN(tot.phoneMin)}</td></tr></tbody></table>`;
+ const pc=r=>{const p=rptPct(r);return p==null?'–':p+'%';};
+ const C=`<table class="rtbl"><thead><tr><th class="num">ลำดับ</th><th>หน่วย</th><th class="num">จำนวนแผ่นที่ใช้ (แผ่น)</th><th class="num">จำนวนหน้าที่พิมพ์/ถ่าย (หน้า)</th><th class="num">ใช้ ๒ หน้า</th><th class="num">วัสดุ รับ / จ่าย (รายการ)</th></tr></thead><tbody>${acct.map(([n,r],i)=>`<tr><td class="num">${i+1}</td><td>${esc(n)}</td><td class="num">${r?rptN(r.copySheets):'–'}</td><td class="num">${r?rptN(r.copyPages):'–'}</td><td class="num">${pc(r)}</td><td class="num">${r?pair(r.matIn,r.matOut):'–'}</td></tr>`).join('')}<tr class="rsum"><td></td><td>รวม</td><td class="num">${rptN(tot.copySheets)}</td><td class="num">${rptN(tot.copyPages)}</td><td class="num">${pc(tot)}</td><td class="num">${pair(tot.matIn,tot.matOut)}</td></tr></tbody></table>`;
+ const probs=us.flatMap(u=>yms.map(m=>[u,m,rptRec(u.id,m)])).filter(x=>x[2]&&(x[2].problem||x[2].auditFix));
+ const D=probs.length?`<table class="rtbl"><thead><tr><th>หน่วย</th><th>เดือน</th><th>ปัญหาที่ขอให้กองพันช่วยแก้ไข</th><th>ผลการแก้ไขข้อบกพร่องจากการตรวจ</th></tr></thead><tbody>${probs.map(([u,m,r])=>`<tr><td>${esc(u.name)}</td><td>${ymLabel(m)}</td><td class="rwrap">${esc(r.problem||'–')}</td><td class="rwrap">${esc(r.auditFix||'–')}</td></tr>`).join('')}</tbody></table>`:'<p class="hint">ไม่มีหน่วยใดแจ้งปัญหา</p>';
+ return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">สรุปผลการปฏิบัติตามมาตรการประหยัด ${ttl}</h3>
+  <span class="row noprint" style="gap:8px"><select id="rptScope" aria-label="ช่วงที่สรุป"><option value="m" ${scope==='m'?'selected':''}>เฉพาะ ${ymLabel(ym)}</option><option value="y" ${scope==='y'?'selected':''}>ทั้งปีงบ ${fy}</option></select><button id="rptCsv">⬇ CSV</button><button id="rptPrint">🖨️ พิมพ์</button></span></div>
+ <p class="hint" style="margin:6px 0 8px">หน่วย ม.๑ พัน.๓ รอ. · ใช้ประกอบรายงานผู้บังคับบัญชาภายในวันที่ 5 ของเดือนถัดไป (คำสั่ง ๑๙๗/๒๕๖๙ ข้อ ๓.๓) และเข้าแฟ้มข้อมูลรับตรวจ</p>
+ <h4>๑. ผลการปฏิบัติ ๗ ด้าน ของ ร้อย.นขต.</h4><div style="overflow:auto">${A}</div>
+ <h4>๒. บัญชีสรุปผลการใช้โทรศัพท์ทางไกล ${ttl}</h4><div style="overflow:auto">${B}</div>
+ <h4>๓. บัญชีสรุปผลการใช้เครื่องถ่ายสำเนาเอกสารและวัสดุสำนักงาน ${ttl}</h4><div style="overflow:auto">${C}</div>
+ <h4>๔. ปัญหาและการแก้ไขข้อบกพร่อง</h4><div style="overflow:auto">${D}</div></div>`;}
+function rptCsv(){const {fy,ms,ym,us,scope}=rptState(),yms=scope==='y'?ms:[ym],H=['หน่วย','เดือน','วันที่ส่ง','ที่หนังสือ',...RPT_ROWS.flatMap(([,,ins])=>ins.map(x=>x[1])),'ใช้ ๒ หน้า (ร้อยละ)','ปัญหาที่ขอให้ช่วยแก้ไข','หมายเหตุ'],rows=[H];
+ for(const u of us)for(const m of yms){const r=rptRec(u.id,m);if(!r)continue;rows.push([u.name,ymLabel(m),r.sentDate||'',r.docNo||'',...RPT_ROWS.flatMap(([,,ins])=>ins.map(([k,,kind])=>kind==='s'?(r[k]==='y'?'ตรง':r[k]==='n'?'ไม่ตรง':''):r[k]??'')),rptPct(r)??'',r.problem||'',r.note||'']);}
+ download('﻿'+rows.map(r=>r.map(v=>{let s=String(v);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return `"${s.replace(/"/g,'""')}"`;}).join(',')).join('\r\n'),`รายงานมาตรการประหยัด ${scope==='y'?'ปีงบ '+fy:ymLabel(ym)}.csv`,'text/csv;charset=utf-8');}
+function rptBn({fy,ms,ym}){const r=rptRec('bn',ym)||{};
+ const cmp=(k,kb,goal)=>{const rows=ms.map(m=>{const x=rptRec('bn',m)||{},v=x[k],b=x[kb],t=b!=null?b*.8:null,d=v!=null&&b>0?(v-b)/b:null;
+   return `<tr><td>${ymLabel(m)}</td><td class="num">${rptN(v)}</td><td class="num">${rptN(b)}</td><td class="num">${goal?(t==null?'–':fmt(t)):''}</td><td class="num" style="color:${d==null?'inherit':d<=(goal?-.2:0)?'var(--ok)':'var(--bad)'}">${d==null?'–':fmtPct(d)}</td>${goal?`<td>${d==null?'–':d<=-.2?'✓ ตามเป้า':'✗ ไม่ถึงเป้า'}</td>`:''}</tr>`;}).join('');
+  const sv=ms.reduce((a,m)=>{const x=rptRec('bn',m)||{};if(x[k]!=null&&x[kb]>0){a.v+=x[k];a.b+=x[kb];}return a;},{v:0,b:0}),d=sv.b>0?(sv.v-sv.b)/sv.b:null;
+  return `<div style="overflow:auto"><table class="rtbl"><thead><tr><th>เดือน</th><th class="num">ปีงบ ${fy}</th><th class="num">ปีฐาน</th><th class="num">${goal?'เป้าหมาย (ฐาน × 0.8)':''}</th><th class="num">เพิ่ม/ลด จากฐาน</th>${goal?'<th>ผลเทียบเป้าหมาย</th>':''}</tr></thead><tbody>${rows}<tr class="rsum"><td>รวมเดือนที่มีข้อมูลครบ</td><td class="num">${sv.b?rptN(sv.v):'–'}</td><td class="num">${sv.b?rptN(sv.b):'–'}</td><td class="num">${goal&&sv.b?fmt(sv.b*.8):''}</td><td class="num">${d==null?'–':fmtPct(d)}</td>${goal?`<td>${d==null?'–':d<=-.2?'✓ ตามเป้า':'✗ ไม่ถึงเป้า'}</td>`:''}</tr></tbody></table></div>`;};
+ const half=(a,b,name)=>{const mm=ms.slice(a,b),s=k=>mm.reduce((x,m)=>x+((rptRec('bn',m)||{})[k]||0),0),last=k=>{for(let i=mm.length-1;i>=0;i--){const v=(rptRec('bn',mm[i])||{})[k];if(v!=null)return v;}return null;};
+  return `<tr><td>${name}</td><td class="num">${rptN(s('elecU'))}</td><td class="num">${rptN(s('elecB'))}</td><td class="num">${rptN(s('fuelL'))}</td><td class="num">${rptN(s('fuelB'))}</td><td class="num">${rptN(last('pers'))}</td><td class="num">${rptN(last('area'))}</td><td class="num">${mm.filter(m=>rptRec('bn',m)).length}/6</td></tr>`;};
+ return `<div class="card"><h3 style="margin:0">ข้อมูลระดับกองพัน ประจำเดือน ${ymLabel(ym)}</h3>
+ <p class="hint" style="margin:6px 0 10px">ใช้ทำรายงานหน่วยเหนือภายในวันที่ 10 ของเดือนถัดไป (คำสั่ง ๑๙๗/๒๕๖๙ ข้อ ๔.๑) และลงระบบ e-report ของกระทรวงพลังงาน (ข้อ ๔.๒) · ไฟฟ้าและประปาใช้ยอดตามใบแจ้งหนี้ของหน่วย · น้ำมันลงเฉพาะงานธุรการ ปริมาณเป็นลิตร จำนวนเงินเป็นบาท (ข้อ ๔.๒.๑–๔.๒.๒)${r.at?` · บันทึกล่าสุด ${rptD(new Date(new Date(r.at).getTime()+7*3600e3).toISOString().slice(0,10))} โดย ${esc(r.by||'')}`:''}</p>
+ <div class="rg">${RPT_BN.map(x=>rptInput(x,r)).join('')}<label class="rw">หมายเหตุ<input type="text" data-k="note" maxlength="400" value="${esc(r.note||'')}"></label></div>
+ <div class="row noprint" style="margin-top:12px"><button id="bnSave" class="primary">💾 บันทึกข้อมูลกองพัน</button>${rptRec('bn',ym)?'<button id="bnDel" class="danger">ลบข้อมูลเดือนนี้</button>':''}<button id="rptPrint">🖨️ พิมพ์</button></div></div>
+ <div class="card"><h3 style="margin:0">เปรียบเทียบกับปีฐาน · ปีงบ ${fy}</h3><p class="hint" style="margin:6px 0 8px">เป้าหมาย: ลดการใช้ไฟฟ้าและน้ำมันเชื้อเพลิงไม่น้อยกว่าร้อยละ 20 เทียบปีฐาน ถ้าไม่ถึงเป้า คณะทำงานต้องวิเคราะห์สาเหตุและเสนอมาตรการเพิ่มเติมภายใน 30 วัน (คำสั่ง ๑๙๗/๒๕๖๙ ข้อ ๔.๓)</p>
+ <h4>ไฟฟ้า (หน่วย kWh)</h4>${cmp('elecU','elecBase',true)}<h4>น้ำมันเชื้อเพลิงงานธุรการ (ลิตร)</h4>${cmp('fuelL','fuelBase',true)}<h4>น้ำประปา (ลบ.ม.)</h4>${cmp('waterU','waterBase',false)}</div>
+ <div class="card"><h3 style="margin:0">ยอดสำหรับลงระบบ e-report · ปีงบ ${fy}</h3><p class="hint" style="margin:6px 0 8px">วงรอบ 6 เดือน (ข้อ ๔.๒.๔) · ต้องลงจำนวนบุคลากรและขนาดพื้นที่ให้ครบ (ข้อ ๔.๒.๓)</p>
+ <div style="overflow:auto"><table class="rtbl"><thead><tr><th>ห้วง</th><th class="num">ไฟฟ้า (หน่วย)</th><th class="num">ไฟฟ้า (บาท)</th><th class="num">น้ำมันธุรการ (ลิตร)</th><th class="num">น้ำมันธุรการ (บาท)</th><th class="num">บุคลากร (นาย)</th><th class="num">พื้นที่ (ตร.ม.)</th><th class="num">เดือนที่ลงแล้ว</th></tr></thead><tbody>${half(0,6,'ต.ค. – มี.ค.')}${half(6,12,'เม.ย. – ก.ย.')}</tbody></table></div></div>`;}
+function rptCollect(){const root=document.querySelector('.rpt'),rec={},mk={};
+ root.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k,v=el.value.trim();if(v==='')return;if(el.type==='number'){const n=Number(v);if(!isFinite(n)||n<0)throw new Error('ตัวเลขไม่ถูกต้อง: '+(el.closest('label')?.firstChild?.textContent||k));rec[k]=n;}else rec[k]=v;});
+ root.querySelectorAll('[data-mk]').forEach(el=>{if(el.value)mk[el.dataset.mk]=el.value;});if(Object.keys(mk).length)rec.mk=mk;return rec;}
+async function rptPut(unit,ym,rec){const all=rptAll();
+ if(API.on){const j=await api('/admin/report',{method:'POST',body:{unit,ym,rec}});rec=j.rec;}
+ else if(rec){rec.by=whoName();rec.at=new Date().toISOString();}
+ all[unit]=all[unit]||{};if(rec)all[unit][ym]=rec;else{delete all[unit][ym];if(!Object.keys(all[unit]).length)delete all[unit];}
+ if(!API.on)save();}
+async function rptSave(unit,del){const {ym}=rptState();let rec=null;
+ try{if(!del){rec=rptCollect();if(!Object.keys(rec).length){toast('ยังไม่ได้กรอกข้อมูล');return;}
+   if(rec.daysOf!=null&&rec.days>rec.daysOf)throw new Error('จำนวนวันที่บันทึกมากกว่าจำนวนวันทั้งเดือน');
+   if(rec.acTotal!=null&&rec.acWashed>rec.acTotal)throw new Error('จำนวนแอร์ที่ล้างมากกว่าจำนวนแอร์ทั้งหมด');
+   if(rec.copySheets>0&&rec.copyPages>rec.copySheets*2)throw new Error('จำนวนหน้ามากกว่า 2 เท่าของจำนวนแผ่น ตรวจตัวเลขถ่ายสำเนาอีกครั้ง');}
+  await rptPut(unit,ym,rec);toast(del?'ลบแล้ว':'บันทึกแล้ว');render();}
+ catch(e){alert('บันทึกไม่ได้: '+e.message);}}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest||!t.closest('.rpt'))return;let el;
+ if(el=t.closest('[data-rv]')){UI.rView=el.dataset.rv;render();return;}
+ if(el=t.closest('[data-rcell]')){const[u,m]=el.dataset.rcell.split('|');UI.rUnit=u;UI.rYm=m;UI.rView='form';render();scrollTo(0,0);return;}
+ if(el=t.closest('[data-rbn]')){UI.rYm=el.dataset.rbn;UI.rView='bn';render();scrollTo(0,0);return;}
+ if(t.closest('#rptSave'))return rptSave(UI.rUnit,false);
+ if(t.closest('#myRptSave'))return rptMySave();
+ if(t.closest('#rptDel')){if(UI.rDel===UI.rUnit+'|'+UI.rYm){UI.rDel=null;return rptSave(UI.rUnit,true);}UI.rDel=UI.rUnit+'|'+UI.rYm;t.closest('#rptDel').textContent='กดอีกครั้งเพื่อยืนยันการลบ';return;}
+ if(t.closest('#bnSave'))return rptSave('bn',false);
+ if(t.closest('#bnDel')){if(UI.rDel==='bn|'+UI.rYm){UI.rDel=null;return rptSave('bn',true);}UI.rDel='bn|'+UI.rYm;t.closest('#bnDel').textContent='กดอีกครั้งเพื่อยืนยันการลบ';return;}
+ if(t.closest('#rptCsv'))return rptCsv();
+ if(t.closest('#rptPrint'))return print();});
+document.addEventListener('change',e=>{const t=e.target;if(!t.closest||!t.closest('.rpt'))return;
+ if(t.id==='rptFy'){UI.rFy=+t.value;UI.rYm=null;render();}else if(t.id==='rptYm'){UI.rYm=t.value;render();}
+ else if(t.id==='rptUnit'){UI.rUnit=t.value;render();}else if(t.id==='myRptYm'){UI.myYm=t.value;render();}else if(t.id==='rptScope'){UI.rScope=t.value;render();}});
+document.addEventListener('input',e=>{const t=e.target;if(!t.dataset||!/^copy(Sheets|Pages)$/.test(t.dataset.k||''))return;const g=k=>Number(document.querySelector('.rpt [data-k="'+k+'"]')?.value||0),el=document.getElementById('rptPct');
+ if(el){const s=g('copySheets'),p=g('copyPages');el.textContent=s>0?Math.min(100,Math.round(p/(s*2)*100)):'–';}});
 function adminData(){const fys=[...new Set([...fyList(),fyOf(openYm())])].sort((a,b)=>b-a),fy=UI.gridFy||fyOf(openYm()),ms=fyMonths(fy);
  return `<div class="card"><div class="row"><h3 style="margin:0">ข้อมูลเลขมิเตอร์รายเดือน</h3><select id="gridFy">${fys.map(y=>`<option value="${y}" ${y===fy?'selected':''}>ปีงบ ${y}</option>`).join('')}</select><button id="csvExp">⬇ ส่งออก CSV (เปิดด้วย Excel)</button></div>
  <p class="hint">แตะช่องเพื่อแก้เลขมิเตอร์ (ผู้ดูแลแก้ได้ทุกเดือน ทุกกองร้อย) · ตัวเลขบน = เลขมิเตอร์ · ตัวเลขล่าง = ใช้ไป · ทุกการแก้ถูกบันทึกในประวัติ</p>
@@ -940,14 +1101,14 @@ function adminAccess(){const om=openYm(),opts=[];let x=nextYm(curYm());for(let i
 function usersCard(){const U=API.users;
  if(!U)return '<div class="card"><h3>ผู้ใช้งานและคำขอสมัคร</h3><p class="hint">กำลังโหลด…</p></div>';
  const pend=U.filter(u=>u.status==='pending'),rest=U.filter(u=>u.status!=='pending');
- const coOpts=sel=>'<option value="">— เลือกกองร้อย —</option>'+S.companies.map(c=>`<option value="${esc(c.id)}" ${sel===c.id?'selected':''}>${esc(c.name)}</option>`).join('');
- const reqName=u=>u.reqCo==='admin'?'ผู้ดูแลระบบ':(S.companies.find(c=>c.id===u.reqCo)?.name||'-');
+ const coOpts=sel=>'<option value="">— เลือกหน่วย —</option>'+S.companies.map(c=>`<option value="${esc(c.id)}" ${sel===c.id?'selected':''}>${esc(c.name)}</option>`).join('')+'<optgroup label="บก.พัน.">'+RPT_HQ.map(([id,n])=>`<option value="${id}" ${sel===id?'selected':''}>${n}</option>`).join('')+'</optgroup>';
+ const reqName=u=>u.reqCo==='admin'?'ผู้ดูแลระบบ':(co(u.reqCo).id?co(u.reqCo).name:'-');
  const stName={active:'<span class="ok">✓ ใช้งาน</span>',disabled:'<span class="bad">⛔ ระงับ</span>',pending:'<span class="warn">⏳ รออนุมัติ</span>'};
  const dt=v=>v?new Date(v).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'}):'-';
  const row=u=>{const role=u.role||(u.reqCo==='admin'?'admin':'company'),cid=u.co||(u.reqCo!=='admin'?u.reqCo:''),self=sess?.user===u.user;
   return `<tr${u.status==='pending'?' class="pend"':''}><td><b>${esc(u.name)}</b><div class="hint">${esc(u.pos||'')}${u.phone?' · '+esc(u.phone):''}</div></td>
   <td>${esc(u.user)}<div class="hint">ขอ: ${esc(reqName(u))} · สมัคร ${dt(u.at)}${u.lastLogin?' · เข้าล่าสุด '+dt(u.lastLogin):''}</div></td><td>${stName[u.status]||esc(u.status)}</td>
-  <td><select id="ur-${u.id}" data-urole="${u.id}" aria-label="สิทธิ์" ${self?'disabled':''}><option value="company" ${role==='company'?'selected':''}>กรอกข้อมูลกองร้อย</option><option value="admin" ${role==='admin'?'selected':''}>ผู้ดูแลระบบ</option></select>
+  <td><select id="ur-${u.id}" data-urole="${u.id}" aria-label="สิทธิ์" ${self?'disabled':''}><option value="company" ${role==='company'?'selected':''}>กรอกข้อมูลของหน่วย</option><option value="admin" ${role==='admin'?'selected':''}>ผู้ดูแลระบบ</option></select>
    <select id="uc-${u.id}" aria-label="กองร้อย" ${self||role==='admin'?'disabled':''}>${coOpts(cid)}</select></td>
   <td>${self?'<span class="hint">บัญชีของคุณ</span>':`<button class="primary" data-uop="${u.status==='active'?'save':'approve'}" data-uid="${u.id}">${u.status==='active'?'บันทึกสิทธิ์':'✓ อนุมัติ'}</button> ${u.status==='active'?`<button data-uop="disable" data-uid="${u.id}">ระงับ</button> `:''}<button data-uop="reset" data-uid="${u.id}">ตั้งรหัสผ่านใหม่</button> <button class="danger" data-uop="delete" data-uid="${u.id}">ลบ</button>`}</td></tr>`;};
  return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">ผู้ใช้งานและคำขอสมัคร ${pend.length?`<span class="badge" style="background:var(--bad)">${pend.length} รออนุมัติ</span>`:''}</h3><button id="uRefresh">↻ โหลดใหม่</button></div>
@@ -1019,7 +1180,7 @@ function loginModal(mode){const acc=ACC();mode=mode||(acc?'user':'code');
  else if(mode==='reg')body=`<p class="hint" style="margin-top:0">สมัครแล้วรอผู้ดูแลระบบอนุมัติ ผู้ดูแลจะกำหนดว่ากรอกข้อมูลของกองร้อยไหนได้</p>
   <label>ยศ ชื่อ สกุล<input type="text" id="rgName" autocomplete="name" maxlength="80" placeholder="เช่น ส.อ.สมชาย ใจดี"></label>
   <label>ตำแหน่ง<input type="text" id="rgPos" maxlength="80" placeholder="เช่น เสมียน ร้อย.ม.๑"></label>
-  <label>ขอสิทธิ์กรอกข้อมูลของ<select id="rgCo"><option value="">— เลือก —</option>${S.companies.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}<option value="admin">ผู้ดูแลระบบ</option></select></label>
+  <label>ขอสิทธิ์กรอกข้อมูลของ<select id="rgCo"><option value="">— เลือก —</option>${S.companies.map(c=>`<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('')}<optgroup label="บก.พัน. (กรอกเฉพาะรายงานมาตรการประหยัด)">${RPT_HQ.map(([id,n])=>`<option value="${id}">${n}</option>`).join('')}</optgroup><option value="admin">ผู้ดูแลระบบ</option></select></label>
   <label>เบอร์โทร (ไม่บังคับ)<input type="tel" id="rgPhone" maxlength="20" autocomplete="tel"></label>
   <label>ชื่อผู้ใช้ (a-z ตัวเลข . _ -)<input type="text" id="rgUser" maxlength="30" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="เช่น somchai.m1"></label>
   <label>รหัสผ่าน (6 ตัวขึ้นไป)<input type="password" id="rgPass" autocomplete="new-password"></label>
@@ -1066,7 +1227,7 @@ function setVal(sel,v){const el=$(sel);if(el&&v!=null)el.value=String(v);}
 
 function render(){
  for(const k in CH){CH[k].destroy();delete CH[k];}
- if(sess?.role==='company'&&!S.companies.some(c=>c.id===sess.co))setSess(null);
+ if(sess?.role==='company'&&!S.companies.some(c=>c.id===sess.co)&&!RPT_HQ.some(x=>x[0]===sess.co))setSess(null);
  if(UI.page==='company'&&sess?.role!=='company')UI.page='view';
  if(UI.page==='admin'&&sess?.role!=='admin')UI.page='view';
  if(UI.page!=='company')UI.fitFor=null;
@@ -1172,7 +1333,7 @@ document.addEventListener('change',async e=>{const t=e.target;
   case 'mkChartT':UI.mkChartT=t.value;if(t.value==='line'&&!UI.mkYears.length)UI.mkYears=fyList().slice(0,FY_MAX);return render();
   case 'mkBld':UI.mkBld=t.value;return render();
   case 'mkFy':UI.mkFy=+t.value;return render();
-  case 'impJson':{const f=t.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.meters||!d.readings||!d.companies||!d.settings)throw 0;if(!confirm('แทนที่ข้อมูลทั้งหมดด้วยไฟล์สำรองนี้?'))return;d.blds=d.blds||[];d.shapes=d.shapes||[];d.log=d.log||[];S=d;if(API.on&&API.empty){API.empty=false;API.etag=null;API.syncCfg=null;API.syncRd={};}log('ผู้ดูแลระบบ','นำเข้าไฟล์สำรอง');save();render();toast('นำเข้าแล้ว');}catch(_){alert('ไฟล์สำรองไม่ถูกต้อง');}return;}
+  case 'impJson':{const f=t.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!d.meters||!d.readings||!d.companies||!d.settings)throw 0;if(!confirm('แทนที่ข้อมูลทั้งหมดด้วยไฟล์สำรองนี้?'))return;d.blds=d.blds||[];d.shapes=d.shapes||[];d.log=d.log||[];S=d;if(API.on&&API.empty){API.empty=false;API.etag=null;API.syncCfg=null;API.syncRd={};}log('ผู้ดูแลระบบ','นำเข้าไฟล์สำรอง');save();if(API.on&&d.reports&&d.reports.recs&&Object.keys(d.reports.recs).length){try{await api('/admin/reports-import',{method:'POST',body:{reports:d.reports}});}catch(e){alert('นำเข้ารายงานมาตรการประหยัดไม่สำเร็จ: '+e.message);}}render();toast('นำเข้าแล้ว');}catch(_){alert('ไฟล์สำรองไม่ถูกต้อง');}return;}
  }
  if(t.dataset.grp){const k={cy:'cmpYears',cc:'cmpCos',my:'mCmpYears',mky:'mkYears'}[t.dataset.grp],val=t.dataset.grp==='cc'?t.value:+t.value;
   if(t.checked&&t.dataset.grp!=='cc'&&UI[k].length>=FY_MAX){t.checked=false;toast(`เปรียบเทียบได้ไม่เกิน ${FY_MAX} ปีงบประมาณ`);return;}
