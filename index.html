@@ -973,7 +973,7 @@ function rptForm({ym,us}){const u=us.find(x=>x.id===UI.rUnit);return rptFormCard
 function rptFormCard(u,ym,r,us,mine){const mk=r.mk||{},pct=rptPct(r),hq=u.grp==='hq',has=!!r.at;
  const rows=RPT_ROWS.map((x,i)=>[x,i]).filter(([,i])=>!hq||(i>=10&&i<=12)).map(([[area,what,ins],i])=>{const key='r'+(i+1),v=mk[key]||'';
   return `<tr>${area?`<td class="rarea" rowspan="${(()=>{let n=1;while(RPT_ROWS[i+n]&&!RPT_ROWS[i+n][0])n++;return n;})()}">${area}</td>`:''}<td class="rwhat">${what}</td>
-  <td><select data-mk="${key}" aria-label="ผล"><option value=""></option><option value="y" ${v==='y'?'selected':''}>✓ ครบ</option><option value="n" ${v==='n'?'selected':''}>✗ ไม่ครบ</option><option value="-" ${v==='-'?'selected':''}>– ไม่มีกรณี</option></select></td>
+  <td><select data-rmk="${key}" aria-label="ผล"><option value=""></option><option value="y" ${v==='y'?'selected':''}>✓ ครบ</option><option value="n" ${v==='n'?'selected':''}>✗ ไม่ครบ</option><option value="-" ${v==='-'?'selected':''}>– ไม่มีกรณี</option></select></td>
   <td><div class="rg">${ins.map(x=>rptInput(x,r)).join('')}${i===11?`<label>ใช้ ๒ หน้า (ร้อยละ)<b id="rptPct" style="font-size:18px">${pct==null?'–':pct}</b></label>`:''}</div></td></tr>`;}).join('');
  return `<div class="card"><div class="row" style="justify-content:space-between"><h3 style="margin:0">รายงานผลการปฏิบัติตามมาตรการประหยัด · ${esc(u.name)} · ${ymLabel(ym)}</h3>
   <span class="row noprint" style="gap:8px">${mine?`<label style="margin:0">เดือน <select id="myRptYm">${mine.yms.map(m=>`<option value="${m}" ${m===ym?'selected':''}>${ymLabel(m)}</option>`).join('')}</select></label>`:`<label style="margin:0">หน่วย <select id="rptUnit">${us.map((x,i)=>`${x.grp==='hq'&&us[i-1]?.grp!=='hq'?'<optgroup label="บก.พัน.">':''}<option value="${x.id}" ${x.id===u.id?'selected':''}>${esc(x.name)}</option>`).join('')}</optgroup></select></label>`}</span></div>
@@ -1042,7 +1042,7 @@ function rptBn({fy,ms,ym}){const r=rptRec('bn',ym)||{};
  <div style="overflow:auto"><table class="rtbl"><thead><tr><th>ห้วง</th><th class="num">ไฟฟ้า (หน่วย)</th><th class="num">ไฟฟ้า (บาท)</th><th class="num">น้ำมันธุรการ (ลิตร)</th><th class="num">น้ำมันธุรการ (บาท)</th><th class="num">บุคลากร (นาย)</th><th class="num">พื้นที่ (ตร.ม.)</th><th class="num">เดือนที่ลงแล้ว</th></tr></thead><tbody>${half(0,6,'ต.ค. – มี.ค.')}${half(6,12,'เม.ย. – ก.ย.')}</tbody></table></div></div>`;}
 function rptCollect(){const root=document.querySelector('.rpt'),rec={},mk={};
  root.querySelectorAll('[data-k]').forEach(el=>{const k=el.dataset.k,v=el.value.trim();if(v==='')return;if(el.type==='number'){const n=Number(v);if(!isFinite(n)||n<0)throw new Error('ตัวเลขไม่ถูกต้อง: '+(el.closest('label')?.firstChild?.textContent||k));rec[k]=n;}else rec[k]=v;});
- root.querySelectorAll('[data-mk]').forEach(el=>{if(el.value)mk[el.dataset.mk]=el.value;});if(Object.keys(mk).length)rec.mk=mk;return rec;}
+ root.querySelectorAll('[data-rmk]').forEach(el=>{if(el.value)mk[el.dataset.rmk]=el.value;});if(Object.keys(mk).length)rec.mk=mk;return rec;}
 async function rptPut(unit,ym,rec){const all=rptAll();
  if(API.on){const j=await api('/admin/report',{method:'POST',body:{unit,ym,rec}});rec=j.rec;}
  else if(rec){rec.by=whoName();rec.at=new Date().toISOString();}
